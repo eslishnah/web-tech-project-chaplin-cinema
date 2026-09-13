@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Movie schedule and booking form.">
+    <meta name="author" content="Daniyar">
+    <title>Chaplin Mega Silk Way - Schedule</title>
+</head>
+
+<body>
+
+<!-- Author: Daniyar -->
+
+<header>
+    <p><strong>Chaplin Mega Silk Way</strong></p>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="movies.html">Movies</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="cinema.html">Cinema</a></li>
+            <li><a href="halls.html">Halls</a></li>
+            <li><a href="visit.html">Visit</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="colophon.html">Colophon</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+
+    <h1>Movie Schedule</h1>
+
+    <section id="table">
+        <h2>Movie schedule</h2>
+
+        <p>
+            This page shows some movie sessions at Chaplin Mega Silk Way.
+            The schedule can change every day, so visitors should check
+            the official Chaplin website before going to the cinema.
+        </p>
+
+        <!-- I use a table because it is easy to compare movies, times and halls -->
+        <table>
+
+            <caption>Chaplin Mega Silk Way movie schedule</caption>
+
+            <thead>
+                <tr>
+                    <th scope="col">Movie</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Hall</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Avatar</td>
+                    <td>16:20</td>
+                    <td>Hall 5</td>
+                </tr>
+
+                <tr>
+                    <td>Spider-man:Brand new day</td>
+                    <td>19:40</td>
+                    <td>Hall 3</td>
+                </tr>
+
+                <tr>
+                    <td>Odyssey</td>
+                    <td>13:10</td>
+                    <td>Hall 1</td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        <ol type="A">
+            <li>Choose a movie.</li>
+            <li>Check the time.</li>
+            <li>Check the hall.</li>
+        </ol>
+
+        <p>
+            The table helps visitors compare movie names,
+            times and halls. This website is a student project,
+            so it is not connected to the real Chaplin booking system.
+        </p>
+    </section>
+
+
+    <section id="form">
+
+        <h2>Booking Form</h2>
+
+        <p>
+            This form is only for our assignment.
+            It does not make a real booking.
+        </p>
+
+        <!-- I use a form because a visitor needs to enter booking information -->
+        <form method="post" action="#">
+
+            <!-- This form does not have a server yet -->
+
+            <fieldset>
+
+                <legend>Booking information</legend>
+
+                <label for="name1">Name:</label>
+                <input type="text"
+                       id="name1"
+                       name="name"
+                       placeholder="Your name"
+                       required>
+                <br>
+
+                <label for="email1">Email:</label>
+                <input type="email"
+                       id="email1"
+                       name="email"
+                       placeholder="Your email"
+                       required>
+                <br>
+
+                <label for="phone1">Phone:</label>
+                <input type="tel"
+                       id="phone1"
+                       name="phone"
+                       placeholder="+7 700 000 00 00"
+                       required>
+                <br>
+
+                <label for="people1">People:</label>
+                <input type="number"
+                       id="people1"
+                       name="people"
+                       min="1"
+                       required>
+                <br>
+
+                <label for="date1">Date:</label>
+                <input type="date"
+                       id="date1"
+                       name="date"
+                       required>
+                <br>
+
+
+                <p>Hall type:</p>
+
+                <input type="radio"
+                       id="normal1"
+                       name="hall"
+                       value="normal"
+                       required>
+
+                <label for="normal1">Normal</label>
+
+
+                <input type="radio"
+                       id="atmos1"
+                       name="hall"
+                       value="atmos">
+
+                <label for="atmos1">ATMOS</label>
+
+                <br>
+
+
+                <input type="checkbox"
+                       id="agree1"
+                       name="agree"
+                       required>
+
+                <label for="agree1">
+                    I know this is only a student form.
+                </label>
+
+                <br>
+
+
+                <label for="movie1">Movie:</label>
+
+                <select id="movie1" name="movie" required>
+
+                    <option value="">Choose movie</option>
+                    <option value="avatar">Avatar</option>
+                    <option value="spiderman">Spider-man:Brand new day</option>
+                    <option value="odyssey">Odyssey</option>
+
+                </select>
+
+                <br>
+
+
+                <label for="comment1">Comment:</label>
+                <br>
+
+                <textarea id="comment1"
+                          name="comment"
+                          rows="4"
+                          cols="35"
+                          placeholder="Write comment"></textarea>
+
+                <br>
+
+
+                <button type="submit">Submit</button>
+                <button type="reset">Reset</button>
+
+            </fieldset>
+
+        </form>
+
+    </section>
+
+
+    <aside>
+
+        <h2>Important</h2>
+
+        <p>
+            Movie times can change.
+            Visitors should check the official Chaplin website
+            before going to the cinema.
+        </p>
+
+        <p>Daniyar made this page.</p>
+
+    </aside>
+
+</main>
+
+
+<footer>
+
+    <p>
+        <a href="mailto:info@chaplin.kz">Email</a>
+    </p>
+
+    <p>&copy; 2026 Chaplin Student Project</p>
+
+</footer>
+
+</body>
+</html>
