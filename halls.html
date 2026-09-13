@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Information about cinema halls.">
+<meta name="author" content="Sandzhar">
+<title>Chaplin Mega Silk Way - Halls</title>
+</head>
+<body>
+
+<!-- Author: Sandzhar -->
+
+<header>
+<p><strong>Chaplin Mega Silk Way</strong></p>
+<nav>
+<ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="movies.html">Movies</a></li>
+<li><a href="schedule.html">Schedule</a></li>
+<li><a href="cinema.html">Cinema</a></li>
+<li><a href="halls.html">Halls</a></li>
+<li><a href="visit.html">Visit</a></li>
+<li><a href="services.html">Services</a></li>
+<li><a href="colophon.html">Colophon</a></li>
+</ul>
+</nav>
+</header>
+
+<main>
+<h1>Cinema Halls</h1>
+
+<section id="halls">
+<h2>Hall information</h2>
+<p>Chaplin has different cinema halls. Some sessions can use <abbr title="Dolby Atmos">ATMOS</abbr>. We will check hall information during our visit. We do not want to add details that we cannot confirm.</p>
+<article>
+<h3>What we check</h3>
+<ol type="A"><li>Hall number</li><li>Screen type</li><li>Seat area</li></ol>
+<ul><li>Inside the hall<ul><li>Seats</li><li>Screen</li></ul></li></ul>
+<table>
+<caption>Hall information</caption>
+<thead><tr><th scope="col">Hall</th><th scope="col">Type</th></tr></thead>
+<tbody><tr><td>Hall 1</td><td>Regular</td></tr><tr><td>Hall 2</td><td>ATMOS</td></tr></tbody>
+</table>
+<p>We use a table because hall information is easier to read in rows and columns. We also use a list for things that we want to check when our team visits the cinema.</p>
+</article>
+</section>
+
+<section id="feedback">
+<h2>Hall Feedback Form</h2>
+<form method="post" action="#">
+<!-- This form does not send data to a server yet -->
+<fieldset>
+<legend>Your feedback</legend>
+<label for="name2">Name:</label><input type="text" id="name2" name="name" placeholder="Your name" required><br>
+<label for="email2">Email:</label><input type="email" id="email2" name="email" placeholder="Your email" required><br>
+<label for="phone2">Phone:</label><input type="tel" id="phone2" name="phone" placeholder="+7 700 000 00 00" required><br>
+<label for="people2">People:</label><input type="number" id="people2" name="people" min="1" required><br>
+<label for="date2">Date:</label><input type="date" id="date2" name="date" required><br>
+<p>Hall type:</p>
+<input type="radio" id="regular2" name="hall" value="regular" required><label for="regular2">Regular</label>
+<input type="radio" id="atmos2" name="hall" value="atmos"><label for="atmos2">ATMOS</label><br>
+<input type="checkbox" id="clean2" name="clean"><label for="clean2">The hall was clean.</label><br>
+<label for="rating2">Rating:</label><select id="rating2" name="rating" required><option value="">Choose</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select><br>
+<label for="comment2">Comment:</label><br><textarea id="comment2" name="comment" rows="4" cols="35" placeholder="Write comment"></textarea><br>
+<button type="submit">Submit</button><button type="reset">Reset</button>
+</fieldset>
+</form>
+</section>
+</main>
+
+<footer>
+<p><a href="mailto:info@chaplin.kz">Email</a></p>
+<p>&copy; 2026 Chaplin Student Project</p>
+</footer>
+
+</body>
+</html>
