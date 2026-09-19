@@ -1,0 +1,19 @@
+/* Color palette: #111111 for readable text, #f5f1e8 for a warm cinema background, #c62828 for cinema accents, #ffffff for clear surfaces, and #d6b36a for a subtle film-inspired highlight. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f5f1e8;
+  color: #111111;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
