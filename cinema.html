@@ -1,55 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Information about Chaplin Mega Silk Way.">
-<meta name="author" content="Sandzhar">
-<title>Dostar - Cinema</title>
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/sandzhar.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Information about Dostar Cinema in Astana.">
+    <meta name="author" content="Sandzhar">
+    <title>Dostar Cinema - Cinema</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/sandzhar.css">
 </head>
 <body>
 
 <!-- Author: Sandzhar -->
 
 <header>
-<p><strong>Dostar cinema</strong></p>
-<nav>
-<ul>
-<li><a href="index.html">Home</a></li>
-<li><a href="movies.html">Movies</a></li>
-<li><a href="schedule.html">Schedule</a></li>
-<li><a href="cinema.html">Cinema</a></li>
-<li><a href="halls.html">Halls</a></li>
-<li><a href="visit.html">Visit</a></li>
-<li><a href="services.html">Services</a></li>
-<li><a href="colophon.html">Colophon</a></li>
-</ul>
-</nav>
+    <p class="site-title"><strong>Dostar Cinema</strong></p>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="movies.html">Movies</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="cinema.html">Cinema</a></li>
+            <li><a href="halls.html">Halls</a></li>
+            <li><a href="visit.html">Visit</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="colophon.html">Colophon</a></li>
+        </ul>
+    </nav>
 </header>
 
 <main>
-<h1>About the Cinema</h1>
+    <h1 class="page-title">About Dostar Cinema</h1>
 
-<section id="about-cinema">
-<h2>Dostar cinema</h2>
-<article>
-<h3>General information</h3>
-<p>Dostar is a real cinema in Astana. It is inside Koktal shopping centre. The cinema has different halls and many movie sessions. People can come here with friends or family.</p>
-<p>We chose this cinema because we can visit it and take our own photos.</p>
-</article>
-<figure><img src="images/entrance.jpg" alt="Chaplin cinema entrance" width="500"><figcaption>Cinema entrance.</figcaption></figure>
-<figure><img src="images/hall.jpg" alt="Dostar cinema hall" width="500"><figcaption>Cinema lobby.</figcaption></figure>
-<figure><img src="images/sign.jpg" alt="Dostar cinema sign" width="500"><figcaption>The sign.</figcaption></figure>
-</section>
+    <!-- This id is right because this is the only main cinema-information section on the page. -->
+    <section id="about-cinema" class="content-section">
+        <h2>Dostar Cinema</h2>
 
+        <p>
+            <img class="float-photo" src="images/dostar-front.jpg" alt="Dostar Cinema entrance">
+            Dostar Cinema is a cinema in Astana. Its interior has strong green branding, light walls, orange accents and dark ceiling panels. We used these visual details as the main idea for the Assignment 2 colour palette.
+        </p>
 
+        <p class="clear-float">The clear class places this paragraph below the floated photo. Our team uses real photos from the cinema as visual references for the design.</p>
+
+        <article>
+            <h3>General information</h3>
+            <p>The cinema has ticket and snack areas, movie halls and seating spaces for visitors. The project presents this information with simple semantic HTML and CSS layouts.</p>
+        </article>
+
+        <figure class="photo-card">
+            <img src="images/dostar-front.jpg" alt="Dostar Cinema entrance and lobby">
+            <figcaption>Dostar Cinema entrance.</figcaption>
+        </figure>
+
+        <figure class="photo-card">
+            <img src="images/dostar-bar.jpg" alt="Dostar Cinema ticket counter">
+            <figcaption>Ticket and snack counter.</figcaption>
+        </figure>
+
+        <figure class="photo-card">
+            <img src="images/dostar-front.jpg" alt="Dostar Cinema waiting area">
+            <figcaption>Waiting area.</figcaption>
+        </figure>
+    </section>
 </main>
 
 <footer>
-<p><a href="mailto:info@chaplin.kz">Email</a></p>
-<p>&copy; 2026 Dostar cinema Student Project</p>
+    <p>
+        <a href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a>
+        |
+        <a href="https://api.whatsapp.com/send/?phone=77474330558&text=Здравствуйте%21%0A%0AПишу+из+приложения+2ГИС.%0A%0A&type=phone_number&app_absent=0">+77474330558</a>
+        |
+        <a href="mailto:studentproject@example.com">Project email</a>
+    </p>
+    <p>&copy; 2026 Dostar Cinema Student Project</p>
 </footer>
 
 </body>

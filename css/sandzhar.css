@@ -1,24 +1,93 @@
-/* Sandzhar's page styles */
+/* Sandzhar personal styles */
 
-body {
-  line-height: 1.5;
+/* ---------- CINEMA PAGE ---------- */
+
+/*
+Grid is better here because the text stays wide
+and the cinema photos can be placed in columns.
+*/
+#about-cinema {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(190px, 1fr));
+  gap: 22px;
 }
 
-header,
-main,
-footer {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 1rem;
+#about-cinema > h2,
+#about-cinema > article,
+#about-cinema > p {
+  grid-column: 1 / -1;
 }
 
-nav ul {
+#about-cinema .photo-card:first-of-type {
+  grid-column: span 2;
+}
+
+#about-cinema .photo-card {
+  border-width: 2px;
+  padding: 10px;
+}
+
+
+/* ---------- HALLS PAGE ---------- */
+
+/* Flexbox is useful because these items should stay in one flexible row. */
+.hall-checks {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 14px;
+  padding: 0;
   list-style: none;
 }
 
-a {
-  color: #c62828;
+.hall-checks > li {
+  flex: 1 1 160px;
+  padding: 12px;
+  border: 2px solid #C77D39;
+  text-align: center;
+}
+
+#halls {
+  border-top: 5px solid #C77D39;
+}
+
+
+/* ---------- FORM ---------- */
+
+.hall-form fieldset {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+}
+
+.hall-form label {
+  flex: 0 0 155px;
+  font-weight: 700;
+}
+
+.hall-form input,
+.hall-form select,
+.hall-form textarea {
+  flex: 1 1 260px;
+}
+
+.hall-form button {
+  flex: 0 0 auto;
+}
+
+.hall-form br {
+  display: none;
+}
+
+
+/* ---------- COLOPHON ---------- */
+
+.code-sample {
+  overflow-x: auto;
+  padding: 14px;
+  border: 1px solid #1F211F;
+  background-color: rgb(242, 240, 232);
 }
