@@ -41,6 +41,16 @@
     border-top: 4px solid #6F8F45;
 }
 
+/* Specificity: #table h2 is (1,0,1), so this rule loses the conflict. */
+#table h2 {
+    color: #C77D39;
+}
+
+/* Specificity: section#table h2 is (1,0,2), so this more specific rule wins. */
+section#table h2 {
+    color: #6F8F45;
+}
+
 /* booking form */
 .booking-form fieldset {
     display: flex;

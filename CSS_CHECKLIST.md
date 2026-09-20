@@ -162,3 +162,15 @@ Inline Style (Cascade Override)
 schedule.html
 53 (<h2 style="...">)
 Daniyar
+
+Specificity Experiment (conflicting rule loses)
+
+daniyar.css
+44-47 (#table h2; specificity (1,0,1); color conflict)
+Daniyar
+
+Specificity Experiment (more specific rule wins)
+
+daniyar.css
+49-52 (section#table h2; specificity (1,0,2); resolves the conflict)
+Daniyar
