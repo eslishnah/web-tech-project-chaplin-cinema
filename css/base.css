@@ -1,19 +1,279 @@
-/* Color palette: #111111 for readable text, #f5f1e8 for a warm cinema background, #c62828 for cinema accents, #ffffff for clear surfaces, and #d6b36a for a subtle film-inspired highlight. */
+/* TEAM BASE.CSS */
+
+/*
+Dostar Cinema palette (5 colours maximum):
+#1F211F - dark ceiling/panels; strong readable text.
+#6F8F45 - main green from the Dostar logo, walls and counters.
+#C77D39 - warm orange from the cinema interior.
+rgb(242, 240, 232) - soft neutral background inspired by the light walls.
+white - clean cards, forms and navigation surfaces.
+*/
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  background-color: #f5f1e8;
-  color: #111111;
-  font-family: Georgia, "Times New Roman", serif;
+    margin: 0;
+    background-color: rgb(242, 240, 232);
+    color: #1F211F;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0.2px;
 }
 
 h1,
 h2,
 h3 {
-  font-family: "Trebuchet MS", Arial, sans-serif;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #1F211F;
+}
+
+header,
+main,
+footer {
+    max-width: 1100px;
+    margin: 0 auto; /* Centering method 1: margin auto centers the main page area. */
+    padding: 20px;
+}
+
+header {
+    background-color: white;
+    border-bottom: 5px solid #6F8F45;
+}
+
+.site-title {
+    margin: 0;
+    text-align: center;
+    font-size: 30px;
+    color: #6F8F45;
+    letter-spacing: 1px;
+}
+
+/* Child selector: matches only the ul directly inside nav. */
+nav > ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center; /* Centering method 2: Flexbox centers navigation items. */
+    align-items: center;
+    gap: 14px;
+    list-style: none;
+    margin: 15px 0 0;
+    padding: 0;
+}
+
+/* Descendant selector: matches links anywhere inside nav. */
+nav a {
+    display: inline-block;
+    padding: 8px 11px;
+    color: #1F211F;
+    text-decoration: none;
+    font-weight: 700;
+    border-bottom: 3px solid #6F8F45;
+}
+
+nav a:hover {
+    color: white;
+    background-color: #6F8F45;
+}
+
+nav a:focus,
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: 3px solid #C77D39;
+    outline-offset: 2px;
+}
+
+/* first-child is used to demonstrate a structural pseudo-class. */
+nav li:first-child a {
+    background-color: rgb(242, 240, 232);
+}
+
+/* Static is correct because main stays in the normal page flow. */
+main {
+    position: static;
+}
+
+.page-title {
+    margin: 22px 0;
+    padding: 18px;
+    text-align: center;
+    background-color: white;
+    border-left: 7px solid #6F8F45;
+    border-right: 7px solid #C77D39;
+    border-bottom: 2px solid #1F211F;
+}
+
+/* Pseudo-element: adds a simple cinema mark after page titles. */
+.page-title::after {
+    content: " ◼";
+    color: #C77D39;
+}
+
+/* Adjacent sibling selector: adds spacing to a section directly after h1. */
+h1 + section {
+    margin-top: 24px;
+}
+
+.content-section {
+    margin-bottom: 22px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #1F211F;
+}
+
+/*
+Margin-collapse note:
+Padding keeps the first heading margin visually inside the section,
+instead of letting it collapse outside the section box.
+*/
+.content-section h2 {
+    margin-top: 0;
+    color: #6F8F45;
+}
+
+.photo-card {
+    position: relative; /* Relative makes the figure a containing block for its caption. */
+    margin: 0;
+    padding: 8px;
+    background-color: white;
+    border: 2px solid #6F8F45;
+}
+
+.photo-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.photo-card figcaption {
+    position: absolute; /* Absolute places the caption inside the relative figure. */
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    padding: 8px;
+    background-color: #1F211F;
+    color: white;
+    text-align: center;
+}
+
+.hero-photo {
+    width: 100%;
+    max-height: 430px;
+    object-fit: cover;
+    display: block;
+    border: 4px solid #6F8F45;
+}
+
+.data-table {
+    width: 100%;
+    margin: 15px 0;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 10px;
+    border: 1px solid #1F211F;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #6F8F45;
+    color: white;
+}
+
+.note-box {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: white;
+    border-left: 6px solid #C77D39;
+}
+
+.quote-box {
+    display: grid;
+    place-items: center; /* Centering method 3: Grid centers quote content. */
+    min-height: 110px;
+    text-align: center;
+}
+
+/* Attribute selector: matches required form controls. */
+input[required],
+select[required] {
+    border-left: 4px solid #6F8F45;
+}
+
+input,
+select,
+textarea,
+button {
+    font: inherit;
+    padding: 8px;
+    margin: 5px 0;
+}
+
+input,
+select,
+textarea {
+    border: 1px solid #1F211F;
+    background-color: white;
+}
+
+button {
+    border: 1px solid #6F8F45;
+    background-color: #6F8F45;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #C77D39;
+    border-color: #C77D39;
+}
+
+.float-photo {
+    float: left;
+    width: 230px;
+    margin: 0 15px 10px 0;
+    border: 3px solid #6F8F45;
+}
+
+/*
+Without clear, the next block could continue beside the floated image.
+clear: both forces the next block below the float.
+*/
+.clear-float {
+    clear: both;
+}
+
+.fixed-help {
+    position: fixed; /* Fixed keeps this reminder visible on screen. */
+    right: 14px;
+    bottom: 14px;
+    width: 210px;
+    z-index: 10;
+}
+
+.contact-link {
+    color: #6F8F45;
+    font-weight: 700;
+}
+
+footer {
+    margin-top: 30px;
+    text-align: center;
+    border-top: 4px solid #6F8F45;
+    background-color: #1F211F;
+    color: white;
+}
+
+footer a {
+    color: white;
 }

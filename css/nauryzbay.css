@@ -1,0 +1,84 @@
+/* NAURYZBAY.CSS - visit.html and services.html */
+
+/*
+Grid is better here because the route section combines one wide article
+with several photo cards that need regular columns.
+*/
+#route {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 18px;
+}
+
+#route > h2,
+#route > article,
+#route > p {
+    grid-column: 1 / -1;
+}
+
+#route .photo-card:first-of-type {
+    grid-column: span 2;
+}
+
+
+img {
+  display: block;
+  margin-bottom: 24px; /* Создает аккуратный пустой отступ снизу */
+}
+
+
+figure {
+  display: block;
+  margin-bottom: 24px;
+}
+
+figure img {
+  display: block;
+  max-width: 100%; /* Защищает большие фото от выхода за пределы экрана */
+}
+
+/* Extra Flexbox block: services wrap and each service can grow or shrink. */
+.service-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0;
+    list-style: none;
+}
+
+.service-list > li {
+    flex: 1 1 170px;
+    padding: 10px;
+    border: 1px solid #6F8F45;
+}
+
+#services {
+    border-top: 4px solid #6F8F45;
+}
+
+.service-form fieldset {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-form label {
+    flex: 0 0 150px;
+}
+
+.service-form input,
+.service-form select,
+.service-form textarea {
+    flex: 1 1 250px;
+}
+
+.service-form button {
+    flex: 0 0 auto;
+}
+
+.service-form br {
+    display: none;
+}
