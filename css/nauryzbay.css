@@ -1,43 +1,155 @@
-/* NAURYZBAY.CSS - visit.html and services.html */
+/* nauryzbay.css — visit.html and services.html
+   Author: Nauryzbay
 
-/*
-Grid is better here because the route section combines one wide article
-with several photo cards that need regular columns.
+   NOTE: visit.html and services.html do not have .content-section or
+   .photo-card classes on their elements. This file styles by ID and
+   element directly to achieve visual parity with the rest of the site.
 */
+
+/* ============================================================
+   SHARED SECTION TREATMENT
+   Mirrors base .content-section: white card, border, spacing.
+   Applied to all named sections on both pages.
+   ============================================================ */
+#location,
+#route,
+#services,
+#feedback {
+    margin-bottom: 22px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #1F211F;
+}
+
+#location h2,
+#route h2,
+#services h2,
+#feedback h2 {
+    margin-top: 0;
+    color: #6F8F45;
+}
+
+/* ============================================================
+   VISIT PAGE — #location
+   Accent border and link styling for contact information.
+   ============================================================ */
+#location {
+    border-top: 4px solid #6F8F45;
+}
+
+#location p {
+    max-width: 65ch;
+    line-height: 1.7;
+}
+
+/* Style the contact links inside #location */
+#location a {
+    color: #6F8F45;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.15s;
+}
+
+#location a:hover {
+    border-color: #6F8F45;
+    color: #C77D39;
+}
+
+/* ============================================================
+   VISIT PAGE — #route
+   Grid layout for the article + three photo figures.
+
+   Grid is better than flex here because the three bare <figure>
+   elements need equal-width columns and one figure needs to span
+   two columns. Flex cannot guarantee equal widths without fixing
+   them, and span control requires grid-column which flex has no
+   equivalent for.
+   ============================================================ */
 #route {
     display: grid;
     grid-template-columns: repeat(3, minmax(180px, 1fr));
     gap: 18px;
 }
 
+/* Full-width for text content */
 #route > h2,
-#route > article,
-#route > p {
+#route > article {
     grid-column: 1 / -1;
 }
 
-#route .photo-card:first-of-type {
+/* Steps list */
+#route article ol {
+    margin: 0;
+    padding-left: 1.4rem;
+    line-height: 1.8;
+}
+
+#route article ol > li {
+    font-weight: 700;
+}
+
+#route article ol ul {
+    font-weight: 400;
+    margin: 4px 0;
+}
+
+/* Style bare <figure> elements as photo cards.
+   Compensates for the missing .photo-card class in the HTML. */
+#route figure {
+    margin: 0;
+    padding: 8px;
+    background-color: white;
+    border: 2px solid #6F8F45;
+    position: relative; /* containing block for the absolute caption */
+}
+
+#route figure img {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+/* First figure spans two columns as a wider feature photo */
+#route figure:first-of-type {
     grid-column: span 2;
 }
 
-
-img {
-  display: block;
-  margin-bottom: 24px; /* Создает аккуратный пустой отступ снизу */
+#route figure:first-of-type img {
+    height: 220px;
 }
 
-
-figure {
-  display: block;
-  margin-bottom: 24px;
+/* Absolute caption over the image — mirrors base .photo-card figcaption */
+#route figcaption {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    padding: 6px 8px;
+    background-color: #1F211F;
+    color: white;
+    font-size: 0.85rem;
+    text-align: center;
 }
 
-figure img {
-  display: block;
-  max-width: 100%; /* Защищает большие фото от выхода за пределы экрана */
+/* ============================================================
+   SERVICES PAGE — #services
+   ============================================================ */
+#services {
+    border-top: 4px solid #6F8F45;
 }
 
-/* Extra Flexbox block: services wrap and each service can grow or shrink. */
+#services p {
+    max-width: 65ch;
+    line-height: 1.7;
+}
+
+/* ============================================================
+   .service-list — flex row of service cards
+   Extra Flexbox block: items grow and shrink to fill the row.
+   flex-direction: row is explicit to satisfy the requirement.
+   ============================================================ */
 .service-list {
     display: flex;
     flex-direction: row;
@@ -45,28 +157,107 @@ figure img {
     gap: 10px;
     padding: 0;
     list-style: none;
+    margin: 12px 0;
 }
 
 .service-list > li {
-    flex: 1 1 170px;
+    flex: 1 1 150px;
+    padding: 12px 14px;
+    border: 2px solid #6F8F45;
+    background-color: rgb(242, 240, 232);
+    font-weight: 700;
+}
+
+/* Nested sub-lists inside service items */
+.service-list ul {
+    font-weight: 400;
+    font-size: 0.875rem;
+    margin: 6px 0 0 0.75rem;
+    padding: 0;
+}
+
+/* ============================================================
+   #services dl — two-column definition list layout
+   Grid aligns every term with its definition precisely.
+   ============================================================ */
+#services article dl {
+    display: grid;
+    grid-template-columns: minmax(110px, 170px) 1fr;
+    gap: 0 16px;
+    margin: 14px 0;
+    align-items: baseline;
+}
+
+#services article dt {
+    font-weight: 700;
+    color: #6F8F45;
+    margin: 0;
+    padding: 7px 0;
+    border-bottom: 1px solid rgb(242, 240, 232);
+}
+
+#services article dd {
+    margin: 0;
+    padding: 7px 0;
+    border-bottom: 1px solid rgb(242, 240, 232);
+}
+
+/* ============================================================
+   #services table — bare <table> with no class; style by context
+   ============================================================ */
+#services table {
+    width: 100%;
+    margin: 14px 0 0;
+    border-collapse: collapse;
+}
+
+#services table th,
+#services table td {
     padding: 10px;
-    border: 1px solid #6F8F45;
+    border: 1px solid #1F211F;
+    text-align: left;
 }
 
-#services {
-    border-top: 4px solid #6F8F45;
+#services table th {
+    background-color: #6F8F45;
+    color: white;
 }
 
+/* ============================================================
+   #feedback — orange accent to distinguish from #services
+   ============================================================ */
+#feedback {
+    border-top: 4px solid #C77D39;
+}
+
+#feedback h2 {
+    color: #C77D39;
+}
+
+/* ============================================================
+   .service-form — feedback form flex layout
+   Label+input pairs sit in a row; inputs grow to fill space.
+   br tags are suppressed because flex gap handles the spacing.
+   ============================================================ */
 .service-form fieldset {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
+    border: 1px solid #6F8F45;
+    padding: 16px;
+}
+
+.service-form legend {
+    font-weight: 700;
+    color: #6F8F45;
+    padding: 0 6px;
 }
 
 .service-form label {
     flex: 0 0 150px;
+    font-weight: 700;
 }
 
 .service-form input,
@@ -79,6 +270,27 @@ figure img {
     flex: 0 0 auto;
 }
 
+/* Suppress <br> spacing in favour of flex gap */
 .service-form br {
     display: none;
+}
+
+/* Radio and checkbox stay compact beside their own inline labels */
+.service-form input[type="radio"],
+.service-form input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.service-form input[type="radio"] + label,
+.service-form input[type="checkbox"] + label {
+    flex: 0 0 auto;
+    font-weight: 400;
+}
+
+/* "First visit?" acts as a label row */
+.service-form p {
+    flex: 0 0 100%;
+    font-weight: 700;
+    margin: 4px 0 0;
 }
