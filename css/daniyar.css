@@ -1,0 +1,69 @@
+/* Daniyar - movies and schedule */
+
+/* I use grid here because photos need columns */
+#movies {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+#movies > h2,
+#movies > p,
+#movies > article {
+    grid-column: 1 / -1;
+}
+
+#movies .photo-card:first-of-type {
+    grid-column: span 2;
+}
+
+/* movie genres in one flexible row */
+.movie-types {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    list-style: none;
+}
+
+.movie-types > li {
+    flex: 1 1 150px;
+    padding: 9px;
+    border: 1px solid #6F8F45;
+}
+
+.movie-types li + li {
+    margin-left: 0;
+}
+
+#table {
+    border-top: 4px solid #6F8F45;
+}
+
+/* booking form */
+.booking-form fieldset {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.booking-form label {
+    flex: 0 0 145px;
+}
+
+.booking-form input,
+.booking-form select,
+.booking-form textarea {
+    flex: 1 1 240px;
+}
+
+.booking-form button {
+    flex: 0 0 auto;
+}
+
+.booking-form br {
+    display: none;
+}

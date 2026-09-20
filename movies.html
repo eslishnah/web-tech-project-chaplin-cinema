@@ -1,91 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Movies at Chaplin Mega Silk Way.">
-<meta name="author" content="Daniyar">
-<title>Chaplin Mega Silk Way - Movies</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Movies and cinema experience at Dostar Cinema.">
+    <meta name="author" content="Daniyar">
+    <title>Dostar Cinema - Movies</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/daniyar.css">
 </head>
 <body>
 
 <!-- Author: Daniyar -->
 
 <header>
-<p><strong>Chaplin Mega Silk Way</strong></p>
-<nav>
-<ul>
-<li><a href="index.html">Home</a></li>
-<li><a href="movies.html">Movies</a></li>
-<li><a href="schedule.html">Schedule</a></li>
-<li><a href="cinema.html">Cinema</a></li>
-<li><a href="halls.html">Halls</a></li>
-<li><a href="visit.html">Visit</a></li>
-<li><a href="services.html">Services</a></li>
-<li><a href="colophon.html">Colophon</a></li>
-</ul>
-</nav>
+    <p class="site-title"><strong>Dostar Cinema</strong></p>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="movies.html">Movies</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="cinema.html">Cinema</a></li>
+            <li><a href="halls.html">Halls</a></li>
+            <li><a href="visit.html">Visit</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="colophon.html">Colophon</a></li>
+        </ul>
+    </nav>
 </header>
 
 <main>
-<h1>Movies at Dostar</h1>
+    <h1 class="page-title">Movies at Dostar Cinema</h1>
 
-<section id="movies">
-<h2>Movies</h2>
-<p>Chaplin Mega Silk Way shows different movies. There can be action, comedy, horror, family and fantasy movies. The schedule changes, so people should check the official website before they go to the cinema.</p>
+    <!-- This id is right because this is the only main movies section on the page. -->
+    <section id="movies" class="content-section">
+        <h2>Movies</h2>
 
-<article>
-<h3>Movie types</h3>
-<ul>
-<li>Action
-<ul>
-<li>Fast story</li>
-<li>Many events</li>
-</ul>
-</li>
-<li>Comedy</li>
-<li>Horror</li>
-<li>Family movies</li>
-</ul>
-</article>
+        <p>
+            <img class="float-photo" src="images/dostar-bar.jpg" alt="Dostar Cinema ticket and snack counter">
+            Dostar Cinema shows different movies for visitors. People can choose a film, check the session time and buy a ticket. The cinema environment uses green, orange and dark details, which inspired our CSS design.
+        </p>
 
-<figure><img src="images/student1-photo1.jpg" alt="Movie posters at Chaplin" width="500"><figcaption>Movie posters near the entrance.</figcaption></figure>
-<figure><img src="images/student1-photo2.jpg" alt="Ticket area at Chaplin" width="500"><figcaption>Ticket area in Chaplin Mega Silk Way.</figcaption></figure>
-<figure><img src="images/student1-photo3.jpg" alt="Chaplin lobby" width="500"><figcaption>Cinema lobby.</figcaption></figure>
-</section>
+        <p class="clear-float">The clear class moves this paragraph below the floated photo. Movie sessions can change, so visitors should check the current cinema schedule before going.</p>
 
+        <article>
+            <h3>Movie types</h3>
+            <ul class="movie-types">
+                <li>Action</li>
+                <li>Comedy</li>
+                <li>Family</li>
+                <li>Animation</li>
+            </ul>
+        </article>
 
+        <figure class="photo-card">
+            <img src="images/dostar-bar.jpg" alt="Dostar Cinema entrance">
+            <figcaption>Dostar Cinema entrance.</figcaption>
+        </figure>
 
+        <figure class="photo-card">
+            <img src="images/dostar-front.jpg " alt="Dostar Cinema ticket and snack counter">
+            <figcaption>Ticket and snack counter.</figcaption>
+        </figure>
 
-<aside>
-    <h2>Note</h2>
+        <figure class="photo-card">
+            <img src="images/dostar-lobby.jpg" alt="Dostar Cinema lobby area">
+            <figcaption>Cinema lobby area.</figcaption>
+        </figure>
+    </section>
 
-    <blockquote>
-        <p>"The hall was clean and comfortable."</p>
-        <cite>Amir, 12 September 2026</cite>
-    </blockquote>
-
-    <p>
-        Amir also said: <q>The sound was good.</q>
-    </p>
-
-    <p>
-        Instagram:
-        <a href="https://www.instagram.com/chaplincinemas"
-           target="_blank"
-           rel="noopener noreferrer">
-            Chaplin Cinemas
-        </a>
-    </p>
-
-    <small>Information was collected during our visit.</small>
-</aside>
-
+    <aside class="note-box quote-box">
+        <h2>Visitor note</h2>
+        <p>Our team uses this section for additional visitor information and observations from the cinema.</p>
+    </aside>
 </main>
 
 <footer>
-<p><a href="mailto:info@chaplin.kz">Email</a></p>
-<p>&copy; 2026 Chaplin Student Project</p>
+    <p>
+        <a href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a>
+        |
+        <a href="tel:+77751150627">+7 775 115 06 27</a>
+        |
+        <a href="mailto:studentproject@example.com">Project email</a>
+    </p>
+    <p>&copy; 2026 Dostar Cinema Student Project</p>
 </footer>
 
 </body>

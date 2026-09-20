@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Movie schedule and booking form.">
+    <meta name="description" content="Movie schedule and student booking form for Dostar Cinema.">
     <meta name="author" content="Daniyar">
-    <title>Chaplin Mega Silk Way - Schedule</title>
+    <title>Dostar Cinema - Schedule</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/daniyar.css">
 </head>
-
 <body>
 
 <!-- Author: Daniyar -->
 
 <header>
-    <p><strong>Chaplin Mega Silk Way</strong></p>
-
+    <p class="site-title"><strong>Dostar Cinema</strong></p>
     <nav>
         <ul>
             <li><a href="index.html">Home</a></li>
@@ -31,23 +30,16 @@
 </header>
 
 <main>
+    <h1 class="page-title">Movie Schedule</h1>
 
-    <h1>Movie Schedule</h1>
-
-    <section id="table">
+    <!-- This id is right because there is only one schedule table section on this page. -->
+    <section id="table" class="content-section">
         <h2>Movie schedule</h2>
+        <p>This table is used to demonstrate how cinema sessions can be organized. Visitors should use the official Dostar Cinema website for the current schedule.</p>
 
-        <p>
-            This page shows some movie sessions at Chaplin Mega Silk Way.
-            The schedule can change every day, so visitors should check
-            the official Chaplin website before going to the cinema.
-        </p>
-
-        <!-- I use a table because it is easy to compare movies, times and halls -->
-        <table>
-
-            <caption>Chaplin Mega Silk Way movie schedule</caption>
-
+        <!-- A table is used because rows and columns make movie, time and hall information easy to compare. -->
+        <table class="data-table">
+            <caption>Dostar Cinema schedule example</caption>
             <thead>
                 <tr>
                     <th scope="col">Movie</th>
@@ -55,195 +47,93 @@
                     <th scope="col">Hall</th>
                 </tr>
             </thead>
-
             <tbody>
-                <tr>
-                    <td>Avatar</td>
-                    <td>16:20</td>
-                    <td>Hall 5</td>
-                </tr>
-
-                <tr>
-                    <td>Spider-man:Brand new day</td>
-                    <td>19:40</td>
-                    <td>Hall 3</td>
-                </tr>
-
-                <tr>
-                    <td>Odyssey</td>
-                    <td>13:10</td>
-                    <td>Hall 1</td>
-                </tr>
+                <tr><td>Movie A</td><td>14:00</td><td>Hall 1</td></tr>
+                <tr><td>Movie B</td><td>17:30</td><td>Hall 2</td></tr>
+                <tr><td>Movie C</td><td>20:10</td><td>Hall 3</td></tr>
             </tbody>
-
         </table>
 
         <ol type="A">
             <li>Choose a movie.</li>
-            <li>Check the time.</li>
+            <li>Check the session time.</li>
             <li>Check the hall.</li>
         </ol>
-
-        <p>
-            The table helps visitors compare movie names,
-            times and halls. This website is a student project,
-            so it is not connected to the real Chaplin booking system.
-        </p>
     </section>
 
+    <!-- This id is right because there is one unique booking-form section on this page. -->
+    <section id="form" class="content-section">
+        <!-- Inline style exists only to demonstrate the cascade. It overrides the external h2 colour on this one heading. -->
+        <h2 style="color: #C77D39;">Booking Form</h2>
 
-    <section id="form">
+        <p>This form is only for the student project. It does not make a real booking.</p>
 
-        <h2>Booking Form</h2>
-
-        <p>
-            This form is only for our assignment.
-            It does not make a real booking.
-        </p>
-
-        <!-- I use a form because a visitor needs to enter booking information -->
-        <form method="post" action="#">
-
-            <!-- This form does not have a server yet -->
-
+        <form class="booking-form" method="post" action="#">
+            <!-- This form does not have a server yet. -->
             <fieldset>
-
                 <legend>Booking information</legend>
 
                 <label for="name1">Name:</label>
-                <input type="text"
-                       id="name1"
-                       name="name"
-                       placeholder="Your name"
-                       required>
+                <input type="text" id="name1" name="name" placeholder="Your name" required>
                 <br>
 
                 <label for="email1">Email:</label>
-                <input type="email"
-                       id="email1"
-                       name="email"
-                       placeholder="Your email"
-                       required>
+                <input type="email" id="email1" name="email" placeholder="Your email" required>
                 <br>
 
                 <label for="phone1">Phone:</label>
-                <input type="tel"
-                       id="phone1"
-                       name="phone"
-                       placeholder="+7 700 000 00 00"
-                       required>
+                <input type="tel" id="phone1" name="phone" placeholder="+7 700 000 00 00" required>
                 <br>
 
-                <label for="people1">People:</label>
-                <input type="number"
-                       id="people1"
-                       name="people"
-                       min="1"
-                       required>
+                <label for="people1">Number of tickets:</label>
+                <input type="number" id="people1" name="tickets" min="1" required>
                 <br>
 
                 <label for="date1">Date:</label>
-                <input type="date"
-                       id="date1"
-                       name="date"
-                       required>
+                <input type="date" id="date1" name="date" required>
                 <br>
-
 
                 <p>Hall type:</p>
-
-                <input type="radio"
-                       id="normal1"
-                       name="hall"
-                       value="normal"
-                       required>
-
+                <input type="radio" id="normal1" name="hall" value="normal" required>
                 <label for="normal1">Normal</label>
 
-
-                <input type="radio"
-                       id="atmos1"
-                       name="hall"
-                       value="atmos">
-
-                <label for="atmos1">ATMOS</label>
-
+                <input type="radio" id="premium1" name="hall" value="premium">
+                <label for="premium1">Premium</label>
                 <br>
 
-
-                <input type="checkbox"
-                       id="agree1"
-                       name="agree"
-                       required>
-
-                <label for="agree1">
-                    I know this is only a student form.
-                </label>
-
+                <input type="checkbox" id="agree1" name="agree" required>
+                <label for="agree1">I know this is only a student form.</label>
                 <br>
-
 
                 <label for="movie1">Movie:</label>
-
                 <select id="movie1" name="movie" required>
-
                     <option value="">Choose movie</option>
-                    <option value="avatar">Avatar</option>
-                    <option value="spiderman">Spider-man:Brand new day</option>
-                    <option value="odyssey">Odyssey</option>
-
+                    <option value="movie-a">Movie A</option>
+                    <option value="movie-b">Movie B</option>
+                    <option value="movie-c">Movie C</option>
                 </select>
-
                 <br>
-
 
                 <label for="comment1">Comment:</label>
+                <textarea id="comment1" name="comment" rows="4" cols="35" placeholder="Write comment"></textarea>
                 <br>
-
-                <textarea id="comment1"
-                          name="comment"
-                          rows="4"
-                          cols="35"
-                          placeholder="Write comment"></textarea>
-
-                <br>
-
 
                 <button type="submit">Submit</button>
                 <button type="reset">Reset</button>
-
             </fieldset>
-
         </form>
-
     </section>
-
-
-    <aside>
-
-        <h2>Important</h2>
-
-        <p>
-            Movie times can change.
-            Visitors should check the official Chaplin website
-            before going to the cinema.
-        </p>
-
-        <p>Daniyar made this page.</p>
-
-    </aside>
-
 </main>
 
-
 <footer>
-
     <p>
-        <a href="mailto:info@chaplin.kz">Email</a>
+        <a href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a>
+        |
+        <a href="tel:+77751150627">+7 775 115 06 27</a>
+        |
+        <a href="mailto:studentproject@example.com">Project email</a>
     </p>
-
-    <p>&copy; 2026 Chaplin Student Project</p>
-
+    <p>&copy; 2026 Dostar Cinema Student Project</p>
 </footer>
 
 </body>

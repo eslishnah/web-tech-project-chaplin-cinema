@@ -1,63 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Student project about Chaplin Mega Silk Way.">
-<meta name="author" content="Daniyar">
-<title>Chaplin Mega Silk Way - Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student website project about Dostar Cinema in Astana.">
+    <meta name="author" content="Daniyar">
+    <title>Dostar Cinema - Home</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/daniyar.css">
+
+    <!-- Internal style exists only to demonstrate the cascade. The id selector overrides the external page-title color. -->
+    <style>
+        #home-title {
+            color: #C77D39;
+        }
+    </style>
 </head>
 <body>
 
 <!-- Author: Daniyar -->
 
 <header>
-<p><strong>Chaplin Mega Silk Way</strong></p>
-<nav>
-<ul>
-<li><a href="index.html">Home</a></li>
-<li><a href="movies.html">Movies</a></li>
-<li><a href="schedule.html">Schedule</a></li>
-<li><a href="cinema.html">Cinema</a></li>
-<li><a href="halls.html">Halls</a></li>
-<li><a href="visit.html">Visit</a></li>
-<li><a href="services.html">Services</a></li>
-<li><a href="colophon.html">Colophon</a></li>
-</ul>
-</nav>
+    <p class="site-title"><strong>Dostar Cinema</strong></p>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="movies.html">Movies</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="cinema.html">Cinema</a></li>
+            <li><a href="halls.html">Halls</a></li>
+            <li><a href="visit.html">Visit</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="colophon.html">Colophon</a></li>
+        </ul>
+    </nav>
 </header>
 
 <main>
-<h1>Chaplin Mega Silk Way</h1>
+    <h1 id="home-title" class="page-title">Dostar Cinema</h1>
 
-<section id="about">
-<h2>About our project</h2>
-<p>
-Our project is about Chaplin Mega Silk Way cinema in Astana. We chose this place because it is real and we can visit it. The cinema is inside MEGA Silk Way. Our website has information about movies, halls, schedule, services and how to visit the cinema.
-</p>
-<p>
-We are three students. Each student has two pages. We also have one home page and one colophon page. We use only HTML in this assignment. We do not use CSS or JavaScript now.
-</p>
-<p><a href="#team">Go to team</a><br><a href="#info">Go to information</a></p>
-</section>
+    <!-- This id is right because there is only one introduction section on this page. -->
+    <section id="about" class="content-section">
+        <h2>About our project</h2>
+        <img class="hero-photo" src="images/dostar-bar.jpg" alt="Dostar Cinema entrance and ticket area">
+        <p>Our project is about Dostar Cinema in Astana. The new design uses colours that we saw in the cinema: green for the main identity, orange for warm accents, dark panels for contrast and a light background for readable content.</p>
+        <p>This Assignment 2 version keeps the same HTML project structure and adds CSS selectors, Flexbox, Grid, positioning, spacing and typography. We still use local files and no JavaScript.</p>
+        <p><a href="#team">Go to team</a> | <a href="#info">Go to information</a></p>
+    </section>
 
-<section id="team">
-<h2>Our team</h2>
-<article>
-<h3>Pages</h3>
-<ol start="1">
-<li>Daniyar: Movies and Schedule</li>
-<li>Sandzhar: Cinema and Halls</li>
-<li>Nauryzbay: Visit and Services</li>
-</ol>
-</article>
-</section>
+    <!-- This id is right because this page has one unique team section. -->
+    <section id="team" class="content-section">
+        <h2>Our team</h2>
+        <article>
+            <h3>Pages</h3>
+            <ol>
+                <li>Daniyar: Movies and Schedule</li>
+                <li>Sandzhar: Cinema and Halls</li>
+                <li>Nauryzbay: Visit and Services</li>
+            </ol>
+        </article>
+    </section>
 
+    <aside id="info" class="note-box">
+        <h2>Design idea</h2>
+        <p>The palette is based on the real Dostar Cinema interior: green counters and branding, orange wall details, dark ceiling panels and light neutral walls.</p>
+    </aside>
 </main>
 
 <footer>
-<p><a href="mailto:info@chaplin.kz">Email</a></p>
-<p>&copy; 2026 Chaplin Student Project</p>
+    <p>
+        <a href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a>
+        |
+        <a href="tel:+77751150627">+7 775 115 06 27</a>
+        |
+        <a href="mailto:studentproject@example.com">Project email</a>
+    </p>
+    <p>&copy; 2026 Dostar Cinema Student Project</p>
 </footer>
 
 </body>
