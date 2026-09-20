@@ -28,30 +28,37 @@ base_2.css
 57 (nav > ul)
 Team
 Descendant Selector (space)
+
 base_2.css
 70 (nav a)
 Team
 Adjacent Sibling Selector (+)
+
 base_2.css
 120 (h1 + section)
 Team
 Attribute Selector ([])
+
 base_2.css
 207-208 (input[required]...)
 Team
 Pseudo-class (State) (:hover)
+
 base_2.css
 79 (nav a:hover)
 Team
 Pseudo-class (Structural) (:first-child)
+
 base_2.css
 94 (nav li:first-child a)
 Team
 Pseudo-element (::after)
+
 base_2.css
 114 (.page-title::after)
 Team
 Flexbox Layout
+
 base_2.css
 58 (display: flex;)
 Team
@@ -71,6 +78,7 @@ nauryzbay.css
 16 (display: flex;)
 Nauryzbay
 Grid Layout
+
 base_2.css
 201 (display: grid;)
 Team
@@ -145,6 +153,7 @@ base_2.css
 126-127
 Team
 Internal Style (Cascade Override)
+
 index.html
 13-17
 Daniyar
