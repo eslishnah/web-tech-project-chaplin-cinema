@@ -1,13 +1,4 @@
-/* TEAM BASE.CSS */
 
-/*
-Dostar Cinema palette (5 colours maximum):
-#1F211F - dark ceiling/panels; strong readable text.
-#6F8F45 - main green from the Dostar logo, walls and counters.
-#C77D39 - warm orange from the cinema interior.
-rgb(242, 240, 232) - soft neutral background inspired by the light walls.
-white - clean cards, forms and navigation surfaces.
-*/
 
 * {
     box-sizing: border-box;
@@ -37,7 +28,7 @@ header,
 main,
 footer {
     max-width: 1100px;
-    margin: 0 auto; /* Centering method 1: margin auto centers the main page area. */
+    margin: 0 auto; 
     padding: 20px;
 }
 
@@ -54,12 +45,12 @@ header {
     letter-spacing: 1px;
 }
 
-/* Child selector: matches only the ul directly inside nav. */
+
 nav > ul {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center; /* Centering method 2: Flexbox centers navigation items. */
+    justify-content: center;
     align-items: center;
     gap: 14px;
     list-style: none;
@@ -67,7 +58,6 @@ nav > ul {
     padding: 0;
 }
 
-/* Descendant selector: matches links anywhere inside nav. */
 nav a {
     display: inline-block;
     padding: 8px 11px;
@@ -91,12 +81,11 @@ button:focus {
     outline-offset: 2px;
 }
 
-/* first-child is used to demonstrate a structural pseudo-class. */
+
 nav li:first-child a {
     background-color: rgb(242, 240, 232);
 }
 
-/* Static is correct because main stays in the normal page flow. */
 main {
     position: static;
 }
@@ -111,13 +100,12 @@ main {
     border-bottom: 2px solid #1F211F;
 }
 
-/* Pseudo-element: adds a simple cinema mark after page titles. */
+
 .page-title::after {
     content: " ◼";
     color: #C77D39;
 }
 
-/* Adjacent sibling selector: adds spacing to a section directly after h1. */
 h1 + section {
     margin-top: 24px;
 }
@@ -129,18 +117,14 @@ h1 + section {
     border: 1px solid #1F211F;
 }
 
-/*
-Margin-collapse note:
-Padding keeps the first heading margin visually inside the section,
-instead of letting it collapse outside the section box.
-*/
+
 .content-section h2 {
     margin-top: 0;
     color: #6F8F45;
 }
 
 .photo-card {
-    position: relative; /* Relative makes the figure a containing block for its caption. */
+    position: relative; 
     margin: 0;
     padding: 8px;
     background-color: white;
@@ -154,7 +138,7 @@ instead of letting it collapse outside the section box.
 }
 
 .photo-card figcaption {
-    position: absolute; /* Absolute places the caption inside the relative figure. */
+    position: absolute; 
     left: 8px;
     right: 8px;
     bottom: 8px;
@@ -199,12 +183,11 @@ instead of letting it collapse outside the section box.
 
 .quote-box {
     display: grid;
-    place-items: center; /* Centering method 3: Grid centers quote content. */
+    place-items: center; 
     min-height: 110px;
     text-align: center;
 }
 
-/* Attribute selector: matches required form controls. */
 input[required],
 select[required] {
     border-left: 4px solid #6F8F45;
@@ -245,16 +228,13 @@ button:hover {
     border: 3px solid #6F8F45;
 }
 
-/*
-Without clear, the next block could continue beside the floated image.
-clear: both forces the next block below the float.
-*/
+
 .clear-float {
     clear: both;
 }
 
 .fixed-help {
-    position: fixed; /* Fixed keeps this reminder visible on screen. */
+    position: fixed;
     right: 14px;
     bottom: 14px;
     width: 210px;

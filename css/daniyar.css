@@ -1,6 +1,4 @@
-/* Daniyar - movies and schedule */
 
-/* I use grid here because photos need columns */
 #movies {
     display: grid;
     grid-template-columns: repeat(3, minmax(180px, 1fr));
@@ -17,7 +15,6 @@
     grid-column: span 2;
 }
 
-/* movie genres in one flexible row */
 .movie-types {
     display: flex;
     flex-direction: row;
@@ -51,7 +48,7 @@ section#table h2 {
     color: #6F8F45;
 }
 
-/* booking form */
+
 .booking-form fieldset {
     display: flex;
     flex-direction: row;

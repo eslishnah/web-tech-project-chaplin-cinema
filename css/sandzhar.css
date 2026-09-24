@@ -1,11 +1,4 @@
-/* Sandzhar personal styles */
 
-/* ---------- CINEMA PAGE ---------- */
-
-/*
-Grid is better here because the text stays wide
-and the cinema photos can be placed in columns.
-*/
 #about-cinema {
   display: grid;
   grid-template-columns: repeat(3, minmax(190px, 1fr));
@@ -28,9 +21,6 @@ and the cinema photos can be placed in columns.
 }
 
 
-/* ---------- HALLS PAGE ---------- */
-
-/* Flexbox is useful because these items should stay in one flexible row. */
 .hall-checks {
   display: flex;
   flex-direction: row;
@@ -51,8 +41,6 @@ and the cinema photos can be placed in columns.
   border-top: 5px solid #C77D39;
 }
 
-
-/* ---------- FORM ---------- */
 
 .hall-form fieldset {
   display: flex;
@@ -81,9 +69,6 @@ and the cinema photos can be placed in columns.
 .hall-form br {
   display: none;
 }
-
-
-/* ---------- COLOPHON ---------- */
 
 .code-sample {
   overflow-x: auto;
