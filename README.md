@@ -158,3 +158,27 @@ This repository contains work for:
 - **Assignment 1 — HTML**
 - **Assignment 2 — CSS Fundamentals and Layouts**
 
+# Dostar Cinema — Bootstrap Version
+
+This is the Bootstrap 5.3.3 version of the Dostar Cinema student website.
+
+## Setup
+
+1. Copy these files into the original project folder.
+2. Keep css/base.css.
+3. Remove links to css/daniyar.css, css/sandzhar.css and css/nauryzbay.css.
+4. Delete those three old CSS files after the migration.
+5. Open index.html in a browser with internet access so the Bootstrap CDN can load.
+
+## Team
+
+- Daniyar — index.html, movies.html, schedule.html, css/base.css, BOOTSTRAP_MIGRATION.md
+- Sandzhar — cinema.html, halls.html, colophon.html, README
+- Nauryzbay — visit.html, services.html, screenshots and AI log
+
+## Checks
+
+- Validate all HTML files with W3C Validator.
+- Check 375 px, 768 px and desktop widths.
+- Confirm the mobile navigation toggler works.
+- Save the four required movies.html screenshots.

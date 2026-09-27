@@ -1,80 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Information about Dostar Cinema in Astana.">
-    <meta name="author" content="Sandzhar">
-    <title>Dostar Cinema - Cinema</title>
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/sandzhar.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Information about Dostar Cinema in Astana.">
+  <meta name="author" content="Sandzhar">
+  <title>Dostar Cinema - Cinema</title>
+  <!-- Bootstrap 5.3.3 via CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
-
-<!-- Author: Sandzhar -->
-
-<header>
-    <p class="site-title"><strong>Dostar Cinema</strong></p>
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="movies.html">Movies</a></li>
-            <li><a href="schedule.html">Schedule</a></li>
-            <li><a href="cinema.html">Cinema</a></li>
-            <li><a href="halls.html">Halls</a></li>
-            <li><a href="visit.html">Visit</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="colophon.html">Colophon</a></li>
-        </ul>
+  <header class="container-fluid bg-white border-bottom border-success border-4 px-0">
+    <nav class="navbar navbar-expand-lg container py-3">
+      <p class="navbar-brand mb-0 text-center text-lg-start"><a class="text-success text-decoration-none fw-bold" href="index.html">Dostar Cinema</a></p>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#site-navigation" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="site-navigation"><ul class="navbar-nav ms-lg-auto mb-2 mb-lg-0"><li class="nav-item"><a class="nav-link" href="index.html">Home</a></li><li class="nav-item"><a class="nav-link" href="movies.html">Movies</a></li><li class="nav-item"><a class="nav-link" href="schedule.html">Schedule</a></li><li class="nav-item"><a class="nav-link active" aria-current="page" href="cinema.html">Cinema</a></li><li class="nav-item"><a class="nav-link" href="halls.html">Halls</a></li><li class="nav-item"><a class="nav-link" href="visit.html">Visit</a></li><li class="nav-item"><a class="nav-link" href="services.html">Services</a></li><li class="nav-item"><a class="nav-link" href="colophon.html">Colophon</a></li></ul></div>
     </nav>
-</header>
+  </header>
 
-<main>
-    <h1 class="page-title">About Dostar Cinema</h1>
-
-    <!-- This id is right because this is the only main cinema-information section on the page. -->
-    <section id="about-cinema" class="content-section">
-        <h2>Dostar Cinema</h2>
-
-        <p>
-            <img class="float-photo" src="images/dostar-front.jpg" alt="Dostar Cinema entrance">
-            Dostar Cinema is a cinema in Astana. Its interior has strong green branding, light walls, orange accents and dark ceiling panels. We used these visual details as the main idea for the Assignment 2 colour palette.
-        </p>
-
-        <p class="clear-float">The clear class places this paragraph below the floated photo. Our team uses real photos from the cinema as visual references for the design.</p>
-
-        <article>
-            <h3>General information</h3>
-            <p>The cinema has ticket and snack areas, movie halls and seating spaces for visitors. The project presents this information with simple semantic HTML and CSS layouts.</p>
-        </article>
-
-        <figure class="photo-card">
-            <img src="images/dostar-bar.jpg" alt="Dostar Cinema entrance and lobby">
-            <figcaption>Dostar Cinema entrance.</figcaption>
-        </figure>
-
-        <figure class="photo-card">
-            <img src="images/dostar-front.jpg" alt="Dostar Cinema ticket counter">
-            <figcaption>Ticket and snack counter.</figcaption>
-        </figure>
-
-        <figure class="photo-card">
-            <img src="images/dostar-lobby.jpg" alt="Dostar Cinema waiting area">
-            <figcaption>Waiting area.</figcaption>
-        </figure>
+  <main class="container py-4">
+    <h1 class="display-5 text-center text-md-start mb-4">About Dostar Cinema</h1>
+    <section id="about-cinema" class="bg-white border rounded-3 shadow-sm p-4">
+      <h2 class="h3 text-success">Dostar Cinema</h2>
+      <p class="lead">Dostar Cinema is a cinema in Astana with green branding, light walls and orange accents.</p>
+      <p>Its ticket area, snack counter, halls and waiting spaces inspired the visual design of this student website.</p>
+      <article class="mb-4"><h3 class="h5">General information</h3><p class="mb-0">The cinema has ticket and snack areas, movie halls and seating spaces for visitors.</p></article>
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-4"><figure class="card h-100 border-success shadow-sm"><img class="card-img-top" src="images/dostar-bar.jpg" alt="Dostar Cinema entrance and lobby"><figcaption class="card-body"><p class="mb-0">Dostar Cinema entrance.</p></figcaption></figure></div>
+        <div class="col-12 col-md-6 col-lg-4"><figure class="card h-100 border-success shadow-sm"><img class="card-img-top" src="images/dostar-front.jpg" alt="Dostar Cinema ticket counter"><figcaption class="card-body"><p class="mb-0">Ticket and snack counter.</p></figcaption></figure></div>
+        <div class="col-12 col-md-6 col-lg-4"><figure class="card h-100 border-success shadow-sm"><img class="card-img-top" src="images/dostar-lobby.jpg" alt="Dostar Cinema waiting area"><figcaption class="card-body"><p class="mb-0">Waiting area.</p></figcaption></figure></div>
+      </div>
     </section>
-</main>
+  </main>
 
-<footer>
-    <p>
-        <a href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a>
-        |
-        <a href="https://api.whatsapp.com/send/?phone=77474330558&text=Здравствуйте%21%0A%0AПишу+из+приложения+2ГИС.%0A%0A&type=phone_number&app_absent=0">+77474330558</a>
-        |
-        <a href="mailto:studentproject@example.com">Project email</a>
-    </p>
-    <p>&copy; 2026 Dostar Cinema Student Project</p>
-</footer>
-
+  <footer class="container-fluid bg-dark text-white mt-5 py-4"><div class="container text-center text-md-start"><div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2"><p class="mb-0 small"><a class="text-white" href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a><span class="d-none d-md-inline"> | </span><a class="text-white" href="mailto:studentproject@example.com">Project email</a></p><p class="mb-0 small">&copy; 2026 Dostar Cinema Student Project</p></div></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
