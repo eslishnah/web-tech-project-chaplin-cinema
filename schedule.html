@@ -1,140 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Movie schedule and student booking form for Dostar Cinema.">
-    <meta name="author" content="Daniyar">
-    <title>Dostar Cinema - Schedule</title>
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/daniyar.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Movie schedule and student booking form for Dostar Cinema.">
+  <meta name="author" content="Daniyar">
+  <title>Dostar Cinema - Schedule</title>
+  <!-- Bootstrap 5.3.3 via CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
-
-<!-- Author: Daniyar -->
-
-<header>
-    <p class="site-title"><strong>Dostar Cinema</strong></p>
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="movies.html">Movies</a></li>
-            <li><a href="schedule.html">Schedule</a></li>
-            <li><a href="cinema.html">Cinema</a></li>
-            <li><a href="halls.html">Halls</a></li>
-            <li><a href="visit.html">Visit</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="colophon.html">Colophon</a></li>
-        </ul>
+  <header class="container-fluid bg-white border-bottom border-success border-4 px-0">
+    <nav class="navbar navbar-expand-lg container py-3">
+      <p class="navbar-brand mb-0 text-center text-lg-start"><a class="text-success text-decoration-none fw-bold" href="index.html">Dostar Cinema</a></p>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#site-navigation" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="site-navigation"><ul class="navbar-nav ms-lg-auto mb-2 mb-lg-0"><li class="nav-item"><a class="nav-link" href="index.html">Home</a></li><li class="nav-item"><a class="nav-link" href="movies.html">Movies</a></li><li class="nav-item"><a class="nav-link active" aria-current="page" href="schedule.html">Schedule</a></li><li class="nav-item"><a class="nav-link" href="cinema.html">Cinema</a></li><li class="nav-item"><a class="nav-link" href="halls.html">Halls</a></li><li class="nav-item"><a class="nav-link" href="visit.html">Visit</a></li><li class="nav-item"><a class="nav-link" href="services.html">Services</a></li><li class="nav-item"><a class="nav-link" href="colophon.html">Colophon</a></li></ul></div>
     </nav>
-</header>
+  </header>
 
-<main>
-    <h1 class="page-title">Movie Schedule</h1>
-
-    <!-- This id is right because there is only one schedule table section on this page. -->
-    <section id="table" class="content-section">
-        <h2>Movie schedule</h2>
-        <p>This table is used to demonstrate how cinema sessions can be organized. Visitors should use the official Dostar Cinema website for the current schedule.</p>
-
-        <!-- A table is used because rows and columns make movie, time and hall information easy to compare. -->
-        <table class="data-table">
-            <caption>Dostar Cinema schedule example</caption>
-            <thead>
-                <tr>
-                    <th scope="col">Movie</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Hall</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Movie A</td><td>14:00</td><td>Hall 1</td></tr>
-                <tr><td>Movie B</td><td>17:30</td><td>Hall 2</td></tr>
-                <tr><td>Movie C</td><td>20:10</td><td>Hall 3</td></tr>
-            </tbody>
+  <main class="container py-4">
+    <h1 class="display-5 text-center text-md-start mb-4">Movie Schedule</h1>
+    <section id="table" class="bg-white border rounded-3 shadow-sm p-4 mb-4">
+      <h2 class="h3 text-success">Movie schedule</h2>
+      <p class="lead">This table demonstrates how cinema sessions can be organized.</p>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <caption>Dostar Cinema schedule example</caption>
+          <thead class="table-success"><tr><th scope="col">Movie</th><th scope="col">Time</th><th scope="col">Hall</th></tr></thead>
+          <tbody><tr><td>Movie A</td><td>14:00</td><td>Hall 1</td></tr><tr><td>Movie B</td><td>17:30</td><td>Hall 2</td></tr><tr><td>Movie C</td><td>20:10</td><td>Hall 3</td></tr></tbody>
         </table>
-
-        <ol type="A">
-            <li>Choose a movie.</li>
-            <li>Check the session time.</li>
-            <li>Check the hall.</li>
-        </ol>
+      </div>
+      <ol class="mb-0"><li>Choose a movie.</li><li>Check the session time.</li><li>Check the hall.</li></ol>
     </section>
 
-    <!-- This id is right because there is one unique booking-form section on this page. -->
-    <section id="form" class="content-section">
-        <!-- Inline style exists only to demonstrate the cascade. It overrides the external h2 colour on this one heading. -->
-        <h2 style="color: #C77D39;">Booking Form</h2>
-
-        <p>This form is only for the student project. It does not make a real booking.</p>
-
-        <form class="booking-form" method="post" action="#">
-            <!-- This form does not have a server yet. -->
-            <fieldset>
-                <legend>Booking information</legend>
-
-                <label for="name1">Name:</label>
-                <input type="text" id="name1" name="name" placeholder="Your name" required>
-                <br>
-
-                <label for="email1">Email:</label>
-                <input type="email" id="email1" name="email" placeholder="Your email" required>
-                <br>
-
-                <label for="phone1">Phone:</label>
-                <input type="tel" id="phone1" name="phone" placeholder="+7 700 000 00 00" required>
-                <br>
-
-                <label for="people1">Number of tickets:</label>
-                <input type="number" id="people1" name="tickets" min="1" required>
-                <br>
-
-                <label for="date1">Date:</label>
-                <input type="date" id="date1" name="date" required>
-                <br>
-
-                <p>Hall type:</p>
-                <input type="radio" id="normal1" name="hall" value="normal" required>
-                <label for="normal1">Normal</label>
-
-                <input type="radio" id="premium1" name="hall" value="premium">
-                <label for="premium1">Premium</label>
-                <br>
-
-                <input type="checkbox" id="agree1" name="agree" required>
-                <label for="agree1">I know this is only a student form.</label>
-                <br>
-
-                <label for="movie1">Movie:</label>
-                <select id="movie1" name="movie" required>
-                    <option value="">Choose movie</option>
-                    <option value="movie-a">Movie A</option>
-                    <option value="movie-b">Movie B</option>
-                    <option value="movie-c">Movie C</option>
-                </select>
-                <br>
-
-                <label for="comment1">Comment:</label>
-                <textarea id="comment1" name="comment" rows="4" cols="35" placeholder="Write comment"></textarea>
-                <br>
-
-                <button type="submit">Submit</button>
-                <button type="reset">Reset</button>
-            </fieldset>
-        </form>
+    <section id="form" class="bg-white border rounded-3 shadow-sm p-4">
+      <h2 class="h3 text-success">Booking Form</h2>
+      <p class="text-muted">This is a student form and does not make a real booking.</p>
+      <form method="post" action="#">
+        <fieldset class="border rounded-3 p-3">
+          <legend class="float-none w-auto px-2 h5">Booking information</legend>
+          <div class="row g-3">
+            <div class="col-12 col-md-6"><label class="form-label" for="name1">Name</label><input class="form-control" type="text" id="name1" name="name" placeholder="Your name" required></div>
+            <div class="col-12 col-md-6"><label class="form-label" for="email1">Email</label><input class="form-control" type="email" id="email1" name="email" placeholder="Your email" required></div>
+            <div class="col-12 col-md-6"><label class="form-label" for="phone1">Phone</label><input class="form-control" type="tel" id="phone1" name="phone" placeholder="+7 700 000 00 00" required></div>
+            <div class="col-12 col-md-6"><label class="form-label" for="people1">Number of tickets</label><input class="form-control" type="number" id="people1" name="tickets" min="1" required></div>
+            <div class="col-12 col-md-6"><label class="form-label" for="date1">Date</label><input class="form-control" type="date" id="date1" name="date" required></div>
+            <div class="col-12 col-md-6"><label class="form-label" for="movie1">Movie</label><select class="form-select" id="movie1" name="movie" required><option value="">Choose movie</option><option value="movie-a">Movie A</option><option value="movie-b">Movie B</option><option value="movie-c">Movie C</option></select></div>
+            <div class="col-12"><p class="form-label mb-1">Hall type</p><div class="form-check form-check-inline"><input class="form-check-input" type="radio" id="normal1" name="hall" value="normal" required><label class="form-check-label" for="normal1">Normal</label></div><div class="form-check form-check-inline"><input class="form-check-input" type="radio" id="premium1" name="hall" value="premium"><label class="form-check-label" for="premium1">Premium</label></div></div>
+            <div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" id="agree1" name="agree" required><label class="form-check-label" for="agree1">I know this is only a student form.</label></div></div>
+            <div class="col-12"><label class="form-label" for="comment1">Comment</label><textarea class="form-control" id="comment1" name="comment" rows="4" placeholder="Write comment"></textarea></div>
+            <div class="col-12"><button class="btn btn-success" type="submit">Submit</button><button class="btn btn-outline-secondary btn-sm" type="reset">Reset</button></div>
+          </div>
+        </fieldset>
+      </form>
     </section>
-</main>
+  </main>
 
-<footer>
-    <p>
-        <a href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a>
-        |
-        <a href="https://api.whatsapp.com/send/?phone=77474330558&text=Здравствуйте%21%0A%0AПишу+из+приложения+2ГИС.%0A%0A&type=phone_number&app_absent=0">+77474330558</a>
-        |
-        <a href="mailto:studentproject@example.com">Project email</a>
-    </p>
-    <p>&copy; 2026 Dostar Cinema Student Project</p>
-</footer>
-
+  <footer class="container-fluid bg-dark text-white mt-5 py-4"><div class="container text-center text-md-start"><div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2"><p class="mb-0 small"><a class="text-white" href="https://dostarcinema.kz/" target="_blank" rel="noopener noreferrer">Official website</a><span class="d-none d-md-inline"> | </span><a class="text-white" href="mailto:studentproject@example.com">Project email</a></p><p class="mb-0 small">&copy; 2026 Dostar Cinema Student Project</p></div></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
