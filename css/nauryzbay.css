@@ -1,0 +1,17 @@
+#location,
+#services {
+  border-top: 4px solid var(--bs-success);
+}
+
+#route,
+#feedback {
+  border-top: 4px solid var(--bs-warning);
+}
+
+#location .btn-warning {
+  --bs-btn-color: #fff;
+}
+
+#feedback legend {
+  color: var(--bs-success);
+}
