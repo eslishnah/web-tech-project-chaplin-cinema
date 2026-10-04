@@ -17,3 +17,12 @@ AI was used as a support tool during the Bootstrap assignment.
 ## Student responsibility
 
 The students reviewed the generated suggestions, chose which changes to use, tested the website and remain responsible for the final code, validation, screenshots and defense.
+
+## Midterm use of AI
+
+- AI helped compare the midterm requirements with the existing Visit and Services pages.
+- AI suggested the location, route, service cards, feedback form IDs, result area and CSS state classes for later JavaScript.
+- We checked and corrected two links that pointed to sections not yet present on teammates' pages, removed an unverified email address and replaced old CSS rules that conflicted with Bootstrap cards.
+- We used AI to help review the markup and identify checks still needed before submission.
+
+The team remains responsible for checking the pages in a browser, validating HTML, taking screenshots, recording the quality pass and making its own Git commits.
