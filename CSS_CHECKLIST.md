@@ -4,7 +4,7 @@ This checklist describes the current Bootstrap version. Source lines refer to th
 
 ## Active custom CSS
 
-All eight pages load `css/base.css` after Bootstrap. The legacy `css/daniyar.css` and `css/sandzhar.css` files are not loaded by any current page.
+All eight pages load only `css/base.css` after Bootstrap. The stylesheet contains the shared Dostar Cinema corrections and prepared UI states.
 
 | Technique | File | Lines | Implementation |
 |---|---|---|---|
@@ -12,6 +12,9 @@ All eight pages load `css/base.css` after Bootstrap. The legacy `css/daniyar.css
 | Type selectors, class selector and grouped selectors | `css/base.css` | 11–16 | `h1`, `h2`, `h3`, `.navbar-brand` share a font family |
 | Image proportions and cropping | `css/base.css` | 18–21 | `.card-img-top` uses `aspect-ratio: 4 / 3` and `object-fit: cover` |
 | Preformatted text wrapping | `css/base.css` | 23–25 | `pre` uses `white-space: pre-wrap` |
+
+| Prepared interface states | `css/base.css` | 27-31 | `.is-hidden`, `.is-active`, `.is-selected`, `.has-error`, `.is-success` |
+| Shared page accents and form focus | `css/base.css` | 34-52 | Section borders and green focus styling for feedback fields |
 
 Theme variables affect the Bootstrap rules that use them. They do not replace every component-specific colour, so some buttons, alerts and table colours retain Bootstrap defaults.
 

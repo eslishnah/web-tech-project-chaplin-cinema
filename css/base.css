@@ -31,3 +31,25 @@ pre { white-space: pre-wrap; }
 .is-selected { outline: 2px solid var(--bs-success); outline-offset: 2px; }
 .has-error { color: #842029; border-color: #dc3545 !important; }
 .is-success { color: #0f5132; border-color: var(--bs-success) !important; }
+
+/* Small page accents and form focus styles shared across the site. */
+#now-showing,
+#location {
+  border-top: 4px solid var(--bs-success) !important;
+}
+
+#booking,
+#feedback {
+  border-top: 4px solid var(--bs-warning) !important;
+}
+
+#location p,
+#services p {
+  max-width: 65ch;
+}
+
+#service-feedback-form .form-control:focus,
+#service-feedback-form .form-select:focus {
+  border-color: var(--bs-success);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25);
+}

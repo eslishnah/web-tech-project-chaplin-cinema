@@ -36,10 +36,11 @@ The shared `css/base.css` contains the small custom styling layer:
 - Georgia headings and navbar branding.
 - A 4:3 aspect ratio and cover cropping for card images.
 - Wrapping for preformatted text.
+- Small green/orange section accents, form focus styling and future JavaScript state classes.
 
 Green, orange, dark and light tones are inspired by the cinema interior. The variable overrides do not retheme every Bootstrap component; some component colours retain Bootstrap defaults.
 
-`css/daniyar.css` and `css/sandzhar.css` remain as legacy Assignment 2 files. No current HTML page loads them. There is no `css/nauryzbay.css` in this version.
+There is one shared custom stylesheet: `css/base.css`. Bootstrap handles the layout and components; `base.css` contains only the shared brand corrections and prepared UI states.
 
 ## Repository structure
 
@@ -54,9 +55,7 @@ project/
 ├── services.html
 ├── colophon.html
 ├── css/
-│   ├── base.css
-│   ├── daniyar.css       (legacy, not loaded)
-│   └── sandzhar.css      (legacy, not loaded)
+│   └── base.css
 ├── images/             (local cinema photos)
 ├── README.md
 ├── CSS_CHECKLIST.md
