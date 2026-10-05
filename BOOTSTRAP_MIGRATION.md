@@ -12,3 +12,6 @@
 | Manual spacing rules | p-*, m-*, mb-*, py-*, gap-* |
 | Hand-written responsive styles | Bootstrap responsive columns and display utilities |
 | Float image layout | Bootstrap responsive rows and columns |
+| Old `#movies` CSS grid | `row g-4`, `col-12 col-md-6 col-lg-4` |
+| Old `.booking-form` flex rules | `row g-3`, `col-12 col-md-6`, `form-control`, `form-select` |
+| Old fixed photo sizing | `.card-img-top` with `aspect-ratio` in the small shared correction CSS |

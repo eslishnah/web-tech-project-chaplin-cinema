@@ -8,10 +8,7 @@
   --bs-font-sans-serif: Arial, Helvetica, sans-serif;
 }
 
-h1,
-h2,
-h3,
-.navbar-brand {
+h1, h2, h3, .navbar-brand {
   font-family: Georgia, "Times New Roman", serif;
 }
 
@@ -20,6 +17,17 @@ h3,
   object-fit: cover;
 }
 
-pre {
-  white-space: pre-wrap;
+pre { white-space: pre-wrap; }
+
+.status-area {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--bs-success);
+  border-radius: 0.375rem;
+  background: #f5f8f0;
 }
+
+.is-hidden { display: none !important; }
+.is-active { color: var(--bs-success); font-weight: 700; }
+.is-selected { outline: 2px solid var(--bs-success); outline-offset: 2px; }
+.has-error { color: #842029; border-color: #dc3545 !important; }
+.is-success { color: #0f5132; border-color: var(--bs-success) !important; }
