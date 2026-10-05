@@ -1,121 +1,50 @@
-# Dostar Cinema Website
+# Dostar Cinema — Bootstrap Version
 
-## Project Description
+## Project
 
-This project is a student website about **Dostar Cinema in Astana**.  
-The website was created for the Web Technologies course.
+A frontend-only student website about Dostar Cinema in Astana, created for the Web Technologies course. The project started with HTML in Assignment 1 and custom CSS in Assignment 2. The current Assignment 3 version uses Bootstrap 5.3.3 on all eight pages.
 
-The project started in **Assignment 1** with HTML structure and semantic elements.  
-In **Assignment 2** we added CSS, Flexbox, Grid, positioning, colours, typography and other styling techniques.
+## Pages and team
 
-## Team Members
+| Author | Pages | Content |
+|---|---|---|
+| Daniyar | `index.html`, `movies.html`, `schedule.html` | Home, movie information, sample schedule and booking form |
+| Sandzhar | `cinema.html`, `halls.html`, `colophon.html` | Cinema information, halls and feedback, project description |
+| Nauryzbay | `visit.html`, `services.html` | Visiting information, services and feedback |
 
-- **Daniyar** — `movies.html`, `schedule.html`
-- **Sandzhar** — `cinema.html`, `halls.html`
-- **Nauryzbay** — `visit.html`, `services.html`
-
-Common pages:
-
-- `index.html`
-- `colophon.html`
-
-## Website Pages
-
-- `index.html` — main page
-- `movies.html` — information about movies
-- `schedule.html` — movie schedule and booking form
-- `cinema.html` — information about Dostar Cinema
-- `halls.html` — information about cinema halls
-- `visit.html` — location and visiting information
-- `services.html` — cinema services and feedback form
-- `colophon.html` — information about how the website was created
-
-## CSS Files
-
-The project uses one shared stylesheet and three personal stylesheets.
-
-- `css/base.css` — common styles for all pages
-- `css/daniyar.css` — styles for Daniyar's pages
-- `css/sandzhar.css` — styles for Sandzhar's pages
-- `css/nauryzbay.css` — styles for Nauryzbay's pages
-
-## Design
-
-The colour palette is based on the real Dostar Cinema interior.
-
-Main colours:
-
-- Green — main cinema colour
-- Orange — accent colour
-- Dark grey — text and dark elements
-- Light neutral — page background
-- White — cards and content blocks
-
-## HTML Features
-
-The website uses:
-
-- semantic HTML
-- headings
-- navigation
-- sections and articles
-- tables
-- lists
-- images with alt text
-- forms
-- internal and external links
-- figure and figcaption
-- blockquote and cite
-- abbreviations
-- code elements
-
-## CSS Features
-
-The project includes:
-
-- type selectors
-- class selectors
-- id selectors
-- descendant selectors
-- child selectors
-- adjacent sibling selectors
-- attribute selectors
-- pseudo-classes
-- pseudo-elements
-- Flexbox
-- CSS Grid
-- `repeat()`
-- `minmax()`
-- `fr`
-- static, relative, absolute and fixed positioning
-- float and clear
-- different centering methods
-- external, internal and inline CSS
-- CSS cascade and specificity examples
-
-## Images
-
-The project uses photos of Dostar Cinema stored in the `images` folder.
-
-Main images:
-
-- `dostar-front.jpg`
-- `dostar-bar.jpg`
-
-## How to Run the Project
+## Run locally
 
 1. Download or clone the repository.
-2. Open the project folder.
-3. Open `index.html` in a web browser.
-4. Use the navigation menu to open other pages.
+2. Open `index.html` in a browser.
+3. Use the navigation menu to explore the pages.
 
-No JavaScript or server is required.
+No build step, package installation, backend or database is required. Internet access is required to load Bootstrap CSS and its JavaScript bundle from jsDelivr. The bundle powers the collapsible mobile navigation; there is no custom JavaScript.
 
-## Project Structure
+## Forms and sample content
+
+The booking and feedback forms demonstrate frontend layout and native browser validation using labels, fieldsets, input types and attributes such as `required` and `min`. They use `method="post" action="#"` as placeholders and have no submission handler. They do not create bookings, deliver feedback or store data in a database. Backend processing is outside the scope of this project.
+
+The schedule and hall tables contain example data, not a live cinema feed.
+
+## Styling
+
+Every page loads Bootstrap 5.3.3 CSS followed by `css/base.css`, and includes the Bootstrap JavaScript bundle. Layout and components use containers, responsive rows and columns, navigation, cards, tables, forms, buttons and utility classes.
+
+The shared `css/base.css` contains the small custom styling layer:
+
+- Bootstrap theme variables for colours, body background, text and font.
+- Georgia headings and navbar branding.
+- A 4:3 aspect ratio and cover cropping for card images.
+- Wrapping for preformatted text.
+
+Green, orange, dark and light tones are inspired by the cinema interior. The variable overrides do not retheme every Bootstrap component; some component colours retain Bootstrap defaults.
+
+`css/daniyar.css` and `css/sandzhar.css` remain as legacy Assignment 2 files. No current HTML page loads them. There is no `css/nauryzbay.css` in this version.
+
+## Repository structure
 
 ```text
 project/
-│
 ├── index.html
 ├── movies.html
 ├── schedule.html
@@ -124,61 +53,30 @@ project/
 ├── visit.html
 ├── services.html
 ├── colophon.html
-│
 ├── css/
 │   ├── base.css
-│   ├── daniyar.css
-│   ├── sandzhar.css
-│   └── nauryzbay.css
-│
-├── images/
-│   ├── dostar-front.jpg
-│   └── dostar-bar.jpg
-│
-├── css_checklist.txt
-├── AI_Log_Assignment_1_2_Full.docx
-└── README.md
+│   ├── daniyar.css       (legacy, not loaded)
+│   └── sandzhar.css      (legacy, not loaded)
+├── images/             (local cinema photos)
+├── README.md
+├── CSS_CHECKLIST.md
+├── BOOTSTRAP_MIGRATION.md
+└── AI_LOG_Assignment_3.md
 ```
 
-## Validation
+## Documentation
 
-Before submission, the team checks:
+- [CSS and Bootstrap checklist](CSS_CHECKLIST.md): current implementation examples and source line references.
+- [Bootstrap migration](BOOTSTRAP_MIGRATION.md): overview of the layout and component migration.
+- [Assignment 3 AI log](AI_LOG_Assignment_3.md): how AI supported the work.
 
-- HTML with the W3C HTML Validator
-- CSS with the W3C CSS Validator
-- working navigation links
-- image paths
-- form fields
-- checklist line numbers
+## Checks before submission
 
-## Course Work
+These are manual checks to perform, not a record of completed validation:
 
-This repository contains work for:
-
-- **Assignment 1 — HTML**
-- **Assignment 2 — CSS Fundamentals and Layouts**
-
-# Dostar Cinema — Bootstrap Version
-
-This is the Bootstrap 5.3.3 version of the Dostar Cinema student website.
-
-## Setup
-
-1. Copy these files into the original project folder.
-2. Keep css/base.css.
-3. Remove links to css/daniyar.css, css/sandzhar.css and css/nauryzbay.css.
-4. Delete those three old CSS files after the migration.
-5. Open index.html in a browser with internet access so the Bootstrap CDN can load.
-
-## Team
-
-- Daniyar — index.html, movies.html, schedule.html, css/base.css, BOOTSTRAP_MIGRATION.md
-- Sandzhar — cinema.html, halls.html, colophon.html, README
-- Nauryzbay — visit.html, services.html, screenshots and AI log
-
-## Checks
-
-- Validate all HTML files with W3C Validator.
-- Check 375 px, 768 px and desktop widths.
-- Confirm the mobile navigation toggler works.
-- Save the four required movies.html screenshots.
+- Validate HTML and custom CSS with the W3C validators.
+- Inspect every page at 375 px, 768 px and desktop widths.
+- Check mobile navigation, internal links and image loading.
+- Check field labels, native required-field validation and reset buttons; real form delivery is outside scope.
+- Capture the required `movies.html` screenshots.
+- Recheck checklist line references after editing source files.
