@@ -4,7 +4,7 @@ This checklist describes the current Bootstrap version. Source lines refer to th
 
 ## Active custom CSS
 
-All eight pages load only `css/base.css` after Bootstrap. The stylesheet contains the shared Dostar Cinema corrections and prepared UI states.
+All seven pages load only `css/base.css` after Bootstrap. The stylesheet contains the shared Dostar Cinema corrections and prepared UI states.
 
 | Technique | File | Lines | Implementation |
 |---|---|---|---|
@@ -37,7 +37,6 @@ Theme variables affect the Bootstrap rules that use them. They do not replace ev
 | Cinema gallery | `cinema.html` | 29–33 | Responsive columns, cards, borders and shadows | Sandzhar |
 | Hall information and table | `halls.html` | 29–31 | Responsive columns and `table-responsive` | Sandzhar |
 | Hall feedback form | `halls.html` | 36–53 | Fieldset, responsive controls, radios and checkbox | Sandzhar |
-| Preformatted code panel | `colophon.html` | 30–34 | `bg-light`, `border`, `rounded-3`, `p-3`, `small` | Sandzhar |
 | Visit gallery | `visit.html` | 46–50 | Responsive cards and images | Nauryzbay |
 | Service columns and description list | `services.html` | 32–37 | `row`, `col-md-4`, `col-sm-3`, `col-sm-9` | Nauryzbay |
 | Feedback controls and disabled button | `services.html` | 50–67 | Form classes, `disabled` and `aria-disabled` | Nauryzbay |

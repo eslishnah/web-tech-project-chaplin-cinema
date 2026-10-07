@@ -11,4 +11,4 @@ Check another team member's pages at least two days before the deadline. Write o
 | 2026-10-02 | Daniyar | visit.html | Contact and location information was not detailed enough | Added clearer contact and location details |
 | 2026-10-02 | Nauryzbay | services.html | Some service descriptions were too short | Added more detailed descriptions for visitor services |
 | 2026-10-03 | Sandzhar | index.html | The Home page did not clearly guide visitors to the main sections | Improved links and descriptions for the main sections |
-| 2026-10-03 | Daniyar | colophon.html | Team contribution information was incomplete | Added clearer information about project structure and team responsibilities |
+| 2026-10-03 | Sandzhar | schedule.html, movies.html, index.html, services.html | We added a ticket booking page where users can choose a film session, date, number of tickets, and enter their details. The order summary and confirmation area are ready, but payment and calculations will be added later with JavaScript. |
