@@ -1,91 +1,75 @@
 # Dostar Cinema — Assignments 4–5
 
-A seven-page student frontend using HTML, Bootstrap 5.3.3, the existing CSS and plain JavaScript. Visitors can find films, manage a ticket basket, add local reviews and plan a visit. No real payment, reservation or message delivery exists.
+This is our seven-page frontend project for Dostar Cinema. We continued the site from the earlier assignments and added JavaScript to help visitors find a film, try a ticket order, read about the cinema, leave local feedback and plan a visit. The order flow is a practice demo: it does not take payment, reserve seats or send messages.
 
-## Team and files
+## Team responsibilities
 
-| Member | Files |
+| Student | Pages | JavaScript files |
+|---|---|---|
+| Daniyar | Home, Movies, Schedule | `js/data.js`, `js/movies.js`, `js/schedule.js` |
+| Sandzhar | Cinema, Halls | `js/cinema.js`, `js/halls.js` |
+| Nauryzbay | Visit, Services | `js/visit.js`, `js/services.js` |
+
+We divided the pages by feature area and worked on `js/main.js` and `js/reviews.js` as shared parts of the site. Our AI assistance log is in `AI_LOG_Assignment_4_5.md`.
+
+## Pages and visitor journeys
+
+| Page | What a visitor can do |
 |---|---|
-| Daniyar | Home, Movies, Schedule; `js/data.js`, `js/movies.js`, `js/schedule.js` |
-| Sandzhar | Cinema, Halls; `js/cinema.js`, `js/halls.js` |
-| Nauryzbay | Visit, Services; `js/visit.js`, `js/services.js` |
+| `index.html` | Start and choose another section of the site |
+| `movies.html` | Browse films, filter them and save a shortlist on this device |
+| `schedule.html` | Choose a session and seats, review a demo ticket basket |
+| `cinema.html` | Read about the cinema and make a visit checklist |
+| `halls.html` | Read hall information and add a local review |
+| `visit.html` | Find the address, map and phone number; plan a departure time |
+| `services.html` | Read about services and prepare local feedback |
 
-This follows existing page ownership and proposes review/defense responsibilities. It is not a claim of individual authorship of generated code. Shared files are `js/main.js` and `js/reviews.js`; see the AI log.
+Three complete routes through the site:
 
-## Page list
-
-| Page | Visitor purpose |
-|---|---|
-| `index.html` | Choose where to go next |
-| `movies.html` | See published films and cinema photos |
-| `schedule.html` | View listed sessions and the on-site ticket checkout interface |
-| `cinema.html` | Learn about the cinema |
-| `halls.html` | See published hall facts and leave review details |
-| `visit.html` | Find the cinema and contact details |
-| `services.html` | Read about visitor services and enter feedback |
-
-## Three visitor journeys
-
-1. **Find the cinema:** Start on Home - open Visit - read the location and route - open the map or phone link. End: the visitor has directions or a working contact method.
-2. **Practice ordering tickets:** Movies → search/filter → choose a film → Schedule receives its session → enter date, quantity and youngest age → open the 2D seat map → choose exactly that many seats → add them to the basket → enter buyer details and consent → review → confirm the demo. Changing details or seats invalidates the review. Confirmation clears the basket and retains a labelled last-demo summary. No real tickets or payments are produced.
-3. **Check facilities and contact:** Start on Home - open Cinema - open Halls - open Services - open Visit - use the phone link. End: the visitor has checked the published hall and parking information and can contact the venue.
-
-## Run
-
-Open `index.html` with VS Code Live Server or another static server. No build is needed. Bootstrap CSS and its existing navigation bundle load from jsDelivr and require internet access. Deferred scripts load in order: `data.js`, `main.js`, then the relevant page script.
-
-## Source of current cinema facts
-
-Historical reference for the existing venue and film data: https://ticketon.kz/en/place/dostar-cinema. This is a documentation source only, not part of the visitor checkout journey.
-Official cinema website: https://dostarcinema.kz/
-Static film examples were checked on 4 October 2026. Current facts were not reverified by this implementation. Confirm with the venue before travel.
+1. **Find the cinema:** Home → Visit → check the location and route → use the map or phone link. The visitor finishes with directions or a contact option.
+2. **Try a ticket order:** Movies → search or filter → choose a film → Schedule → enter the date, ticket count and youngest visitor's age → select the same number of seats in the illustrative map → review the basket, buyer details and consent → confirm the demo. Changing details or seats requires a new review. The confirmation shows a demo reference and clears the basket; it is not a real ticket.
+3. **Check facilities:** Home → Cinema → Halls → Services → Visit. The visitor can check the published hall and parking information and then contact the cinema.
 
 ## Functionality Plan
 
 | Page | Visitor goal | Function | Expected result | Responsible student |
 |---|---|---|---|---|
-| All seven | Find a page and read comfortably | Search/category/reset, larger text, skip link | Matching destinations/count/empty state; saved reading preference | Shared team |
-| Movies | Find a suitable film | Combined search, age filter, sorting | Matching cards/count/reset and session handoff | Daniyar |
-| Movies | Remember films | Save/remove and shortlist filter | Saved film IDs on this device; fallback if storage unavailable | Daniyar |
-| Schedule | Practice buying tickets | 2D seat picker, basket, quantity, remove/clear, validation, review/confirm | Chosen seat labels, estimated totals and DEMO reference | Daniyar |
-| Cinema | Prepare for different needs | General/family/assistance checklist, progress/reset | Useful preparation steps and relevant links | Sandzhar |
-| Halls | Manage a review | Validation, counter, local cards, average rating, sort/edit/delete | Completed local review, with empty/duplicate states | Sandzhar |
-| Visit | Decide when to leave | Date/time/travel/buffer calculation | Departure time or an invalid/impossible-plan message | Nauryzbay |
-| Services | Prepare visitor feedback | Name/email/topic/message validation, counter, sort/edit/delete | Local feedback card; no email displayed or sent | Nauryzbay |
+| All pages | Find a section and read comfortably | Page search, category filter, reset, larger-text setting and skip link | Matching destinations and count, an empty message when needed, saved reading preference | Shared team |
+| Movies | Choose a suitable film | Search, age filter and sorting together | Matching film cards, count, reset and link to the selected session | Daniyar |
+| Movies | Keep a shortlist | Save/remove films and show saved films only | Saved film IDs on this device, with feedback if storage is unavailable | Daniyar |
+| Schedule | Try a ticket order | Seat selection, basket changes, totals and review | Seat labels and updated totals after add, increase, decrease, remove or clear | Daniyar |
+| Schedule | Complete the demo safely | Date, age, count and buyer validation; confirmation | Field errors or a DEMO reference with an explicit no-payment/no-reservation message | Daniyar |
+| Cinema | Prepare for a visit | General, family or assistance checklist | Relevant steps, progress, reset and useful links | Sandzhar |
+| Halls | Share a local review | Validation, character counter, rating, sort, edit and delete | A review card with date/time, average rating and empty/duplicate feedback | Sandzhar |
+| Visit | Plan travel to a session | Date, time, travel and buffer calculation | A departure time or an explanation of an invalid or impossible plan | Nauryzbay |
+| Services | Prepare feedback | Name, email, topic and message validation; sort, edit and delete | A local feedback card; the email is not displayed or sent | Nauryzbay |
 
-## Data and rules
+## How to run it
 
-- The original three films/posters remain. `CinemaData.pages` supplies seven real objects with five meaningful properties for the shared page search. Extra films or screenings were not invented to reach six objects.
-- KZT 1,000 per ticket is a **demo estimate** based on the old starting-price examples, not a verified charge.
-- Demo dates range from today through the next 30 days, using the device's local clock. Past session times today are rejected. This range does not assert real cinema availability.
-- Demo restrictions: one session per date, 1–10 tickets per session, youngest visitor at least the film's rated age. The 12 × 12 seat map is an illustrative layout created for the assignment. Selected seat labels are part of the local demo basket, but no actual hall is assigned and no seat availability is checked or reserved.
-- `Math.random()` contributes to a temporary DEMO reference, not a booking token or security credential.
-- Only larger text and shortlist IDs use localStorage. Basket, contact details, notes and reviews stay in page memory and disappear on reload. Nothing is sent to a backend.
-- No login page exists, so the conditional login/registration module is not applicable.
+The site runs from `index.html` with VS Code Live Server or another static server; it has no build step. Bootstrap 5.3.3 CSS and the navigation bundle load from jsDelivr and need an internet connection. We load the scripts with `defer` in this order: `js/data.js`, `js/main.js`, then the page script. The project uses plain JavaScript and no jQuery.
 
-## HTML/CSS freeze and existing corrections
+## Data and demo rules
 
-Only deferred script links were added to HTML. `css/base.css` is unchanged. Runtime elements use DOM methods and existing Bootstrap/base classes through `classList`; no generated CSS, `element.style`, inline events, jQuery or new runtime framework is used.
+- We kept the three existing film examples and posters. `CinemaData.pages` contains seven site destinations, each with an ID, title, link, category and description for the shared page search.
+- KZT 1,000 per ticket is a demo estimate based on older starting-price examples, not a confirmed current price. The film examples were checked on 4 October 2026 and are not a live schedule. Historical source: https://ticketon.kz/en/place/dostar-cinema. Official site: https://dostarcinema.kz/. Confirm current films, prices, times and venue details with the cinema before visiting.
+- The demo accepts dates from today through the next 30 days according to the device's local clock and rejects session times that have already passed today. It allows one session per date, 1–10 tickets per session and requires the youngest visitor to meet the film's age rating. These rules do not represent live availability.
+- The 12 × 12 seat map is illustrative. Seat labels appear in the local basket, but the actual hall, layout and free seats are unknown. Selecting a seat here does not reserve it.
+- `Math.random()` helps create a temporary DEMO reference. It is not a booking number or security credential.
+- Only the larger-text preference and film shortlist IDs use `localStorage`. The basket, buyer details, notes and reviews stay in page memory and disappear on reload. Nothing is sent to a server.
+- The site does not include login or registration.
 
-Two existing defects are corrected at runtime, without rewriting HTML: Visit's map URL had a newline and stray trailing digit; Halls implied that this demo assigned a hall. `visit.js` removes the malformed suffix (the external destination was not reverified), and `halls.js` replaces the unsupported claim with a contact-the-cinema message. These repairs are not scored features.
+## HTML/CSS starting point
 
-Six HTML files already had uncommitted changes when this work began; they were preserved. No `midterm` tag was present in this checkout. `tests/freeze-baseline.json` is a regression baseline reconstructed by removing the added script links; it is **not** independent proof of a midterm revision. Compare with your actual midterm before submission; preserve its real tag.
+We added deferred script links to the HTML and kept `css/base.css` unchanged. JavaScript creates the new interface elements and uses existing Bootstrap/base classes through `classList` for visual states. We did not add CSS rules, inline styles or inline event handlers.
 
-## Verification and documentation
+We also corrected two issues in the earlier pages through JavaScript. `js/visit.js` removes a newline and an extra final digit from the map URL; the external destination has not been independently rechecked. `js/halls.js` replaces a statement suggesting that the demo assigns a real hall with advice to contact the cinema. These corrections are separate from the new visitor features.
 
-The follow-up visual refresh removes the redundant navigation buttons identified in the screenshots. Shared JavaScript creates green page introductions with small orange accents, consistent white cards, a quieter footer disclosure, venue facts and service FAQs. Core movie selection, map access, navigation and checkout controls remain available. No HTML/CSS source changes were needed for this refresh.
+## Checks and project documents
 
-Run dependency-free checks: `node --test tests/logic.test.cjs tests/freeze.test.cjs`.
+The visual refresh removed the redundant navigation buttons identified in the screenshots. Shared JavaScript adds green page introductions with small orange accents, consistent cards, a quieter footer, venue details and service FAQs. Movie selection, map access, navigation and checkout remain available. This refresh did not require HTML or CSS source edits.
 
-`tests/browser.cjs` uses development-only Playwright and installed Chrome. It is not loaded by the website. Run `node tests/browser.cjs` where Playwright is available, or follow `tests/evidence/README.md` manually. The tests do not certify full WCAG compliance or live venue information.
+We check the data logic with `node --test tests/logic.test.cjs tests/freeze.test.cjs`. Browser checks use `node tests/browser.cjs` with development-only Playwright and Chrome; the manual steps are in `tests/evidence/README.md`. Our evidence covers widths near 375 px, 768 px and desktop, plus larger-text mode. These checks do not certify full accessibility or verify live cinema information.
 
-- `JAVASCRIPT_CHECKLIST.md`: requirements mapped to exact source lines.
-- `DEFENSE_JS_RU.md`: code explanation and live-change exercises.
-- `AI_LOG_Assignment_4_5.md`: honest disclosure of generated implementation.
-- `tests/evidence/`: browser evidence and test scope.
-
-## Remaining submission responsibilities
-
-The supplied assignment prohibits AI-written code and documentation. This generated implementation is **not compliant with that authorship rule** as-is; discuss permission with the teacher or produce permitted work independently. Do not claim unaided authorship.
-
-No commits or tags were created. The team must understand the code, confirm actual responsibilities, preserve `midterm`, and create legitimate `assignment-4`/`assignment-5` milestones. Stage 4 logic is separated in `data.js`, but this does not create historical milestones. Meet the meaningful-commit requirement over at least three days: four per team member, or six for an individual. Do not backdate or fabricate contributions.
+- `JAVASCRIPT_CHECKLIST.md` maps the assignment requirements to source files and line numbers.
+- `AI_LOG_Assignment_4_5.md` records AI assistance.
+- `tests/evidence/` contains the browser-check scope and screenshots; `evidence/` also contains page and seat-map screenshots.
