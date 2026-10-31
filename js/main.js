@@ -124,65 +124,8 @@ const CinemaUI = (() => {
   icon.href = 'images/dostar-front.jpg';
   document.head.append(icon);
 
-  const tools = element('details', 'container border rounded bg-white p-3 mt-3');
-  tools.append(element('summary', 'fw-semibold', 'Reading settings & find a page'));
-  const readingStatus = element('p', 'mt-2 mb-0');
-  readingStatus.setAttribute('role', 'status');
-  let large = readStorage('dostar-large-text', false) === true;
-  const largeButton = button('Larger text', () => {
-    large = !large;
-    const saved = writeStorage('dostar-large-text', large);
-    applyReading();
-    readingStatus.textContent = `${large ? 'Larger' : 'Standard'} text enabled.${saved ? ' Preference saved on this device.' : ' Storage unavailable; preference applies to this page.'}`;
-  });
-  function applyReading() {
-    document.documentElement.classList.toggle('fs-4', large);
-    largeButton.setAttribute('aria-pressed', String(large));
-    largeButton.classList.toggle('active', large);
-    largeButton.textContent = large ? 'Use standard text' : 'Use larger text';
-  }
-  tools.append(largeButton, readingStatus);
-  applyReading();
 
-  const search = field('Find a page by task', 'site-search', 'search');
-  const category = field('Page category', 'site-category', 'select', [['', 'All pages'], ['Tickets', 'Tickets'], ['Information', 'Information'], ['Feedback', 'Feedback']]);
-  const searchRow = element('div', 'row mt-3');
-  search.wrapper.classList.add('col-12', 'col-md-8');
-  category.wrapper.classList.add('col-12', 'col-md-4');
-  searchRow.append(search.wrapper, category.wrapper);
-  const results = element('ul', 'list-group my-3');
-  const count = element('p');
-  count.setAttribute('role', 'status');
-  function searchPages() {
-    const query = search.input.value.trim().toLowerCase();
-    const matches = CinemaData.pages.filter(page =>
-      `${page.title} ${page.description}`.toLowerCase().includes(query) &&
-      (category.input.value === '' || page.category === category.input.value)
-    );
-    count.textContent = `${matches.length} of ${CinemaData.pages.length} pages found.`;
-    renderList(results, matches, page => {
-      const item = element('li', 'list-group-item');
-      const anchor = element('a', 'd-block py-2 fw-semibold text-success-emphasis', page.title);
-      anchor.href = page.href;
-      item.append(anchor, element('span', '', page.description));
-      return item;
-    }, 'No matching pages. Try “tickets”, “map” or reset the search.');
-  }
-  tools.append(searchRow, count, results, button('Reset page search', () => {
-    search.input.value = '';
-    category.input.value = '';
-    searchPages();
-    search.input.focus();
-  }, true));
-  search.input.addEventListener('input', searchPages);
-  category.input.addEventListener('change', searchPages);
-  tools.addEventListener('keydown', event => {
-    if (event.key === 'Escape') { tools.open = false; tools.querySelector('summary').focus(); }
-  });
-  document.querySelector('header').after(tools);
-  searchPages();
-
-  const notice = element('p', 'alert alert-info', 'Student demo: no real tickets, payments or messages are sent. Film examples are from 4 October 2026; confirm current details with the cinema before travel.');
+  const notice = element('p', 'alert alert-info', 'Student demo: no real tickets, payments or messages are sent. Film sessions are saved examples; confirm current details with the cinema before travel.');
   main.querySelector('h1').after(notice);
   return { element, button, link, field, renderList, status, errorFor, clearErrors, validateFields, readStorage, writeStorage, section };
 })();
@@ -238,9 +181,6 @@ const CinemaUI = (() => {
     notice.classList.add('small', 'text-dark', 'border-top', 'border-success', 'pt-3', 'mt-4', 'mb-0');
     document.querySelector('footer .container').append(notice);
   }
-  const tools = document.querySelector('header + details');
-  tools.classList.remove('border', 'rounded');
-  tools.classList.add('rounded-4', 'shadow-sm');
   document.querySelector('header').classList.remove('border-4');
   document.querySelector('.navbar-nav').classList.add('gap-1');
   document.querySelector('.nav-link[aria-current="page"]').classList.add('bg-success', 'text-black', 'rounded-pill');
