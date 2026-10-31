@@ -1,12 +1,15 @@
 'use strict';
 
-// Historical film examples, not a live cinema feed. Prices are demo estimates.
+// Session examples transcribed from the supplied Dostar Cinema screenshots, not a live feed.
 const CinemaData = (() => {
   const films = [
-    { id: '25-tenge', title: '25 Tenge: The Main Mission', poster: 'images/25-tenge.webp', age: 12, language: 'Kazakh', time: '16:00', price: 1000, session: '25-tenge-1600' },
-    { id: '7-robbers', title: '7 Robbers', poster: 'images/7-robbers.webp', age: 14, language: 'Kazakh', time: '16:05', price: 1000, session: '7-robbers-1605' },
-    { id: 'zharygym-ai', title: 'Zharygym-ai', poster: 'images/zharygym-ai.jpg', age: 12, language: 'Kazakh', time: '16:50', price: 1000, session: 'zharygym-ai-1650' }
+    { id: 'zamanback-2', title: 'Zamanback 2', originalTitle: 'Заманback 2', poster: 'images/zamanback-2.jpg', age: 18, language: 'Kazakh', format: '2D', price: 1800, times: ['19:25', '21:30', '23:35'] },
+    { id: 'bazha-kinoda', title: 'Bazha Kinoda', originalTitle: 'Бажа кинода', poster: 'images/bazha-kinoda.jpg', age: 16, language: 'Kazakh', format: '2D', price: 1800, times: ['19:40', '20:35', '21:25', '22:00', '22:25', '23:10', '00:15'] },
+    { id: 'kit-vo-tme-glubin', title: 'Whalefall', originalTitle: 'Кит: Во тьме глубин', poster: 'images/kit-vo-tme-glubin.jpg', age: 16, language: 'Russian', format: '2D', price: 1800, times: ['20:00', '23:50'] }
   ];
+  const showtimes = films.flatMap(film => film.times.map(time => ({
+    ...film, time, session: `${film.id}-${time.replace(':', '')}`, nextDay: time === '00:15'
+  })));
 
   // Seven real destinations: the assignment's array with 6+ objects.
   const pages = [
@@ -34,16 +37,16 @@ const CinemaData = (() => {
   }
 
   function findFilm(session) {
-    return films.find(film => film.session === session);
+    return showtimes.find(showtime => showtime.session === session);
   }
 
   function filterFilms(query, age, savedOnly, saved, sort) {
     const result = films.filter(film =>
-      film.title.toLowerCase().includes(query.trim().toLowerCase()) &&
+      `${film.title} ${film.originalTitle}`.toLowerCase().includes(query.trim().toLowerCase()) &&
       (age === '' || film.age <= Number(age)) &&
       (!savedOnly || saved.includes(film.id))
     );
-    return result.sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title) : a.time.localeCompare(b.time));
+    return result.sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title) : a.times[0].localeCompare(b.times[0]));
   }
 
   function emailValid(value) {
@@ -59,7 +62,7 @@ const CinemaData = (() => {
       errors.date = 'Choose a valid date.';
     } else if (selection.date < localDate(now) || selection.date > lastDemoDate(now)) {
       errors.date = 'Choose today or a date within the next 30 days for this demo.';
-    } else if (film && new Date(`${selection.date}T${film.time}:00`) <= now) {
+    } else if (film && new Date(new Date(`${selection.date}T${film.time}:00`).getTime() + (film.nextDay ? 86400000 : 0)) <= now) {
       errors.date = 'This session time has passed. Choose another date.';
     }
     if (!Number.isInteger(Number(selection.quantity)) || Number(selection.quantity) < 1 || Number(selection.quantity) > 10) {
@@ -93,7 +96,7 @@ const CinemaData = (() => {
     return leave > now ? leave : null;
   }
 
-  return { films, pages, localDate, lastDemoDate, money, findFilm, filterFilms, emailValid, sessionErrors, cartTotal, ticketCount, demoReference, departureTime };
+  return { films, showtimes, pages, localDate, lastDemoDate, money, findFilm, filterFilms, emailValid, sessionErrors, cartTotal, ticketCount, demoReference, departureTime };
 })();
 
 if (typeof module !== 'undefined') module.exports = CinemaData;

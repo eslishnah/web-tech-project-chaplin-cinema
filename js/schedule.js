@@ -10,16 +10,16 @@
     name: byId('booking-name'), email: byId('booking-email'), session: byId('booking-session'),
     date: byId('booking-date'), quantity: byId('booking-tickets'), note: byId('booking-note'), agree: byId('booking-agree')
   };
-  renderList(byId('session-list'), CinemaData.films, film => {
+  renderList(byId('session-list'), CinemaData.showtimes, film => {
     const row = element('tr');
-    row.append(element('td', '', film.title), element('td', '', film.time), element('td', '', money(film.price)));
+    row.append(element('td', '', film.title), element('td', '', `${film.time}${film.nextDay ? ' (after midnight)' : ''} · ${film.language} · ${film.format}`), element('td', '', `From ${money(film.price)}`));
     return row;
   }, 'No session examples available.');
   const placeholder = element('option', '', 'Choose a session');
   placeholder.value = '';
   fields.session.replaceChildren(placeholder);
-  CinemaData.films.forEach(film => {
-    const option = element('option', '', `${film.title} — ${film.time} (${film.age}+)`);
+  CinemaData.showtimes.forEach(film => {
+    const option = element('option', '', `${film.title} — ${film.time}${film.nextDay ? ' (after midnight)' : ''} · ${film.language} (${film.age}+)`);
     option.value = film.session;
     fields.session.append(option);
   });
@@ -34,8 +34,8 @@
   fields.email.maxLength = 120;
   fields.date.min = localDate();
   fields.date.max = lastDemoDate();
-  byId('booking-availability').textContent = 'Demo only: today through the next 30 days. One session per date, up to 10 tickets. Times use your device’s local clock; no availability is verified.';
-  const notice = element('p', 'alert alert-success', '1. Choose a session and seats. 2. Review your basket. 3. Confirm the demo. Estimated price: KZT 1,000 per ticket. No payment, email or reservation is made. Details stay in this tab and disappear on reload.');
+  byId('booking-availability').textContent = 'Demo only: today through the next 30 days. One session per cinema day, up to 10 tickets. The 00:15 showing is after midnight on the following calendar day. No availability is verified.';
+  const notice = element('p', 'alert alert-success', '1. Choose a session and seats. 2. Review your basket. 3. Confirm the demo. Listed starting price: KZT 1,800 per ticket. No payment, email or reservation is made. Details stay in this tab and disappear on reload.');
   notice.id = 'checkout-notice';
   form.before(notice);
   const error = byId('booking-error');
@@ -209,7 +209,7 @@
     filmPoster.src = film.poster;
     filmPoster.alt = `${film.title} film poster`;
     const readableDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${chosen.date}T12:00:00`));
-    sessionDetails.textContent = `${readableDate} · ${film.time} · ${film.age}+`;
+    sessionDetails.textContent = `${readableDate} · ${film.time}${film.nextDay ? ' (following calendar day)' : ''} · ${film.age}+`;
     sessionMeta.textContent = `${target} ${target === 1 ? 'ticket' : 'tickets'} · ${money(film.price)} each (demo estimate)`;
     drawSeats();
     seatModal.show();
@@ -256,7 +256,7 @@
     const chosen = selection();
     const film = findFilm(chosen.session);
     const quantity = Number(chosen.quantity);
-    byId('order-session').textContent = film ? `${film.title} — ${film.time} (${film.age}+)` : 'No session selected';
+    byId('order-session').textContent = film ? `${film.title} — ${film.time}${film.nextDay ? ' (following calendar day)' : ''} (${film.age}+)` : 'No session selected';
     byId('order-date').textContent = chosen.date || 'No date selected';
     byId('order-quantity').textContent = Number.isInteger(quantity) && quantity > 0 && quantity <= 10 ? String(quantity) : 'Enter 1–10 tickets';
     byId('order-unit-price').textContent = film ? `${money(film.price)} (demo estimate)` : 'Choose a session';
@@ -267,7 +267,7 @@
     renderList(cartContainer, cart, item => {
       const film = findFilm(item.session);
       const row = element('article', 'border rounded p-3 mb-2');
-      row.append(element('h4', 'h6', `${film.title} — ${film.time}`), element('p', '', `${item.date} · ${item.quantity} × ${money(film.price)} = ${money(item.quantity * film.price)}`), element('p', 'fw-semibold', `Selected seats: ${item.seats.join(', ')}`));
+      row.append(element('h4', 'h6', `${film.title} — ${film.time}${film.nextDay ? ' (following calendar day)' : ''}`), element('p', '', `${item.date} · ${item.quantity} × ${money(film.price)} = ${money(item.quantity * film.price)}`), element('p', 'fw-semibold', `Selected seats: ${item.seats.join(', ')}`));
       const controls = element('div', 'd-flex flex-wrap gap-2');
       const minus = button('− 1 ticket', () => {
         item.seats = item.seats.slice(0, -1);
@@ -350,7 +350,7 @@
   confirm.addEventListener('click', () => {
     if (!reviewed || !validateOrder()) { invalidate(); return; }
     byId('ticket-reference').textContent = CinemaData.demoReference();
-    byId('ticket-session').textContent = cart.map(item => `${findFilm(item.session).title}, ${item.date} ${findFilm(item.session).time}, seats ${item.seats.join(', ')}`).join('; ');
+    byId('ticket-session').textContent = cart.map(item => `${findFilm(item.session).title}, ${item.date} ${findFilm(item.session).time}${findFilm(item.session).nextDay ? ' (following calendar day)' : ''}, seats ${item.seats.join(', ')}`).join('; ');
     byId('ticket-quantity').textContent = String(ticketCount(cart));
     byId('ticket-total').textContent = `${money(cartTotal(cart))} (demo estimate)`;
     status(byId('booking-status'), 'Demo complete. No payment was taken, no email was sent and no seats were reserved. Save this summary only as a practice example.');

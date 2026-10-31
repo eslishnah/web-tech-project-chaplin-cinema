@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="css/base.css">
   <script src="js/data.js" defer></script>
   <script src="js/main.js" defer></script>
+  <!-- jQuery 3.7.1 full build is needed before the Movies script for filtering and effects. -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
+  <script src="js/jquery-reading.js" defer></script>
   <script src="js/movies.js" defer></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -30,113 +33,8 @@
     <h1 class="display-5 text-center text-md-start mb-4">Movies at Dostar Cinema</h1>
     <section id="now-showing" class="bg-white border rounded-3 shadow-sm p-4 mb-4">
       <h2 class="h3 text-success">Films on the published listing</h2>
-      <p>The films below appeared on the Dostar Cinema listing checked on 4 October 2026. Continue to Schedule to view the listed sessions and prepare your ticket order.</p>
+      <p>These films, sessions and starting prices are saved listing examples. Times and prices may change; confirm them with the cinema before visiting.</p>
       <div id="movie-list" class="d-grid gap-4">
-        <article id="film-25-tenge" class="movie-detail border rounded-3 p-3 p-md-4" aria-labelledby="title-25-tenge">
-          <div class="row g-4 align-items-start">
-            <div class="col-12 col-md-3 col-lg-2">
-              <img class="movie-poster img-fluid rounded-3 d-block mx-auto mx-md-0" src="images/25-tenge.webp" alt="25 Tenge: The Main Mission film poster">
-            </div>
-            <div class="col-12 col-md-9 col-lg-10">
-              <h3 id="title-25-tenge" class="h2 mb-4">25 Tenge: The Main Mission</h3>
-              <div class="row g-3">
-                <div class="col-6 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Age rating</dt>
-                    <dd class="mb-3">12+</dd>
-                    <dt class="text-body-secondary fw-normal mb-1">Language</dt>
-                    <dd class="mb-0">Kazakh</dd>
-                  </dl>
-                </div>
-                <div class="col-6 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Listed session</dt>
-                    <dd class="mb-3">16:00</dd>
-                    <dt class="text-body-secondary fw-normal mb-1">Price from</dt>
-                    <dd class="mb-0">₸1,000</dd>
-                  </dl>
-                </div>
-                <div class="col-12 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Listing checked</dt>
-                    <dd class="mb-0">4 October 2026</dd>
-                  </dl>
-                </div>
-              </div>
-              <a id="tickets-25-tenge" class="btn btn-success mt-4" href="schedule.html#booking">Choose session and tickets</a>
-            </div>
-          </div>
-        </article>
-        <article id="film-7-robbers" class="movie-detail border rounded-3 p-3 p-md-4" aria-labelledby="title-7-robbers">
-          <div class="row g-4 align-items-start">
-            <div class="col-12 col-md-3 col-lg-2">
-              <img class="movie-poster img-fluid rounded-3 d-block mx-auto mx-md-0" src="images/7-robbers.webp" alt="7 Robbers film poster">
-            </div>
-            <div class="col-12 col-md-9 col-lg-10">
-              <h3 id="title-7-robbers" class="h2 mb-4">7 Robbers</h3>
-              <div class="row g-3">
-                <div class="col-6 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Age rating</dt>
-                    <dd class="mb-3">14+</dd>
-                    <dt class="text-body-secondary fw-normal mb-1">Language</dt>
-                    <dd class="mb-0">Kazakh</dd>
-                  </dl>
-                </div>
-                <div class="col-6 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Listed session</dt>
-                    <dd class="mb-3">16:05</dd>
-                    <dt class="text-body-secondary fw-normal mb-1">Price from</dt>
-                    <dd class="mb-0">₸1,000</dd>
-                  </dl>
-                </div>
-                <div class="col-12 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Listing checked</dt>
-                    <dd class="mb-0">4 October 2026</dd>
-                  </dl>
-                </div>
-              </div>
-              <a id="tickets-7-robbers" class="btn btn-success mt-4" href="schedule.html#booking">Choose session and tickets</a>
-            </div>
-          </div>
-        </article>
-        <article id="film-zharygym-ai" class="movie-detail border rounded-3 p-3 p-md-4" aria-labelledby="title-zharygym-ai">
-          <div class="row g-4 align-items-start">
-            <div class="col-12 col-md-3 col-lg-2">
-              <img class="movie-poster img-fluid rounded-3 d-block mx-auto mx-md-0" src="images/zharygym-ai.jpg" alt="Zharygym-ai film poster">
-            </div>
-            <div class="col-12 col-md-9 col-lg-10">
-              <h3 id="title-zharygym-ai" class="h2 mb-4">Zharygym-ai</h3>
-              <div class="row g-3">
-                <div class="col-6 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Age rating</dt>
-                    <dd class="mb-3">12+</dd>
-                    <dt class="text-body-secondary fw-normal mb-1">Language</dt>
-                    <dd class="mb-0">Kazakh</dd>
-                  </dl>
-                </div>
-                <div class="col-6 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Listed session</dt>
-                    <dd class="mb-3">16:50</dd>
-                    <dt class="text-body-secondary fw-normal mb-1">Price from</dt>
-                    <dd class="mb-0">₸1,000</dd>
-                  </dl>
-                </div>
-                <div class="col-12 col-lg-4">
-                  <dl class="mb-0">
-                    <dt class="text-body-secondary fw-normal mb-1">Listing checked</dt>
-                    <dd class="mb-0">4 October 2026</dd>
-                  </dl>
-                </div>
-              </div>
-              <a id="tickets-zharygym-ai" class="btn btn-success mt-4" href="schedule.html#booking">Choose session and tickets</a>
-            </div>
-          </div>
-        </article>
       </div>
       <p id="movie-error" class="has-error is-hidden" role="alert"></p>
       <a class="btn btn-success mt-3" href="schedule.html#booking">Order tickets on this site</a>
