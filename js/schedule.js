@@ -8,7 +8,6 @@
     renderList,
     status,
     validateFields,
-    clearErrors,
   } = CinemaUI;
   const {
     findFilm,
@@ -222,8 +221,9 @@
     reviewStatus,
   );
   byId('booking-review').type = 'submit';
-  byId('booking-review').textContent = 'Choose seats';
-  byId('booking-reset').textContent = 'Clear form';
+  byId('booking-review').textContent = 'Add seats to basket';
+  byId('booking-reset').remove();
+  byId('booking-edit').remove();
   byId('booking-result-title').textContent = 'Your order summary';
   byId('booking-result').querySelector('dt').textContent = 'Local reference';
   byId('ticket-reference').textContent = 'Created after review';
@@ -234,6 +234,8 @@
     'I have checked the age rating and understand that this site does not reserve seats or take payment.';
   byId('booking-status').textContent =
     'Complete the form and select seats to prepare your order summary.';
+  const result = byId('booking-result');
+  result.classList.add('is-hidden');
   let cart = [];
   let reviewed = false;
   let lastDemoSummary = '';
@@ -265,7 +267,17 @@
   );
   copySummary.id = 'copy-demo-summary';
   copySummary.disabled = true;
-  byId('booking-submit').parentElement.append(copySummary);
+  copySummary.classList.add('mt-3');
+  result.append(copySummary);
+
+  function updateActions() {
+    const hasTickets = cart.length > 0;
+    review.classList.toggle('is-hidden', !hasTickets || reviewed);
+    clearCart.classList.toggle('is-hidden', !hasTickets);
+    confirm.classList.toggle('is-hidden', !hasTickets || !reviewed);
+    confirm.disabled = !hasTickets || !reviewed;
+    copySummary.disabled = !lastDemoSummary;
+  }
 
   // This is a schematic practice map, not the cinema's real hall or live seat inventory.
   const seatIds = Array.from({ length: 12 }, (_, row) =>
@@ -547,12 +559,12 @@
 
   function invalidate() {
     reviewed = false;
-    confirm.disabled = true;
     customerSummary.textContent = '';
     reviewStatus.textContent =
       cart.length === 0
         ? 'Add tickets to begin.'
         : 'Review the basket and your details before confirming.';
+    updateActions();
   }
 
   function liveSelection() {
@@ -669,9 +681,7 @@
       'Your ticket basket is empty. Choose a session and add tickets.',
     );
     cartStatus.textContent = `${ticketCount(cart)} tickets · ${cart.length} sessions · Estimated basket total: ${money(cartTotal(cart))}`;
-    clearCart.disabled = cart.length === 0;
-    review.disabled = cart.length === 0;
-    confirm.disabled = !reviewed || cart.length === 0;
+    updateActions();
   }
 
   form.addEventListener('submit', (event) => {
@@ -770,9 +780,9 @@
   function reviewOrder() {
     if (!validateOrder()) return;
     reviewed = true;
-    confirm.disabled = false;
     customerSummary.textContent = `Buyer: ${fields.name.value.trim()} · Email: ${fields.email.value.trim()} · Phone: ${fields.phone.value.trim()} · Youngest visitor: ${fields.age.value}.`;
-    reviewStatus.textContent = `Reviewed: ${ticketCount(cart)} tickets (${cart.map((item) => item.seats.join(', ')).join('; ')}), estimated ${money(cartTotal(cart))}. Prepare the summary below.`;
+    reviewStatus.textContent = `Reviewed: ${ticketCount(cart)} tickets (${cart.map((item) => item.seats.join(', ')).join('; ')}), estimated ${money(cartTotal(cart))}. To change details, edit the fields above and review again.`;
+    updateActions();
     status(
       error,
       'Order reviewed. Check your basket and details before confirming.',
@@ -806,14 +816,15 @@
       `Total: ${money(cartTotal(cart))} (estimated)`,
       'No payment was taken and no seats were reserved.',
     ].join('\n');
-    copySummary.disabled = false;
+    result.classList.remove('is-hidden');
+    updateActions();
     status(
       byId('booking-status'),
       'Order summary prepared on this device. No payment was taken, no email was sent and no seats were reserved. Contact the cinema to confirm availability.',
     );
-    byId('booking-result').classList.add('is-success');
-    byId('booking-result').tabIndex = -1;
-    byId('booking-result').focus();
+    result.classList.add('is-success');
+    result.tabIndex = -1;
+    result.focus();
     cart = [];
     invalidate();
     renderCart();
@@ -838,23 +849,6 @@
   form.addEventListener('change', () => {
     invalidate();
     liveSelection();
-  });
-  form.addEventListener('reset', () => {
-    // Native form values reset after the reset event has finished.
-    setTimeout(() => {
-      clearErrors(form);
-      invalidate();
-      liveSelection();
-      status(
-        error,
-        'Form cleared. The ticket basket is unchanged; use Clear ticket basket to remove tickets.',
-      );
-      fields.name.focus();
-    }, 0);
-  });
-  byId('booking-edit').addEventListener('click', () => {
-    invalidate();
-    fields.name.focus();
   });
   const requested = new URLSearchParams(location.search).get('session');
   if (findFilm(requested)) fields.session.value = requested;

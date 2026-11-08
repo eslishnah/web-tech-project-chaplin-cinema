@@ -18,6 +18,8 @@
 - Split repeated film sessions and checkout into an eight-page flow: Movies → Schedule → Booking. Renamed the visible checkout result as a local order summary and kept its no-reservation notice accurate.
 - Reworked Schedule into a film-grouped three-column table using JavaScript and existing Bootstrap classes, then checked desktop and mobile views.
 - Removed the unnecessary Booking order-notes control from the rendered page and from validation and review text.
+- Simplified Booking into visible steps and removed redundant reset/edit controls; tested that changing buyer details invalidates the previous review.
+- Replaced the malformed Visit map URL with the 2GIS location link supplied by the student and removed the old runtime URL repair.
 
 **Files changed with AI assistance:**
 
@@ -26,6 +28,7 @@
 - `js/jquery-home.js`
 - `js/main.js`, `js/cinema.js`
 - `booking.html`
+- `visit.html`, `js/visit.js`
 - `js/movies.js`
 - `js/schedule.js`
 - `images/cat-in-the-hat.jpg`, `images/qudiret.jpg`, `images/little-demons.webp`

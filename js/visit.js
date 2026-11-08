@@ -10,9 +10,6 @@
     validateFields,
     clearErrors,
   } = CinemaUI;
-  // Fix the accidental newline + trailing digit in the existing map URL at runtime.
-  const map = document.querySelector('#location a[href^="https://2gis"]');
-  map.setAttribute('href', map.getAttribute('href').split(/\s/)[0]);
   const panel = section('When should I leave?');
   panel.id = 'arrival-planner';
   panel.append(

@@ -23,6 +23,7 @@ The earlier project was extended rather than resubmitted unchanged:
 - Repeated cross-page buttons were removed from Services, Halls and the Cinema checklist. Home keeps three distinct starting routes, Movies links each showing directly to its order, and Visit keeps the map action.
 - Movies now presents film information without repeating every session. Schedule lists session times and prices, with a direct selection link to the new Booking page. Booking contains the form, illustrative seat map, basket and local order summary.
 - Schedule groups the 19 sessions by film in a three-column table with compact film headings. Each time shows its own price and opens Booking with that exact session selected; a film-specific link from Movies narrows the view.
+- Booking presents one primary action at a time: add seats, review the basket, then prepare the summary. Clear basket appears only when it contains tickets, and Copy order summary appears beside the finished result. Editing details or seats requires another review.
 - All new interface elements are created by JavaScript and use existing Bootstrap classes. No new HTML elements or CSS rules were written by hand for these extensions.
 
 ## Pages and visitor journeys
@@ -86,7 +87,7 @@ The site runs from `index.html` with VS Code Live Server or another static serve
 
 We added deferred script links to the HTML and kept `css/base.css` unchanged. JavaScript creates the new interface elements and uses existing Bootstrap/base classes for visual states. We did not add CSS rules, inline styles or inline event handlers.
 
-We also corrected two issues in the earlier pages through JavaScript. `js/visit.js` removes a newline and an extra final digit from the map URL; the external destination has not been independently rechecked. `js/halls.js` replaces a statement suggesting that the demo assigns a real hall with advice to contact the cinema. These corrections are separate from the new visitor features.
+The Visit map button uses the 2GIS location link supplied by the team. `js/halls.js` advises visitors to contact the cinema to confirm the hall and seating. The site does not assign real seats.
 
 ## Checks and project documents
 
