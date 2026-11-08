@@ -105,7 +105,7 @@ $(function () {
     );
     const $schedule = $('<a>', {
       href: `schedule.html?film=${encodeURIComponent(film.id)}#live-schedule`,
-      text: 'View sessions',
+      text: 'Choose a session',
     }).addClass('btn btn-success mb-3 align-self-start');
     const $save = $('<button>', {
       type: 'button',
@@ -124,7 +124,7 @@ $(function () {
       $title,
       $meta,
       $('<p>', {
-        text: 'Check available session examples and prices on the Schedule page.',
+        text: 'Choose a session and check its price on the Schedule page.',
       }).addClass('mb-2'),
       $schedule,
       $save,

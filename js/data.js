@@ -110,7 +110,7 @@ const CinemaData = (() => {
       title: 'Booking',
       href: 'booking.html',
       category: 'Tickets',
-      description: 'Choose seats and prepare an order summary.',
+      description: 'Choose seats and prepare an order.',
     },
     {
       id: 'cinema',

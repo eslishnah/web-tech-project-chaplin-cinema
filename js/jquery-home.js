@@ -9,15 +9,11 @@ $(function () {
   );
   const $toggle = $('<button>', {
     type: 'button',
-    text: 'Reading settings & find a page',
+    text: 'Find a page',
   })
     .addClass('btn btn-link text-dark fw-semibold text-decoration-none p-0')
     .attr({ 'aria-expanded': 'false', 'aria-controls': 'home-tools-panel' });
   const $panel = $('<div>', { id: 'home-tools-panel' }).hide();
-  const $large = $('<button>', { type: 'button' }).addClass(
-    'btn btn-outline-secondary mt-3',
-  );
-  const $readingStatus = $('<p>', { role: 'status' }).addClass('mt-2 mb-0');
   const $search = $('<input>', {
     id: 'site-search',
     type: 'search',
@@ -60,18 +56,9 @@ $(function () {
     type: 'button',
     text: 'Reset page search',
   }).addClass('btn btn-outline-secondary');
-  $panel.append($large, $readingStatus, $row, $count, $results, $reset);
+  $panel.append($row, $count, $results, $reset);
   $tools.append($toggle, $panel);
   $('header').after($tools);
-
-  let large = CinemaUI.readStorage('dostar-large-text', false) === true;
-  function applyReading() {
-    CinemaReading.apply(large);
-    $large
-      .attr('aria-pressed', String(large))
-      .toggleClass('active', large)
-      .text(large ? 'Use standard text' : 'Use larger text');
-  }
 
   function searchPages() {
     const query = $search.val().trim().toLowerCase();
@@ -108,14 +95,6 @@ $(function () {
         $(this).attr('aria-expanded', String($panel.is(':visible'))),
       );
   });
-  $large.on('click', function () {
-    large = !large;
-    const saved = CinemaUI.writeStorage('dostar-large-text', large);
-    applyReading();
-    $readingStatus.text(
-      `${large ? 'Larger' : 'Standard'} text enabled.${saved ? ' Preference saved on this device.' : ' Preference applies to this page.'}`,
-    );
-  });
   $panel.on('input change', '#site-search, #site-category', searchPages);
   $reset.on('click', function () {
     $search.val('');
@@ -130,6 +109,5 @@ $(function () {
       );
     }
   });
-  applyReading();
   searchPages();
 });

@@ -23,7 +23,8 @@ The earlier project was extended rather than resubmitted unchanged:
 - Repeated cross-page buttons were removed from Services, Halls and the Cinema checklist. Home keeps three distinct starting routes, Movies links each showing directly to its order, and Visit keeps the map action.
 - Movies now presents film information without repeating every session. Schedule lists session times and prices, with a direct selection link to the new Booking page. Booking contains the form, illustrative seat map, basket and local order summary.
 - Schedule groups the 19 sessions by film in a three-column table with compact film headings. Each time shows its own price and opens Booking with that exact session selected; a film-specific link from Movies narrows the view.
-- Booking presents one primary action at a time: add seats, review the basket, then prepare the summary. Clear basket appears only when it contains tickets, and Copy order summary appears beside the finished result. Editing details or seats requires another review.
+- Booking presents one primary action at a time: choose seats, review order, then prepare order. Clear basket appears only when it contains tickets, and Copy order summary appears beside the finished result. Editing details or seats requires another review.
+- The main action labels are consistent across pages: Choose a film → Choose a session → Choose seats → Review order → Prepare order. Informational text still explains that the result is a local summary, not a reservation.
 - All new interface elements are created by JavaScript and use existing Bootstrap classes. No new HTML elements or CSS rules were written by hand for these extensions.
 
 ## Pages and visitor journeys
@@ -66,8 +67,8 @@ The site runs from `index.html` with VS Code Live Server or another static serve
 
 ## Assignment 6 jQuery work
 
-- `js/jquery-home.js` rewrites the home page search and reading controls. The panel slides open and closed. The eight page links are built from the `CinemaData.pages` array, not written in the HTML.
-- `js/jquery-reading.js` applies the saved text-size choice on all pages; the controls that change it appear only on Home.
+- `js/jquery-home.js` rewrites the home page search. The panel slides open and closed. The eight page links are built from the `CinemaData.pages` array, not written in the HTML.
+- `js/jquery-reading.js` adds a text-size control to every page and applies the saved choice across the site.
 - `js/movies.js` rewrites movie filtering, sorting and saved-film buttons with jQuery. Cards and links to each film's Schedule view are built from the film array; save buttons use delegated clicks because the cards change.
 - `js/jquery-services.js` rewrites the Services feedback form and local review cards with jQuery. A required phone field is created in code. Every field receives its own error message; email and phone are checked, and errors update as values change. After a valid submission the form resets and the local review appears below. Email and phone are never displayed or stored in the review array.
 - `js/old-js-version.js` is an unlinked comparison archive of the earlier plain-JavaScript implementations. The jQuery files contain brief comparison comments.
@@ -78,7 +79,7 @@ The site runs from `index.html` with VS Code Live Server or another static serve
 - The six film examples are Zamanback 2, Bazha Kinoda, Whalefall, The Cat in the Hat, Qudiret and Little Demons Journey to the West. The added film times, age ratings, languages and price examples came from the supplied screenshots. The new local posters came from Freedom Ticketon (Cat and Qudiret) and KINO.KZ (Little Demons). `CinemaData.pages` contains eight site destinations for the Home page search.
 - Prices vary by session in the supplied screenshots and are not confirmed current prices. The screenshots are fixed examples, not a live schedule. Listing sources: https://ticketon.kz/place/dostar-cinema and https://kino.kz/ru/movie/12420. Official site: https://dostarcinema.kz/. Confirm current films, prices, times and venue details with the cinema before visiting. The 00:15 Bazha Kinoda showing is treated as after midnight on the following calendar day.
 - The local order flow accepts dates from today through the next 30 days according to the device's clock and rejects session times that have already passed. It allows one session per cinema day, 1–10 tickets per session and requires the youngest visitor to meet the film's age rating. These rules do not represent live availability.
-- The 12 × 12 seat map is illustrative. Seat labels appear in the local basket, but the actual hall, layout and free seats are unknown. Selecting a seat here does not reserve it.
+- The 12 × 12 seat map is illustrative. Visitors can jump to a row, move between seats with arrow keys and select with Enter or Space. Seat labels appear in the local basket, but the actual hall, layout and free seats are unknown. Selecting a seat here does not reserve it.
 - `Math.random()` helps create a temporary DEMO reference. It is not a booking number or security credential.
 - Only the larger-text preference and film shortlist IDs use `localStorage`. The basket, buyer details, notes and reviews stay in page memory and disappear on reload. Nothing is sent to a server.
 - The site does not include login or registration.

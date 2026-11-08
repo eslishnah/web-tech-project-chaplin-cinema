@@ -41,8 +41,9 @@
     const visibleFilms = CinemaData.films.filter(
       (film) => !selectedFilm || film.id === selectedFilm,
     );
+    schedule.querySelector('h2').textContent = 'Choose a session';
     schedule.querySelector('p.lead').textContent =
-      'Choose a time below to continue to seats and order details.';
+      'Choose a session below, then choose seats on the Booking page.';
     const count = element(
       'p',
       'text-body-secondary mb-4',
@@ -111,7 +112,7 @@
             );
           const price = element('td', 'fw-semibold text-nowrap', money(session.price));
           const actionCell = element('td');
-          const action = element('a', 'btn btn-success btn-sm text-nowrap', 'Choose');
+          const action = element('a', 'btn btn-success btn-sm text-nowrap', 'Choose seats');
           action.href = `booking.html?session=${encodeURIComponent(session.session)}#booking`;
           action.setAttribute(
             'aria-label', `${film.title}, ${session.time}, from ${money(session.price)}. Choose seats`,
@@ -175,7 +176,7 @@
   const notice = element(
     'p',
     'alert alert-success',
-    '1. Choose a session and seats. 2. Review your basket. 3. Save the order summary. Prices are estimates. This site does not take payment or reserve seats; confirm your plans with the cinema.',
+    '1. Choose a session and seats. 2. Review order. 3. Prepare order. Prices are estimates. This site does not take payment or reserve seats; confirm your plans with the cinema.',
   );
   notice.id = 'checkout-notice';
   form.before(notice);
@@ -194,7 +195,7 @@
   reviewStatus.setAttribute('role', 'status');
   const customerSummary = element('p', 'text-break');
   const confirm = byId('booking-submit');
-  confirm.textContent = 'Prepare order summary';
+  confirm.textContent = 'Prepare order';
   const review = button('Review order', reviewOrder);
   review.id = 'cart-review';
   confirm.before(review);
@@ -221,7 +222,7 @@
     reviewStatus,
   );
   byId('booking-review').type = 'submit';
-  byId('booking-review').textContent = 'Add seats to basket';
+  byId('booking-review').textContent = 'Choose seats';
   byId('booking-reset').remove();
   byId('booking-edit').remove();
   byId('booking-result-title').textContent = 'Your order summary';
@@ -233,7 +234,7 @@
   byId('booking-agree').nextElementSibling.textContent =
     'I have checked the age rating and understand that this site does not reserve seats or take payment.';
   byId('booking-status').textContent =
-    'Complete the form and select seats to prepare your order summary.';
+    'Complete the form and choose seats to prepare your order.';
   const result = byId('booking-result');
   result.classList.add('is-hidden');
   let cart = [];
@@ -311,14 +312,14 @@
   filmDetails.append(
     element(
       'p',
-      'small text-warning fw-bold text-uppercase mb-1',
+      'small text-warning fw-bold text-uppercase mb-1 d-none d-sm-block',
       'Seat selection · Dostar Cinema',
     ),
   );
   const dialogTitle = element('h2', 'modal-title fs-5 fw-bold', 'Choose seats');
   dialogTitle.id = 'seat-picker-title';
   const sessionDetails = element('p', 'mb-1');
-  const sessionMeta = element('p', 'small text-white-50 mb-0');
+  const sessionMeta = element('p', 'small text-white-50 mb-0 d-none d-sm-block');
   filmDetails.append(dialogTitle, sessionDetails, sessionMeta);
   filmHeader.append(filmPoster, filmDetails);
   const closeSeatDialog = element(
@@ -332,8 +333,8 @@
   const dialogBody = element('div', 'modal-body');
   const seatDescription = element(
     'p',
-    'text-white mb-4',
-    'Select the same number of seats as tickets. Tap a selected seat again to remove it.',
+    'text-white mb-2',
+    'Choose one seat per ticket. Use arrows to move, Enter or Space to select, and select again to remove.',
   );
   seatDescription.id = 'seat-picker-description';
   const seatHint = element(
@@ -353,6 +354,17 @@
     'aria-label',
     'Illustrative seat map with 12 rows and 12 seats per row',
   );
+  const rowJump = element('div', 'd-flex align-items-center gap-2 mb-3');
+  const rowJumpLabel = element('label', 'fw-semibold', 'Go to row');
+  rowJumpLabel.htmlFor = 'seat-row-jump';
+  const rowJumpSelect = element('select', 'form-select w-auto bg-dark text-white');
+  rowJumpSelect.id = 'seat-row-jump';
+  for (let row = 1; row <= 12; row += 1) {
+    const option = element('option', '', `Row ${row}`);
+    option.value = String(row);
+    rowJumpSelect.append(option);
+  }
+  rowJump.append(rowJumpLabel, rowJumpSelect);
   const seatLegend = element(
     'div',
     'd-flex flex-wrap gap-3 align-items-center small',
@@ -380,10 +392,18 @@
     'small text-white-50 mb-0',
     'Illustrative layout only. The real hall and seat availability are unknown; choosing a seat here does not reserve it.',
   );
-  dialogBody.append(seatDescription, mobileScreenLabel, seatMap, mapDisclaimer);
+  dialogBody.append(
+    seatDescription,
+    rowJump,
+    seatHint,
+    mobileScreenLabel,
+    seatMap,
+    seatLegend,
+    mapDisclaimer,
+  );
   const dialogFooter = element('div', 'modal-footer border-secondary');
   const footerInfo = element('div', 'me-auto');
-  footerInfo.append(seatLegend, seatStatus, seatHint);
+  footerInfo.append(seatStatus);
   const cancelSeats = button('Cancel', () => seatModal.hide(), true);
   cancelSeats.classList.replace('btn-outline-secondary', 'btn-outline-light');
   const saveSeats = button('Add selected seats', commitSeats);
@@ -399,6 +419,48 @@
   let selectedSeats = new Set();
   let returnFocus = fields.session;
   let seatsSaved = false;
+  let activeSeat = '1-1';
+
+  function focusSeat(seat) {
+    activeSeat = seat;
+    const target = byId(`seat-${seat}`);
+    if (!target) return;
+    seatMap.querySelector('[tabindex="0"]')?.setAttribute('tabindex', '-1');
+    target.tabIndex = 0;
+    target.focus();
+    target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    rowJumpSelect.value = seat.split('-')[0];
+  }
+
+  rowJumpSelect.addEventListener('change', () => {
+    focusSeat(`${rowJumpSelect.value}-1`);
+  });
+  seatMap.addEventListener('focusin', (event) => {
+    const seat = event.target.id?.match(/^seat-(\d+)-(\d+)$/);
+    if (!seat) return;
+    activeSeat = `${seat[1]}-${seat[2]}`;
+    seatMap.querySelectorAll('button').forEach((node) => {
+      node.tabIndex = node === event.target ? 0 : -1;
+    });
+    rowJumpSelect.value = seat[1];
+  });
+  seatMap.addEventListener('keydown', (event) => {
+    const seat = event.target.id?.match(/^seat-(\d+)-(\d+)$/);
+    if (!seat) return;
+    let row = Number(seat[1]);
+    let number = Number(seat[2]);
+    switch (event.key) {
+      case 'ArrowLeft': number = Math.max(1, number - 1); break;
+      case 'ArrowRight': number = Math.min(12, number + 1); break;
+      case 'ArrowUp': row = Math.max(1, row - 1); break;
+      case 'ArrowDown': row = Math.min(12, row + 1); break;
+      case 'Home': number = 1; break;
+      case 'End': number = 12; break;
+      default: return;
+    }
+    event.preventDefault();
+    focusSeat(`${row}-${number}`);
+  });
 
   function drawSeats() {
     seatMap.replaceChildren();
@@ -410,7 +472,7 @@
     screen.setAttribute('viewBox', '0 0 800 90');
     screen.setAttribute('role', 'img');
     screen.setAttribute('aria-label', 'Screen at the front of the hall');
-    screen.classList.add('w-100', 'mb-3');
+    screen.classList.add('w-100', 'mb-5');
     const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     arc.setAttribute('d', 'M 30 65 C 190 5 610 5 770 65');
     arc.setAttribute('fill', 'none');
@@ -433,6 +495,7 @@
         'div',
         'd-flex flex-nowrap align-items-center gap-1 mb-2',
       );
+      if (row === 1) line.classList.add('mt-5');
       line.append(
         element(
           'strong',
@@ -453,8 +516,9 @@
               seatStatus.textContent = `You already selected ${pending.target} seats. Remove one to choose a different seat.`;
               return;
             }
+            activeSeat = seat;
             drawSeats();
-            byId(`seat-${seat}`).focus();
+            focusSeat(seat);
           },
           !isSelected,
         );
@@ -464,7 +528,10 @@
           isSelected ? 'btn-success' : 'btn-outline-secondary',
           isSelected ? 'btn-warning' : 'btn-outline-light',
         );
+        seatButton.classList.replace('py-2', 'py-3');
+        seatButton.classList.replace('px-3', 'px-4');
         seatButton.classList.add('rounded-3', 'flex-shrink-0');
+        seatButton.tabIndex = seat === activeSeat ? 0 : -1;
         if (isSelected) seatButton.classList.add('text-black');
         seatButton.setAttribute(
           'aria-label',
@@ -494,6 +561,8 @@
   function openSeatPicker(chosen, existing, target, trigger) {
     pending = { chosen, existing, target };
     selectedSeats = new Set(existing?.seats || []);
+    activeSeat = existing?.seats?.[0] || '1-1';
+    rowJumpSelect.value = activeSeat.split('-')[0];
     returnFocus = trigger || document.activeElement;
     seatsSaved = false;
     const film = findFilm(chosen.session);
@@ -536,9 +605,11 @@
     seatModal.hide();
   }
 
-  seatDialog.addEventListener('shown.bs.modal', () =>
-    seatMap.querySelector('button')?.focus(),
-  );
+  seatDialog.addEventListener('shown.bs.modal', () => {
+    seatDialog.scrollTop = 0;
+    dialogBody.scrollTop = 0;
+    rowJumpSelect.focus({ preventScroll: true });
+  });
   seatDialog.addEventListener('hidden.bs.modal', () => {
     if (seatsSaved) {
       cartStatus.tabIndex = -1;
@@ -781,11 +852,11 @@
     if (!validateOrder()) return;
     reviewed = true;
     customerSummary.textContent = `Buyer: ${fields.name.value.trim()} · Email: ${fields.email.value.trim()} · Phone: ${fields.phone.value.trim()} · Youngest visitor: ${fields.age.value}.`;
-    reviewStatus.textContent = `Reviewed: ${ticketCount(cart)} tickets (${cart.map((item) => item.seats.join(', ')).join('; ')}), estimated ${money(cartTotal(cart))}. To change details, edit the fields above and review again.`;
+    reviewStatus.textContent = `Reviewed: ${ticketCount(cart)} tickets (${cart.map((item) => item.seats.join(', ')).join('; ')}), estimated ${money(cartTotal(cart))}. To change details, edit the fields above and review the order again.`;
     updateActions();
     status(
       error,
-      'Order reviewed. Check your basket and details before confirming.',
+      'Order reviewed. Check the details before choosing Prepare order.',
     );
     confirm.focus();
   }

@@ -10,6 +10,14 @@
     validateFields,
     clearErrors,
   } = CinemaUI;
+  const filmStep = document.querySelector('#route a[href="movies.html"]');
+  filmStep.textContent = 'Choose a film';
+  const sessionStep = document.querySelector('#route a[href="schedule.html"]');
+  sessionStep.textContent = 'Choose a session';
+  sessionStep.parentElement.replaceChildren(
+    sessionStep,
+    document.createTextNode(' and check its price.'),
+  );
   const panel = section('When should I leave?');
   panel.id = 'arrival-planner';
   panel.append(

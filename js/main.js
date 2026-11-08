@@ -257,6 +257,15 @@ const CinemaUI = (() => {
     services.querySelector(':scope > .row')?.remove();
     services.querySelector(':scope > .table-responsive')?.remove();
   }
+  if (page === 'index.html') {
+    document.querySelector('#visitor-paths a[href^="movies.html"]').textContent =
+      'Choose a film';
+    const orderCard = document.querySelector('#visitor-paths a[href^="schedule.html"]');
+    orderCard.textContent = 'Choose a session';
+    orderCard.closest('.card-body').querySelector('h3').textContent = 'Prepare an order';
+    orderCard.closest('.card-body').querySelector('p').textContent =
+      'Choose a session, then choose seats and prepare an order on our website.';
+  }
 
   const heading = main.querySelector('h1');
   const [eyebrow, tagline, description] =
@@ -390,7 +399,7 @@ const CinemaUI = (() => {
     ]);
   if (page === 'booking.html') {
     const steps = element('ol', 'row g-3 list-unstyled mt-4 mb-0');
-    ['Choose seats', 'Review your basket', 'Save your order summary'].forEach(
+    ['Choose seats', 'Review order', 'Prepare order'].forEach(
       (text, index) => {
         const item = element('li', 'col-12 col-lg-4');
         item.append(
@@ -412,7 +421,7 @@ const CinemaUI = (() => {
     [
       [
         'How does the ticket order work?',
-        'Choose a film and time on Schedule, then select seats and prepare an order summary on Booking. Payment and reservations are not available on this site.',
+        'Choose a session on Schedule, then choose seats and prepare an order on Booking. Payment and reservations are not available on this site.',
       ],
       [
         'What should I check before visiting?',

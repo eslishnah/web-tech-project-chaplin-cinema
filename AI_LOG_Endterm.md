@@ -19,6 +19,7 @@
 - Reworked Schedule into a film-grouped three-column table using JavaScript and existing Bootstrap classes, then checked desktop and mobile views.
 - Removed the unnecessary Booking order-notes control from the rendered page and from validation and review text.
 - Simplified Booking into visible steps and removed redundant reset/edit controls; tested that changing buyer details invalidates the previous review.
+- Aligned the labels for the main visitor route across Home, Movies, Schedule, Booking and Visit; checked all eight pages on desktop and mobile widths.
 - Replaced the malformed Visit map URL with the 2GIS location link supplied by the student and removed the old runtime URL repair.
 
 **Files changed with AI assistance:**
