@@ -2,9 +2,12 @@
 
 (() => {
   const { element, field, button, section, status, validateFields, clearErrors } = CinemaUI;
-  // Fix the accidental newline + trailing digit in the existing map URL at runtime.
-  const map = document.querySelector('#location a[href^="https://2gis"]');
-  map.setAttribute('href', map.getAttribute('href').split(/\s/)[0]);
+  const directions = document.querySelector('#location a[href^="https://2gis"]');
+  directions.href = '#route';
+  directions.textContent = 'See arrival directions';
+  directions.removeAttribute('target');
+  directions.removeAttribute('rel');
+  document.querySelector('#route li:last-child').textContent = 'Use the photos below to find the entrance to Koktal shopping centre.';
   const panel = section('When should I leave?');
   panel.id = 'arrival-planner';
   panel.append(element('p', '', 'Enter a session you have confirmed with the cinema. We subtract your travel time and arrival buffer. This is a personal estimate, not a traffic forecast. Times use your device’s local clock.'));
@@ -14,7 +17,7 @@
   const time = field('Confirmed session time', 'arrival-time', 'time');
   const travel = field('Estimated travel time (minutes)', 'arrival-travel', 'number');
   const buffer = field('Arrive early by (minutes)', 'arrival-buffer', 'number');
-  date.input.min = CinemaData.localDate();
+  date.input.min = CinemaData.deviceDate();
   travel.input.min = '1';
   travel.input.max = '360';
   buffer.input.min = '0';
@@ -44,7 +47,7 @@
     const now = new Date();
     const departure = CinemaData.departureTime(date.input.value, time.input.value, travel.input.value, buffer.input.value, now);
     const valid = validateFields([
-      [date.input, date.input.value === '' || date.input.value < CinemaData.localDate(now) ? 'Choose today or a future date.' : ''],
+      [date.input, date.input.value === '' || date.input.value < CinemaData.deviceDate(now) ? 'Choose today or a future date.' : ''],
       [time.input, time.input.value === '' || Number.isNaN(start.getTime()) || start <= now ? 'Choose a session time in the future.' : ''],
       [travel.input, travel.input.value === '' || !Number.isInteger(Number(travel.input.value)) || Number(travel.input.value) < 1 || Number(travel.input.value) > 360 ? 'Enter a whole number from 1 to 360.' : ''],
       [buffer.input, buffer.input.value === '' || !Number.isInteger(Number(buffer.input.value)) || Number(buffer.input.value) < 0 || Number(buffer.input.value) > 120 ? 'Enter a whole number from 0 to 120.' : '']

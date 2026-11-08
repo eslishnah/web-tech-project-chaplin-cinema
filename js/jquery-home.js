@@ -26,7 +26,7 @@ $(function () {
   const $reset = $('<button>', { type: 'button', text: 'Reset page search' }).addClass('btn btn-outline-secondary');
   $panel.append($large, $readingStatus, $row, $count, $results, $reset);
   $tools.append($toggle, $panel);
-  $('header').after($tools);
+  $('body > header').after($tools);
 
   let large = CinemaUI.readStorage('dostar-large-text', false) === true;
   function applyReading() {
