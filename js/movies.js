@@ -1,214 +1,109 @@
 'use strict';
 
-// jQuery 3.7.1 full build loads before this deferred script, including its effects module.
+// jQuery uses append() in place of DOM insertion and on() in place of individual card listeners.
 $(function () {
-  // .append(), .addClass() and .on() replace createElement()/append(), classList and addEventListener().
-  // Filtering and delegated buttons are shorter; cards now come directly from the film array.
   const $list = $('#movie-list');
   const stored = CinemaUI.readStorage('dostar-shortlist', []);
-  let saved = Array.isArray(stored)
-    ? stored.filter((id) => CinemaData.films.some((film) => film.id === id))
-    : [];
+  let saved = Array.isArray(stored) ? stored.filter(id => CinemaData.films.some(film => film.id === id)) : [];
   let savedOnly = false;
 
-  function control(label, id, type, options = []) {
-    const $input =
-      type === 'select' ? $('<select>', { id }) : $('<input>', { id, type });
-    $input.addClass(type === 'select' ? 'form-select' : 'form-control');
-    options.forEach(([value, text]) =>
-      $input.append($('<option>', { value, text })),
-    );
-    return $('<div>')
-      .addClass('col-12 col-lg-4')
-      .append(
-        $('<label>', { for: id, text: label }).addClass(
-          'form-label fw-semibold',
-        ),
-        $input,
-      );
+  function control(label, id, options) {
+    const $input = options
+      ? $('<select>', { id }).addClass('form-select')
+      : $('<input>', { id, type: 'search' }).addClass('form-control');
+    if (options) options.forEach(([value, text]) => $input.append($('<option>', { value, text })));
+    return $('<div>').addClass('col-12 col-sm-6 col-xl-3').append(
+      $('<label>', { for: id, text: label }).addClass('form-label fw-semibold'), $input);
   }
-  const $searchControl = control('Search film titles', 'movie-search', 'search');
-  const $searchCount = $('<small>', { id: 'movie-search-count' }).addClass(
-    'form-text d-block',
+
+  const categories = [...new Set(CinemaData.films.map(film => film.category))].sort();
+  const categoryOptions = [['', 'All categories'], ...categories.map(category => [category, category])];
+  const ages = [['', 'All ages'], ...[6, 14, 16, 18, 21].map(age => [String(age), `Up to ${age}+`])];
+  const $filters = $('<div>').addClass('row g-2 mb-3').append(
+    control('Search films', 'movie-search'),
+    control('Category', 'movie-category', categoryOptions),
+    control('Age rating', 'movie-age', ages),
+    control('Sort by', 'movie-sort', [['catalogue', 'Catalogue order'], ['title', 'Title A–Z']])
   );
-  $searchControl.find('input').attr('aria-describedby', 'movie-search-count');
-  $searchControl.append($searchCount);
-  const $controls = $('<div>')
-    .addClass('row g-3 mb-4')
-    .append(
-      $searchControl,
-      control('Youngest viewer’s age', 'movie-age', 'select', [
-        ['', 'Show all ratings'],
-        ['6', '6–11'],
-        ['12', '12–15'],
-        ['16', '16–17'],
-        ['18', '18 or older'],
-      ]),
-      control('Sort films', 'movie-sort', 'select', [
-        ['time', 'Session time'],
-        ['title', 'Title A–Z'],
-      ]),
-    );
-  const $savedOnly = $('<button>', {
-    type: 'button',
-    text: 'Show saved films',
-  }).addClass('btn btn-success');
-  const $reset = $('<button>', {
-    type: 'button',
-    text: 'Reset filters',
-  }).addClass('btn btn-outline-secondary');
-  const $clearSaved = $('<button>', {
-    type: 'button',
-    text: 'Clear saved films',
-  }).addClass('btn btn-outline-secondary');
+  const $shortlist = $('<button>', { type: 'button', text: 'Show saved films' }).addClass('btn btn-outline-secondary');
+  const $reset = $('<button>', { type: 'button', text: 'Reset filters' }).addClass('btn btn-outline-secondary');
+  const $actions = $('<div>').addClass('d-flex flex-wrap gap-2 mb-3').append($shortlist, $reset);
   const $count = $('<p>', { role: 'status' }).addClass('fw-semibold');
-  const $status = $('<p>', { role: 'status' });
-  $list.before(
-    $controls,
-    $('<div>')
-      .addClass('d-flex flex-wrap gap-2 mb-3')
-      .append($savedOnly, $reset, $clearSaved),
-    $count,
-    $status,
-  );
+  const $notice = $('#movie-error');
+  $('#now-showing > h2').text('Now showing');
+  $('#now-showing > p').first().text('Select a film to see its details and sample showtimes and prices.');
+  $list.removeClass('d-grid gap-4').addClass('row g-3').before($filters, $actions, $count);
 
   function cardFor(film) {
-    const $card = $('<article>', { id: `film-${film.id}` });
-    // attr() connects the heading, addClass() applies the shared card style, toggleClass() marks saved cards.
-    $card
-      .attr('aria-labelledby', `title-${film.id}`)
-      .addClass('border p-3 p-md-4 bg-white rounded-4 shadow-sm')
-      .toggleClass('is-selected', saved.includes(film.id));
-    const $poster = $('<img>', {
-      src: film.poster,
-      alt: `${film.title} film poster`,
-    }).addClass(
-      'movie-poster img-fluid rounded-4 d-block mx-auto mx-md-0 shadow',
+    const isSaved = saved.includes(film.id);
+    const $poster = $('<img>', { src: film.poster, alt: '', loading: 'lazy', width: 240, height: 336 })
+      .addClass('img-fluid w-100 rounded-top-3');
+    const $text = $('<div>').addClass('p-2 p-sm-3').append(
+      $('<span>', { text: film.title }).addClass('fw-semibold d-block'),
+      $('<span>', { text: `${film.category} · ${film.age}+` }).addClass('small text-body-secondary d-block'),
+      $('<span>', { text: `From ${CinemaData.money(CinemaData.fromPrice(film))}` }).addClass('small d-block mt-2')
     );
-    const $posterCell = $('<div>')
-      .addClass('col-12 col-md-3 col-lg-3')
-      .append($poster);
-    const $content = $('<div>').addClass(
-      'col-12 col-md-9 col-lg-9 d-flex flex-column align-self-stretch',
-    );
-    const $title = $('<h3>', {
-      id: `title-${film.id}`,
-      text: film.title,
-    }).addClass('h2 mb-3');
-    const $meta = $('<div>').addClass('d-flex flex-wrap gap-2 mb-3');
-    [`${film.age}+`, film.language, film.format].forEach((value) =>
-      $meta.append(
-        $('<span>', { text: value }).addClass(
-          'border rounded-3 px-3 py-2 bg-light',
-        ),
-      ),
-    );
-    const $schedule = $('<a>', {
-      href: `schedule.html?film=${encodeURIComponent(film.id)}#live-schedule`,
-      text: 'Choose a session',
-    }).addClass('btn btn-success mb-3 align-self-start');
-    const $save = $('<button>', {
-      type: 'button',
-      id: `save-${film.id}`,
-      text: saved.includes(film.id) ? 'Remove from saved' : 'Save film',
-    })
-      .addClass(
-        'btn btn-outline-secondary movie-save py-2 px-3 mt-auto align-self-start',
-      )
-      .attr({
-        'data-film-id': film.id,
-        'aria-pressed': String(saved.includes(film.id)),
-        'aria-label': `${saved.includes(film.id) ? 'Remove from saved' : 'Save film'}: ${film.title}`,
-      });
-    $content.append(
-      $title,
-      $meta,
-      $('<p>', {
-        text: 'Choose a session and check its price on the Schedule page.',
-      }).addClass('mb-2'),
-      $schedule,
-      $save,
-    );
-    $card.append(
-      $('<div>')
-        .addClass('row g-4 align-items-start')
-        .append($posterCell, $content),
-    );
-    return $card;
+    const $open = $('<button>', { type: 'button', 'aria-label': `Details: ${film.title}` }).addClass('film-open btn p-0 text-start w-100')
+      .append($poster, $text);
+    const $save = $('<button>', { type: 'button', text: isSaved ? 'Saved' : 'Save' })
+      .addClass('movie-save btn btn-link text-success-emphasis small px-2 px-sm-3 py-1')
+      .attr({ 'aria-pressed': String(isSaved), 'aria-label': `${isSaved ? 'Remove from saved' : 'Save film'}: ${film.title}` });
+    // The chain sets the card layout, marks saved films, then attaches the card controls.
+    const $card = $('<article>', { 'data-film-id': film.id }).addClass('border rounded-3 h-100 d-flex flex-column justify-content-between')
+      .toggleClass('is-selected', isSaved)
+      .append($open, $('<div>').addClass('border-top').append($save));
+    return $('<div>').addClass('col-6 col-md-4 col-lg-3 col-xl-2').append($card);
   }
 
   function render(animate = false) {
-    const search = $('#movie-search').val();
-    const characters = Array.from(search).length;
-    $searchCount.text(`${characters} character${characters === 1 ? '' : 's'} entered`);
-    const matches = CinemaData.filterFilms(
-      search,
-      $('#movie-age').val(),
-      savedOnly,
-      saved,
-      $('#movie-sort').val(),
-    );
-    $count.text(
-      `${matches.length} of ${CinemaData.films.length} films shown. ${saved.length} saved.`,
-    );
-    $savedOnly
-      .attr('aria-pressed', String(savedOnly))
-      .toggleClass('active', savedOnly)
+    const matches = CinemaData.filterFilms({
+      query: $('#movie-search').val(), category: $('#movie-category').val(), age: $('#movie-age').val(),
+      sort: $('#movie-sort').val(), savedOnly, saved
+    });
+    $count.text(`${matches.length} of ${CinemaData.films.length} films · ${saved.length} saved`);
+    $shortlist.attr('aria-pressed', String(savedOnly)).toggleClass('active', savedOnly)
       .text(savedOnly ? 'Show all films' : 'Show saved films');
-    $clearSaved.prop('disabled', saved.length === 0);
-    const replace = () => {
-      $list.empty();
-      if (!matches.length)
-        $list.append(
-          $('<p>', {
-            text: 'No matching films. Change the age filter or reset the filters.',
-          }).addClass('p-3 border rounded'),
-        );
-      matches.forEach((film) => $list.append(cardFor(film)));
-      if (animate) $list.fadeIn(180);
-    };
-    $list.stop(true, true);
-    if (animate) $list.fadeOut(120, replace);
-    else replace();
+    $list.stop(true, true).empty();
+    if (!matches.length) $list.append($('<p>', { text: 'No matching films. Change the filters to try again.' }));
+    matches.forEach(film => $list.append(cardFor(film)));
+    if (animate) $list.hide().fadeIn(160);
   }
 
-  $('#movie-search').on('input', () => render(true));
-  $('#movie-age, #movie-sort').on('change', () => render(true));
-  $savedOnly.on('click', function () {
-    savedOnly = !savedOnly;
-    render(true);
-  });
-  $reset.on('click', function () {
-    $('#movie-search').val('');
-    $('#movie-age').val('');
-    $('#movie-sort').val('time');
+  async function openFilm(id) {
+    const film = CinemaData.films.find(item => item.id === id);
+    if (!film) return;
+    try {
+      const booking = await import('./booking.js');
+      $notice.addClass('is-hidden');
+      booking.openFilm(film);
+    } catch {
+      $notice.text('Film details could not load. Open the site through Live Server and try again.').removeClass('is-hidden');
+    }
+  }
+
+  $filters.on('input', '#movie-search', () => render(true));
+  $filters.on('change', 'select', () => render(true));
+  $shortlist.on('click', () => { savedOnly = !savedOnly; render(true); });
+  $reset.on('click', () => {
+    $('#movie-search, #movie-category, #movie-age').val('');
+    $('#movie-sort').val('catalogue');
     savedOnly = false;
-    render(true);
+    render();
     $('#movie-search').trigger('focus');
   });
-  $clearSaved.on('click', function () {
-    saved = [];
-    savedOnly = false;
-    const persisted = CinemaUI.writeStorage('dostar-shortlist', saved);
-    render(true);
-    $status.text(
-      `Saved films cleared.${persisted ? '' : ' Storage is unavailable, but this page has been cleared.'}`,
-    );
-    $savedOnly.trigger('focus');
+  $list.on('click', '.film-open', function () {
+    openFilm($(this).closest('article').attr('data-film-id'));
   });
-  // Delegation is needed because render() replaces film cards after every filter change.
   $list.on('click', '.movie-save', function () {
-    const id = $(this).closest('article').attr('id').slice(5);
-    saved = saved.includes(id)
-      ? saved.filter((item) => item !== id)
-      : [...saved, id];
-    const persisted = CinemaUI.writeStorage('dostar-shortlist', saved);
+    const id = $(this).closest('article').attr('data-film-id');
+    saved = saved.includes(id) ? saved.filter(item => item !== id) : [...saved, id];
+    const stored = CinemaUI.writeStorage('dostar-shortlist', saved);
+    $notice.text(stored ? '' : 'Your shortlist is available until you leave this page.').toggleClass('is-hidden', stored);
     render();
-    $status.text(
-      `${saved.length} films saved.${persisted ? '' : ' Storage unavailable; saves last until you leave this page.'}`,
-    );
-    const $replacement = $(`#save-${id}`);
-    ($replacement.length ? $replacement : $savedOnly).trigger('focus');
+    const $replacement = $list.find(`[data-film-id="${id}"] .movie-save`);
+    ($replacement.length ? $replacement : $shortlist).trigger('focus');
   });
+
   render();
+  openFilm(new URLSearchParams(location.search).get('film'));
 });
