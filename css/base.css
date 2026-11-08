@@ -8,8 +8,11 @@
   --bs-font-sans-serif: Arial, Helvetica, sans-serif;
 }
 
-h1, h2, h3, .navbar-brand {
-  font-family: Georgia, "Times New Roman", serif;
+h1,
+h2,
+h3,
+.navbar-brand {
+  font-family: Georgia, 'Times New Roman', serif;
 }
 
 .card-img-top {
@@ -17,7 +20,9 @@ h1, h2, h3, .navbar-brand {
   object-fit: cover;
 }
 
-pre { white-space: pre-wrap; }
+pre {
+  white-space: pre-wrap;
+}
 
 /* Film detail panels use Bootstrap columns and uncropped posters. */
 .movie-detail {
@@ -37,11 +42,25 @@ pre { white-space: pre-wrap; }
   background: #f5f8f0;
 }
 
-.is-hidden { display: none !important; }
-.is-active { color: var(--bs-success); font-weight: 700; }
-.is-selected { outline: 2px solid var(--bs-success); outline-offset: 2px; }
-.has-error { color: #842029; border-color: #dc3545 !important; }
-.is-success { color: #0f5132; border-color: var(--bs-success) !important; }
+.is-hidden {
+  display: none !important;
+}
+.is-active {
+  color: var(--bs-success);
+  font-weight: 700;
+}
+.is-selected {
+  outline: 2px solid var(--bs-success);
+  outline-offset: 2px;
+}
+.has-error {
+  color: #842029;
+  border-color: #dc3545 !important;
+}
+.is-success {
+  color: #0f5132;
+  border-color: var(--bs-success) !important;
+}
 
 /* Small page accents and form focus styles shared across the site. */
 #now-showing,
