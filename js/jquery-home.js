@@ -248,7 +248,7 @@ $(function () {
   if (!featured.length) return;
 
   const $section = $('<section>', { 'aria-labelledby': 'featured-films-title' }).addClass('mt-4');
-  const $heading = $('<h2>', { id: 'featured-films-title', text: 'Now Trending' }).addClass('h3 mb-0');
+  const $heading = $('<h2>', { id: 'featured-films-title', text: 'Trending now' }).addClass('h3 mb-0');
   const $track = $('<div>', { id: 'featured-films-track', tabindex: 0, 'aria-label': 'Scroll through trending films' })
     .addClass('row mx-0 g-0 flex-nowrap overflow-auto');
 
