@@ -166,20 +166,11 @@ const CinemaProfile = (() => {
   phoneHint.id = 'profile-phone-hint';
   phone.input.setAttribute('aria-describedby', phoneHint.id);
   phone.wrapper.append(phoneHint);
-  const card = field('Card number (optional)', 'profile-card');
-  card.input.inputMode = 'numeric';
-  card.input.autocomplete = 'off';
-  card.input.maxLength = 23;
   const form = element('form');
   form.noValidate = true;
-  card.input.placeholder = '0000 0000 0000 0000';
-  card.input.addEventListener('input', () => {
-    const digits = card.input.value.replace(/ /g, '');
-    if (/^\d{16}$/.test(digits)) card.input.value = digits.match(/\d{4}/g).join(' ');
-  });
   const signIn = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', 'Sign in');
   signIn.type = 'submit';
-  form.append(name.wrapper, phone.wrapper, card.wrapper, signIn);
+  form.append(name.wrapper, phone.wrapper, signIn);
   const account = element('section');
   const accountStatus = element('p');
   const signOut = button('Sign out', () => {
@@ -211,11 +202,9 @@ const CinemaProfile = (() => {
   function checks() {
     const enteredName = name.input.value.trim();
     const enteredPhone = phone.input.value.trim();
-    const enteredCard = card.input.value.trim();
     return [
       [name.input, enteredName.length < 2 || enteredName.length > 80 ? 'Enter a name with 2 to 80 characters.' : ''],
-      [phone.input, /^[78]\d{10}$/.test(enteredPhone) ? '' : 'Enter 11 digits starting with 7 or 8.'],
-      [card.input, !enteredCard || /^\d{4}( \d{4}){3}$/.test(enteredCard) ? '' : 'Enter 16 digits in the format 0000 0000 0000 0000.']
+      [phone.input, /^[78]\d{10}$/.test(enteredPhone) ? '' : 'Enter 11 digits starting with 7 or 8.']
     ];
   }
 
@@ -233,7 +222,6 @@ const CinemaProfile = (() => {
     window.close();
     document.dispatchEvent(new Event('cinema-profile-change'));
   });
-  window.addEventListener('close', () => { card.input.value = ''; });
 
   return { get: () => profile, open };
 })();

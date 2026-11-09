@@ -32,7 +32,7 @@ All six pages are independently reachable. The logo opens Home. Movies and Sched
 | Seat selection and ticket totals | Visitors can choose several seats, choose a ticket type for each, apply the `WEB1` discount and save tickets with guest details or a local profile. | JavaScript, `js/booking.js` | Sandzhar Fazyl |
 | My tickets | The shared dialog displays tickets saved in the browser. The seat picker uses saved tickets to mark occupied seats for the selected showing. | JavaScript, `js/main.js` and `js/booking.js` | Sandzhar Fazyl |
 | Cinema and navigation | The Cinema page shows venue facts and photos. The Details menu groups Cinema, Visit and Reviews. The separate Halls page was removed. | JavaScript and Bootstrap, `js/main.js`. The Halls removal also changed the source HTML. | Sandzhar Fazyl |
-| Profile validation | Local sign-in validates the name and phone; a card number is optional. | JavaScript, `js/main.js` | Nauryzbay Kinayatov |
+| Profile validation | Local sign-in validates the name and phone. | JavaScript, `js/main.js` | Nauryzbay Kinayatov |
 | Reviews | Signed-in visitors can rate their visit and post, edit or delete their own reviews. The page shows the average rating and lets visitors sort the list. | jQuery, `js/jquery-services.js` | Nauryzbay Kinayatov |
 | Visit | Shows an interactive map, address, contacts, daily opening hours and entrance photos. | JavaScript, `js/visit.js` and `js/main.js` | Nauryzbay Kinayatov |
 
