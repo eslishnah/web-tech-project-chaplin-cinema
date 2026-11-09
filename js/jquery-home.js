@@ -34,6 +34,34 @@ $(function () {
   background: linear-gradient(0deg, #111c22 0%, rgba(17, 28, 34, .72) 22%, transparent 68%);
 }
 .featured-film:focus-visible::after { box-shadow: inset 0 0 0 3px #fff; }
+#featured-films-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#featured-films-track::-webkit-scrollbar { display: none; }
+.featured-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border-radius: 50%;
+  background: #111c22;
+  border: 1px solid rgba(255, 255, 255, .6);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+}
+.featured-arrow:hover, .featured-arrow:focus-visible { background: #25363f; color: #fff; }
+.featured-arrow:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.featured-arrow:disabled { opacity: .35; }
+.featured-arrow-prev { left: .5rem; }
+.featured-arrow-next { right: .5rem; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .featured-film img { transition: transform .25s ease; }
   .featured-film:hover img { transform: scale(1.05); }
@@ -222,18 +250,19 @@ $(function () {
   const $section = $('<section>', { 'aria-labelledby': 'featured-films-title' }).addClass('mt-4');
   const $heading = $('<h2>', { id: 'featured-films-title', text: 'Now Trending' }).addClass('h3 mb-0');
   const $track = $('<div>', { id: 'featured-films-track', tabindex: 0, 'aria-label': 'Scroll through trending films' })
-    .addClass('row mx-0 g-0 flex-nowrap overflow-auto pb-2');
+    .addClass('row mx-0 g-0 flex-nowrap overflow-auto');
 
   function arrow(label, symbol) {
     return $('<button>', { type: 'button', text: symbol, 'aria-label': label, 'aria-controls': 'featured-films-track' })
-      .addClass('btn btn-outline-secondary py-2 px-3 rounded-3 fw-semibold');
+      .addClass('btn featured-arrow');
   }
 
-  const $previous = arrow('Previous trending film', '‹');
-  const $next = arrow('Next trending film', '›');
+  const $previous = arrow('Previous trending film', '‹').addClass('featured-arrow-prev');
+  const $next = arrow('Next trending film', '›').addClass('featured-arrow-next');
   const $all = $('<a>', { href: 'movies.html', text: 'View all movies' })
     .addClass('btn btn-success py-2 px-3 rounded-3 fw-semibold');
-  const $actions = $('<div>').addClass('d-flex flex-wrap gap-2').append($all, $previous, $next);
+  const $actions = $('<div>').addClass('d-flex flex-wrap gap-2').append($all);
+  const $carousel = $('<div>').addClass('position-relative').append($track, $previous, $next);
   const $header = $('<div>').addClass('d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3')
     .append($heading, $actions);
 
@@ -267,7 +296,7 @@ $(function () {
   $next.on('click', () => scrollFilms(1));
   $track.on('scroll', updateArrows);
   $(window).on('resize', updateArrows);
-  $('#upcoming-trailers').after($section.append($header, $track));
+  $('#upcoming-trailers').after($section.append($header, $carousel));
   if (location.hash === '#about-cinema') document.getElementById('about-cinema')?.scrollIntoView();
   updateArrows();
 });
