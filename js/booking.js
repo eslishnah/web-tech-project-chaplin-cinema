@@ -174,7 +174,7 @@ function ticketData(seat) {
   const price = seat.type.price;
   const discount = promoCode === 'WEB1' ? Math.round(price * 0.2) : 0;
   return {
-    title: film.title, date, time: screening.time, hall: film.hall,
+    filmId: film.id, title: film.title, date, time: screening.time, hall: film.hall,
     seat: seat.id, row: seat.row, number: seat.number, sessionKey: screening.key,
     type: seat.type.label, subtotal: price, discount, total: price - discount
   };

@@ -292,7 +292,25 @@ const CinemaTickets = (() => {
       const paid = ticket.paymentStatus === 'paid';
       const badge = element('p', paid ? 'badge bg-success-subtle text-success-emphasis' : 'badge bg-warning-subtle text-warning-emphasis',
         paid ? 'Paid (demo)' : 'Unpaid');
-      card.append(element('h3', 'h5', ticket.title), element('p', 'text-body-secondary', `Ticket ${ticket.reference}`), badge, summary(ticket));
+      const filmId = ticket.filmId || ticket.sessionKey?.split('/')[0];
+      const film = CinemaData.films.find(item => item.id === filmId)
+        || CinemaData.films.find(item => item.title === ticket.title);
+      const layout = element('div', 'row g-3 align-items-start');
+      const details = element('div', film ? 'col-8' : 'col-12');
+      details.append(element('h3', 'h5', ticket.title), element('p', 'text-body-secondary text-break', `Ticket ${ticket.reference}`), badge, summary(ticket));
+      layout.append(details);
+      if (film) {
+        const picture = element('div', 'col-4 d-flex justify-content-end');
+        const poster = element('img', 'movie-poster img-fluid rounded-3');
+        poster.src = film.poster;
+        poster.alt = `${film.title} poster`;
+        poster.loading = 'lazy';
+        poster.width = 200;
+        poster.height = 280;
+        picture.append(poster);
+        layout.append(picture);
+      }
+      card.append(layout);
       body.append(card);
     });
     const pending = unpaid(tickets);
