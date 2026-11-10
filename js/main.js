@@ -227,7 +227,7 @@ const CinemaProfile = (() => {
 })();
 
 const CinemaTickets = (() => {
-  const { element, button, field, link, dialog, readStorage, writeStorage, validateFields, status } = CinemaUI;
+  const { element, button, field, link, dialog, readStorage, writeStorage, status } = CinemaUI;
   const storageKey = 'dostar-tickets-v1';
   const { window, heading, body } = dialog('my-tickets', 'My tickets', true);
 
@@ -337,33 +337,16 @@ const CinemaTickets = (() => {
     heading.textContent = 'Pay for tickets';
     const form = element('form');
     form.noValidate = true;
+    form.autocomplete = 'off';
     const holder = field('Cardholder name', 'payment-cardholder');
-    holder.input.maxLength = 80;
     const card = field('Card number', 'payment-card-number');
-    card.input.inputMode = 'numeric';
-    card.input.maxLength = 19;
-    card.input.placeholder = '4242 4242 4242 4242';
-    card.input.addEventListener('input', () => {
-      const digits = card.input.value.replace(/\D/g, '').slice(0, 16);
-      card.input.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
-    });
+    card.input.placeholder = 'Any test value';
     const expiry = field('Expiry date (MM/YY)', 'payment-expiry');
-    expiry.input.inputMode = 'numeric';
-    expiry.input.maxLength = 5;
     expiry.input.placeholder = 'MM/YY';
-    expiry.input.addEventListener('input', () => {
-      const digits = expiry.input.value.replace(/\D/g, '').slice(0, 4);
-      expiry.input.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
-    });
-    const cvc = field('CVC', 'payment-cvc', 'password');
-    cvc.input.inputMode = 'numeric';
-    cvc.input.maxLength = 4;
-    cvc.input.addEventListener('input', () => {
-      cvc.input.value = cvc.input.value.replace(/\D/g, '').slice(0, 4);
-    });
-    [holder, card, expiry, cvc].forEach(item => {
-      item.input.required = true;
+    const cvc = field('CVC', 'payment-cvc');
+    [holder, card, expiry, cvc].forEach((item, index) => {
       item.input.autocomplete = 'off';
+      item.input.name = `demo-detail-${index}`;
     });
     const dates = element('div', 'row');
     expiry.wrapper.classList.add('col-7');
@@ -382,7 +365,7 @@ const CinemaTickets = (() => {
     form.append(holder.wrapper, card.wrapper, dates, notice, actions);
     body.replaceChildren(
       element('p', 'fw-semibold', `${pending.length} ticket${pending.length === 1 ? '' : 's'} - Total: ${CinemaData.money(total(pending))}`),
-      element('p', 'small text-body-secondary', 'Demo payment only. Use test card 4242 4242 4242 4242, a future expiry date and any 3-digit CVC. No money is charged and card details are not saved.'),
+      element('p', 'small text-body-secondary', 'Demo payment only. Enter any test details. No money is charged and card details are not saved.'),
       form
     );
     window.scrollTop = 0;
@@ -390,21 +373,6 @@ const CinemaTickets = (() => {
 
     form.addEventListener('submit', event => {
       event.preventDefault();
-      const digits = card.input.value.replace(/ /g, '');
-      const checksum = [...digits].reverse().reduce((sum, digit, index) => {
-        let value = Number(digit) * (index % 2 ? 2 : 1);
-        return sum + (value > 9 ? value - 9 : value);
-      }, 0);
-      const match = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(expiry.input.value);
-      const today = new Date();
-      const validExpiry = match && (2000 + Number(match[2])) * 12 + Number(match[1]) >= today.getFullYear() * 12 + today.getMonth() + 1;
-      if (!validateFields([
-        [holder.input, holder.input.value.trim().length >= 2 ? '' : 'Enter the cardholder name.'],
-        [card.input, /^\d{16}$/.test(digits) && checksum % 10 === 0 ? '' : 'Enter a valid 16-digit card number.'],
-        [expiry.input, validExpiry ? '' : 'Enter a valid expiry date that has not passed (MM/YY).'],
-        [cvc.input, /^\d{3,4}$/.test(cvc.input.value) ? '' : 'Enter a 3 or 4-digit CVC.']
-      ])) return;
-
       // Re-read before saving so paid tickets cannot be charged twice and new tickets are not silently included.
       const tickets = read();
       const current = unpaid(tickets);
