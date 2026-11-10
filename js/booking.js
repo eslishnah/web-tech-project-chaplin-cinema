@@ -143,7 +143,7 @@ function seats(message = '') {
 function continueBooking() {
   const unpriced = selectedSeats.find(seat => !seat.type);
   if (unpriced) chooseType(unpriced);
-  else payment();
+  else reviewTickets();
 }
 
 function chooseType(seat) {
@@ -197,7 +197,7 @@ function orderSummary(tickets) {
   return summary;
 }
 
-function payment() {
+function reviewTickets() {
   const summary = element('div', 'bg-light rounded-3 p-3 mb-3');
   const promo = field('Promo code (optional)', 'ticket-promo');
   promo.input.maxLength = 16;
@@ -223,26 +223,15 @@ function payment() {
   phoneHint.id = 'ticket-buyer-phone-hint';
   guestPhone.input.setAttribute('aria-describedby', phoneHint.id);
   guestPhone.wrapper.append(phoneHint);
-  const guestCard = field('Card number (optional)', 'ticket-buyer-card');
-  guestCard.input.inputMode = 'numeric';
-  guestCard.input.autocomplete = 'off';
-  guestCard.input.placeholder = '0000 0000 0000 0000';
-  guestCard.input.addEventListener('input', () => {
-    const digits = guestCard.input.value.replace(/\D/g, '').slice(0, 16);
-    guestCard.input.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
-  });
   guest.append(
     element('h3', 'h5', 'Continue without signing in'),
     guestName.wrapper,
-    guestPhone.wrapper,
-    guestCard.wrapper,
-    element('p', 'small text-body-secondary mb-0',
-      'No payment is taken here. Card details are not saved.')
+    guestPhone.wrapper
   );
   let useGuest = false;
   const form = element('form');
   form.noValidate = true;
-  const buy = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', selectedSeats.length === 1 ? 'Save ticket' : 'Save tickets');
+  const buy = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', 'Add to My tickets');
   buy.type = 'submit';
 
   function renderAccount() {
@@ -304,11 +293,9 @@ function payment() {
     if (!profile || useGuest) {
       const name = guestName.input.value.trim();
       const phone = guestPhone.input.value.trim();
-      const card = guestCard.input.value.trim();
       if (!validateFields([
         [guestName.input, name.length >= 2 && name.length <= 80 ? '' : 'Enter a name with 2 to 80 characters.'],
-        [guestPhone.input, /^[78]\d{10}$/.test(phone) ? '' : 'Enter 11 digits starting with 7 or 8.'],
-        [guestCard.input, !card || /^\d{4}( \d{4}){3}$/.test(card) ? '' : 'Enter 16 digits in the format 0000 0000 0000 0000.']
+        [guestPhone.input, /^[78]\d{10}$/.test(phone) ? '' : 'Enter 11 digits starting with 7 or 8.']
       ])) return;
     }
     if (!applyPromo()) {
@@ -329,7 +316,7 @@ function payment() {
     if (outcome === 'taken') {
       const saved = CinemaTickets.read();
       selectedSeats = selectedSeats.filter(seat => !saved.some(ticket => CinemaTickets.isTaken(ticket, screening.key, seat.id)));
-      seats('A selected seat was taken. Review your selection before buying.');
+      seats('A selected seat was taken. Review your selection before adding tickets.');
       return;
     }
     if (outcome !== 'saved') {
@@ -337,10 +324,10 @@ function payment() {
       return;
     }
     const message = tickets.length === 1
-      ? `Ticket ${reference} is ready in My tickets.`
-      : `Order ${reference} · ${tickets.length} tickets are ready in My tickets.`;
-    show(tickets.length === 1 ? 'Ticket saved' : 'Tickets saved', element('p', 'is-success fw-semibold', message),
-      element('p', 'small text-body-secondary', 'Saved on this device. No reservation or payment was made.'),
+      ? `Ticket ${reference} has been added to My tickets.`
+      : `Order ${reference} · ${tickets.length} tickets have been added to My tickets.`;
+    show(tickets.length === 1 ? 'Ticket added' : 'Tickets added', element('p', 'is-success fw-semibold', message),
+      element('p', 'small text-body-secondary', 'Add more tickets or open My tickets to pay for all unpaid tickets together.'),
       orderSummary(tickets), button('Open My tickets', () => {
         window.close();
         CinemaTickets.open();

@@ -227,9 +227,9 @@ const CinemaProfile = (() => {
 })();
 
 const CinemaTickets = (() => {
-  const { element, link, dialog, readStorage, writeStorage } = CinemaUI;
+  const { element, button, field, link, dialog, readStorage, writeStorage, validateFields, status } = CinemaUI;
   const storageKey = 'dostar-tickets-v1';
-  const { window, body } = dialog('my-tickets', 'My tickets', true);
+  const { window, heading, body } = dialog('my-tickets', 'My tickets', true);
 
   function read() {
     const tickets = readStorage(storageKey, []);
@@ -244,7 +244,7 @@ const CinemaTickets = (() => {
     const tickets = read();
     const taken = newTickets.some(ticket => tickets.some(item => isTaken(item, ticket.sessionKey, ticket.seat)));
     if (taken) return 'taken';
-    return writeStorage(storageKey, [...newTickets, ...tickets]) ? 'saved' : 'unavailable';
+    return writeStorage(storageKey, [...newTickets.map(ticket => ({ ...ticket, paymentStatus: 'unpaid' })), ...tickets]) ? 'saved' : 'unavailable';
   }
 
   function summary(ticket) {
@@ -261,13 +261,27 @@ const CinemaTickets = (() => {
     return list;
   }
 
-  function open() {
+  function unpaid(tickets) {
+    return tickets.filter(ticket => ticket.paymentStatus !== 'paid');
+  }
+
+  function total(tickets) {
+    return tickets.reduce((sum, ticket) => sum + ticket.total, 0);
+  }
+
+  function render(message = '') {
     const tickets = read();
+    heading.textContent = 'My tickets';
     body.replaceChildren();
+    if (message) {
+      const confirmation = element('p', 'is-success fw-semibold', message);
+      confirmation.setAttribute('role', 'status');
+      body.append(confirmation);
+    }
     if (!tickets.length) {
-      body.append(element('p', '', 'You don’t have any tickets yet.'));
+      body.append(element('p', '', 'You do not have any tickets yet.'));
       if (location.pathname.endsWith('/movies.html')) {
-        body.append(CinemaUI.button('Browse movies', () => {
+        body.append(button('Browse movies', () => {
           window.close();
           document.getElementById('movie-search')?.focus();
         }));
@@ -275,11 +289,142 @@ const CinemaTickets = (() => {
     }
     tickets.forEach(ticket => {
       const card = element('article', 'border rounded-4 p-3 mb-3');
-      card.append(element('h3', 'h5', ticket.title), element('p', 'text-body-secondary', `Ticket ${ticket.reference}`), summary(ticket));
+      const paid = ticket.paymentStatus === 'paid';
+      const badge = element('p', paid ? 'badge bg-success-subtle text-success-emphasis' : 'badge bg-warning-subtle text-warning-emphasis',
+        paid ? 'Paid (demo)' : 'Unpaid');
+      card.append(element('h3', 'h5', ticket.title), element('p', 'text-body-secondary', `Ticket ${ticket.reference}`), badge, summary(ticket));
       body.append(card);
     });
-    window.showModal();
+    const pending = unpaid(tickets);
+    if (pending.length) {
+      const checkout = element('section', 'border-top pt-3');
+      checkout.setAttribute('aria-label', 'Payment total');
+      checkout.append(
+        element('p', 'mb-1', `${pending.length} unpaid ticket${pending.length === 1 ? '' : 's'}`),
+        element('p', 'h5 mb-3', `Total to pay: ${CinemaData.money(total(pending))}`),
+        button('Pay', () => payment()),
+        element('p', 'small text-body-secondary mt-2 mb-0', 'Pay for all unpaid tickets together. Demo checkout; no real charge.')
+      );
+      body.append(checkout);
+    }
   }
+
+  function payment() {
+    const pending = unpaid(read());
+    if (!pending.length) {
+      render();
+      return;
+    }
+    const references = new Set(pending.map(ticket => ticket.reference));
+    heading.textContent = 'Pay for tickets';
+    const form = element('form');
+    form.noValidate = true;
+    const holder = field('Cardholder name', 'payment-cardholder');
+    holder.input.maxLength = 80;
+    const card = field('Card number', 'payment-card-number');
+    card.input.inputMode = 'numeric';
+    card.input.maxLength = 19;
+    card.input.placeholder = '4242 4242 4242 4242';
+    card.input.addEventListener('input', () => {
+      const digits = card.input.value.replace(/\D/g, '').slice(0, 16);
+      card.input.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+    });
+    const expiry = field('Expiry date (MM/YY)', 'payment-expiry');
+    expiry.input.inputMode = 'numeric';
+    expiry.input.maxLength = 5;
+    expiry.input.placeholder = 'MM/YY';
+    expiry.input.addEventListener('input', () => {
+      const digits = expiry.input.value.replace(/\D/g, '').slice(0, 4);
+      expiry.input.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+    });
+    const cvc = field('CVC', 'payment-cvc', 'password');
+    cvc.input.inputMode = 'numeric';
+    cvc.input.maxLength = 4;
+    cvc.input.addEventListener('input', () => {
+      cvc.input.value = cvc.input.value.replace(/\D/g, '').slice(0, 4);
+    });
+    [holder, card, expiry, cvc].forEach(item => {
+      item.input.required = true;
+      item.input.autocomplete = 'off';
+    });
+    const dates = element('div', 'row');
+    expiry.wrapper.classList.add('col-7');
+    cvc.wrapper.classList.add('col-5');
+    dates.append(expiry.wrapper, cvc.wrapper);
+    const notice = element('p', 'is-hidden');
+    notice.setAttribute('role', 'status');
+    const confirm = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', `Pay ${CinemaData.money(total(pending))}`);
+    confirm.type = 'submit';
+    const actions = element('div', 'd-flex flex-wrap gap-2');
+    actions.append(confirm, button('Back to My tickets', () => {
+      form.reset();
+      render();
+      heading.focus();
+    }, true));
+    form.append(holder.wrapper, card.wrapper, dates, notice, actions);
+    body.replaceChildren(
+      element('p', 'fw-semibold', `${pending.length} ticket${pending.length === 1 ? '' : 's'} - Total: ${CinemaData.money(total(pending))}`),
+      element('p', 'small text-body-secondary', 'Demo payment only. Use test card 4242 4242 4242 4242, a future expiry date and any 3-digit CVC. No money is charged and card details are not saved.'),
+      form
+    );
+    window.scrollTop = 0;
+    holder.input.focus();
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const digits = card.input.value.replace(/ /g, '');
+      const checksum = [...digits].reverse().reduce((sum, digit, index) => {
+        let value = Number(digit) * (index % 2 ? 2 : 1);
+        return sum + (value > 9 ? value - 9 : value);
+      }, 0);
+      const match = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(expiry.input.value);
+      const today = new Date();
+      const validExpiry = match && (2000 + Number(match[2])) * 12 + Number(match[1]) >= today.getFullYear() * 12 + today.getMonth() + 1;
+      if (!validateFields([
+        [holder.input, holder.input.value.trim().length >= 2 ? '' : 'Enter the cardholder name.'],
+        [card.input, /^\d{16}$/.test(digits) && checksum % 10 === 0 ? '' : 'Enter a valid 16-digit card number.'],
+        [expiry.input, validExpiry ? '' : 'Enter a valid expiry date that has not passed (MM/YY).'],
+        [cvc.input, /^\d{3,4}$/.test(cvc.input.value) ? '' : 'Enter a 3 or 4-digit CVC.']
+      ])) return;
+
+      // Re-read before saving so paid tickets cannot be charged twice and new tickets are not silently included.
+      const tickets = read();
+      const current = unpaid(tickets);
+      if (current.length !== pending.length || current.some(ticket => !references.has(ticket.reference)) || total(current) !== total(pending)) {
+        form.reset();
+        render();
+        const changed = element('p', 'has-error', 'Your tickets changed. Review the total and select Pay again.');
+        changed.setAttribute('role', 'alert');
+        body.prepend(changed);
+        heading.focus();
+        return;
+      }
+      const paidAt = new Date().toISOString();
+      const updated = tickets.map(ticket => references.has(ticket.reference)
+        ? { ...ticket, paymentStatus: 'paid', paidAt }
+        : ticket);
+      if (!writeStorage(storageKey, updated)) {
+        status(notice, 'Payment could not be saved. Check browser storage settings and try again.', true);
+        return;
+      }
+      form.reset();
+      render(`Demo payment completed for ${pending.length} ticket${pending.length === 1 ? '' : 's'}. Total: ${CinemaData.money(total(pending))}.`);
+      window.scrollTop = 0;
+      heading.focus();
+    });
+  }
+
+  function open() {
+    render();
+    if (!window.open) window.showModal();
+    heading.focus();
+  }
+
+  // Remove the payment form and its values when the dialog is dismissed, including with Escape.
+  window.addEventListener('close', () => {
+    body.querySelector('form')?.reset();
+    body.replaceChildren();
+  });
 
   return { read, isTaken, save, summary, open };
 })();
