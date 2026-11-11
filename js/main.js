@@ -340,7 +340,15 @@ const CinemaTickets = (() => {
     form.autocomplete = 'off';
     const holder = field('Cardholder name', 'payment-cardholder');
     const card = field('Card number', 'payment-card-number');
-    card.input.placeholder = 'Any test value';
+    card.input.placeholder = '0000 0000 0000 0000';
+    card.input.inputMode = 'numeric';
+    card.input.maxLength = 19;
+    card.input.required = true;
+    card.input.addEventListener('input', () => {
+      const digits = card.input.value.replace(/\D/g, '').slice(0, 16);
+      card.input.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+      if (card.input.getAttribute('aria-invalid') === 'true') CinemaUI.errorFor(card.input, '');
+    });
     const expiry = field('Expiry date (MM/YY)', 'payment-expiry');
     expiry.input.placeholder = 'MM/YY';
     const cvc = field('CVC', 'payment-cvc');
@@ -365,7 +373,7 @@ const CinemaTickets = (() => {
     form.append(holder.wrapper, card.wrapper, dates, notice, actions);
     body.replaceChildren(
       element('p', 'fw-semibold', `${pending.length} ticket${pending.length === 1 ? '' : 's'} - Total: ${CinemaData.money(total(pending))}`),
-      element('p', 'small text-body-secondary', 'Demo payment only. Enter any test details. No money is charged and card details are not saved.'),
+      element('p', 'small text-body-secondary', 'Demo payment only. Enter any 16-digit test card number. No money is charged and card details are not saved.'),
       form
     );
     window.scrollTop = 0;
@@ -373,6 +381,11 @@ const CinemaTickets = (() => {
 
     form.addEventListener('submit', event => {
       event.preventDefault();
+      if (!/^\d{16}$/.test(card.input.value.replace(/ /g, ''))) {
+        CinemaUI.errorFor(card.input, 'Enter 16 digits for the card number.');
+        card.input.focus();
+        return;
+      }
       // Re-read before saving so paid tickets cannot be charged twice and new tickets are not silently included.
       const tickets = read();
       const current = unpaid(tickets);
