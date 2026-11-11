@@ -391,16 +391,12 @@ const CinemaTickets = (() => {
     form.addEventListener('submit', event => {
       event.preventDefault();
       const digits = card.input.value.replace(/ /g, '');
-      const checksum = [...digits].reverse().reduce((sum, digit, index) => {
-        let value = Number(digit) * (index % 2 ? 2 : 1);
-        return sum + (value > 9 ? value - 9 : value);
-      }, 0);
       const match = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(expiry.input.value);
       const today = new Date();
       const validExpiry = match && (2000 + Number(match[2])) * 12 + Number(match[1]) >= today.getFullYear() * 12 + today.getMonth() + 1;
       if (!validateFields([
         [holder.input, holder.input.value.trim().length >= 2 ? '' : 'Enter the cardholder name.'],
-        [card.input, /^\d{16}$/.test(digits) && checksum % 10 === 0 ? '' : 'Enter a valid 16-digit card number.'],
+        [card.input, /^\d{16}$/.test(digits) ? '' : 'Enter 16 digits for the card number.'],
         [expiry.input, validExpiry ? '' : 'Enter a valid expiry date that has not passed (MM/YY).'],
         [cvc.input, /^\d{3,4}$/.test(cvc.input.value) ? '' : 'Enter a 3 or 4-digit CVC.']
       ])) return;
