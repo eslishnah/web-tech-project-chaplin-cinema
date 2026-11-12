@@ -31,7 +31,7 @@ $(function () {
   const $count = $('<p>', { role: 'status' }).addClass('fw-semibold');
   const $notice = $('#movie-error');
   $('#now-showing > h2').text('Now showing');
-  $('#now-showing > p').first().text('Select a film to see its details and sample showtimes and prices.');
+  $('#now-showing > p').first().remove();
   $list.removeClass('d-grid gap-4').addClass('row g-3').before($filters, $actions, $count);
 
   function cardFor(film) {

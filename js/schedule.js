@@ -36,8 +36,12 @@
   byId('booking').remove();
 
   const schedule = byId('live-schedule');
+  schedule.classList.replace('border', 'border-top');
+  schedule.classList.add('border-4', 'border-success');
   const title = element('h2', 'h3 mb-3', 'Showtimes');
-  title.id = 'booking'; // Keep existing links to schedule.html#booking working.
+  const bookingAnchor = element('span', 'visually-hidden');
+  bookingAnchor.id = 'booking'; // Keep existing links to schedule.html#booking working.
+  title.prepend(bookingAnchor);
   const dates = bookingDates();
   const dateFormat = new Intl.DateTimeFormat('en-GB', {
     weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'

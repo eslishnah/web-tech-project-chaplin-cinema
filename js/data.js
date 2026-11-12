@@ -46,7 +46,7 @@ const CinemaData = (() => {
     { title: 'Schedule', href: 'schedule.html', category: 'Tickets', description: 'Compare screening times and start a ticket order.' },
     { title: 'Cinema', href: 'cinema.html', category: 'Information', description: 'See cinema photographs and read about the venue.' },
     { title: 'Visit', href: 'visit.html', category: 'Information', description: 'Find the address, phone and directions.' },
-    { title: 'Services & Reviews', href: 'services.html', category: 'Feedback', description: 'Check services and write a cinema review.' }
+    { title: 'Reviews', href: 'services.html', category: 'Feedback', description: 'Read reviews or sign in to rate your visit.' }
   ];
 
   const cinemaDay = new Intl.DateTimeFormat('en-CA', {
