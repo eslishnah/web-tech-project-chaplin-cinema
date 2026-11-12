@@ -49,13 +49,12 @@ $(function () {
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  border-radius: 50%;
-  background: #111c22;
-  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: .375rem;
+  background: rgba(16, 24, 29, .5);
+  border: 1px solid rgba(255, 255, 255, .65);
   color: #fff;
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
 }
 .featured-arrow:hover, .featured-arrow:focus-visible { background: #25363f; color: #fff; }
 .featured-arrow:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
