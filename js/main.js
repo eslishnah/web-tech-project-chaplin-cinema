@@ -293,14 +293,14 @@ const CinemaTickets = (() => {
   const descriptions = {
     'index.html': ['Cinema in Astana', '', 'Your cinema at Koktal Shopping Centre, Astana.'],
     'movies.html': ['THE FILM COLLECTION', 'Find your next film.'],
-    'schedule.html': ['PLAN YOUR SCREENING', '', 'Choose a date, then select a showtime to pick your seats.'],
+    'schedule.html': ['PLAN YOUR SCREENING', '', 'Check which films and showtimes are listed for each day. To choose seats, open a film on Movies.'],
     'cinema.html': ['BEHIND THE SCREEN', 'A closer look at Dostar.'],
     'visit.html': ['FIND YOUR WAY', 'Your visit starts here.'],
     'services.html': ['VISITOR FEEDBACK', 'Share your cinema experience.']
   };
 
   // Remove only redundant navigation actions identified in the user's screenshots.
-  document.querySelectorAll('#about .btn, #now-showing > a.btn, main > a[href="schedule.html#live-schedule"]').forEach(node => node.remove());
+  document.querySelectorAll('#about .btn, main > a[href="schedule.html#live-schedule"]').forEach(node => node.remove());
 
   document.getElementById('movie-photos')?.remove();
 

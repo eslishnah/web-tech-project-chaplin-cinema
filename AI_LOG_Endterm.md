@@ -83,7 +83,9 @@ The `show()` helper in `js/booking.js` changes the title and uses `replaceChildr
 
 **20. Why is `booking.js` loaded with `import()`?**
 
-Movies and Schedule load the shared booking module when a visitor opens a film or chooses a showing.
+Movies loads the booking module when a visitor opens a film. Schedule now displays showtimes without opening the order.
+
+**12 November update:** At the student's request, Schedule became a read-only list of films and showtimes by date. Ticket selection remains on Movies. The old Schedule order form, its JavaScript path and links to it were removed. A local browser check covered both date switching and a complete ticket save from Movies.
 
 **21. Why does the Movies page attach save clicks to the list?**
 

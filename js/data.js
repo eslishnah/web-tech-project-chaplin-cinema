@@ -43,7 +43,7 @@ const CinemaData = (() => {
   const pages = [
     { title: 'Home', href: 'index.html', category: 'Information', description: 'Welcome to Dostar Cinema.' },
     { title: 'Movies', href: 'movies.html', category: 'Tickets', description: 'Browse films, choose seats and buy tickets.' },
-    { title: 'Schedule', href: 'schedule.html', category: 'Tickets', description: 'Compare screening times and start a ticket order.' },
+    { title: 'Schedule', href: 'schedule.html', category: 'Information', description: 'See films and showtimes by date.' },
     { title: 'Cinema', href: 'cinema.html', category: 'Information', description: 'See cinema photographs and read about the venue.' },
     { title: 'Visit', href: 'visit.html', category: 'Information', description: 'Find the address, phone and directions.' },
     { title: 'Reviews', href: 'services.html', category: 'Feedback', description: 'Read reviews or sign in to rate your visit.' }

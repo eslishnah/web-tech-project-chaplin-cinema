@@ -19,7 +19,7 @@ All six pages are independently reachable. The logo opens Home. Movies and Sched
 ## Visitor journeys
 
 1. **Find the cinema.** From Home, open **Details > Visit**. Check the address, interactive map, contacts and daily opening hours, then scroll down to see the entrance photos.
-2. **Try a ticket order.** On **Movies**, choose a film and screening, select one or more seats and choose a ticket type for each. Apply `WEB1` for 20% off. If asked to sign in, enter a sample name, phone number and any 16-digit test card number, such as `4242 4242 4242 4242`. Save the ticket and reopen it in **My tickets**. On **Schedule**, pick a date and a showtime to open the same seat picker. After choosing ticket types, enter your contact details and the youngest viewer's age in the booking dialog.
+2. **Try a ticket order.** On **Movies**, choose a film and screening, select one or more seats and choose a ticket type for each. Apply `WEB1` for 20% off. If asked to sign in, enter a sample name, phone number and any 16-digit test card number, such as `4242 4242 4242 4242`. Save the ticket and reopen it in **My tickets**. **Schedule** is for browsing films and showtimes by date; it does not open the ticket order.
 3. **Leave a review.** Open **Details > Reviews** and sign in. The form fills in your profile name. Choose one to five stars, write a review and select **Post review**. Your review appears with its rating and date. You can edit or delete it during the same sign-in session.
 
 ## Endterm functionality and defense topics
@@ -28,11 +28,11 @@ All six pages are independently reachable. The logo opens Home. Movies and Sched
 |---|---|---|---|
 | Home | A featured-film carousel links to each film's showtimes. | jQuery, `js/jquery-home.js` | Daniyar Nataliyev |
 | Movies | The catalogue shows 24 films with search, category and age filters, sorting and a saved-film shortlist. | jQuery for rendering and events in `js/movies.js`, JavaScript for data and filtering in `js/data.js` | Daniyar Nataliyev |
-| Schedule listings | Dates filter upcoming showtimes grouped by film. Selecting a time opens the shared seat picker. | JavaScript, `js/schedule.js` and `js/data.js` | Daniyar Nataliyev |
+| Schedule listings | Dates filter upcoming showtimes grouped by film. Times and starting prices are displayed for comparison; ordering starts on Movies. | JavaScript, `js/schedule.js` and `js/data.js` | Daniyar Nataliyev |
 | Seat selection and ticket totals | Visitors can choose several seats, choose a ticket type for each and apply the `WEB1` discount. | JavaScript, `js/booking.js` | Sandzhar Fazyl |
 | My tickets | The shared dialog displays tickets saved in the browser. The seat picker uses saved tickets to mark occupied seats for the selected showing. | JavaScript, `js/main.js` and `js/booking.js` | Sandzhar Fazyl |
 | Cinema and navigation | The Cinema page shows venue facts and photos. The Details menu groups Cinema, Visit and Reviews. The separate Halls page was removed. | JavaScript and Bootstrap, `js/main.js`. The Halls removal also changed the source HTML. | Sandzhar Fazyl |
-| Booking and profile validation | Schedule reuses the buyer form in the booking dialog and checks contact details and the youngest viewer's age. Local sign-in validates the sample profile fields. | JavaScript, `js/schedule.js` and `js/main.js` | Nauryzbay Kinayatov |
+| Profile validation | Local sign-in validates the sample profile fields before tickets are saved from Movies. | JavaScript, `js/main.js` | Nauryzbay Kinayatov |
 | Reviews | Signed-in visitors can rate their visit and post, edit or delete their own reviews. The page shows the average rating and lets visitors sort the list. | jQuery, `js/jquery-services.js` | Nauryzbay Kinayatov |
 | Visit | Shows an interactive map, address, contacts, daily opening hours and entrance photos. | JavaScript, `js/visit.js` and `js/main.js` | Nauryzbay Kinayatov |
 

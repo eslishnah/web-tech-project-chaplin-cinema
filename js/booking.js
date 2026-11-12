@@ -6,7 +6,6 @@ let film;
 let date;
 let screening;
 let selectedSeats = [];
-let scheduleOrder = null;
 let promoCode;
 let currentAccountListener = null;
 
@@ -135,10 +134,7 @@ function seats(message = '') {
       seats();
     }, true));
   }
-  const back = scheduleOrder
-    ? button('Back to Schedule', () => window.close(), true)
-    : button('Back to showtimes', () => details(), true);
-  actions.append(back);
+  actions.append(button('Back to showtimes', () => details(), true));
   const selection = element('p', 'mb-2', selectedSeats.length
     ? `Selected: ${selectedSeats.map(seat => `row ${seat.row}, seat ${seat.number}`).join('; ')}.`
     : 'Select an available seat to begin.');
@@ -147,21 +143,7 @@ function seats(message = '') {
 function continueBooking() {
   const unpriced = selectedSeats.find(seat => !seat.type);
   if (unpriced) chooseType(unpriced);
-  else if (scheduleOrder) showBuyerDetails();
   else payment();
-}
-
-function showBuyerDetails() {
-  const firstVisit = !scheduleOrder.review;
-  scheduleOrder.review = name => {
-    scheduleOrder.name = name;
-    payment();
-  };
-  const count = selectedSeats.length;
-  show('Booking details', filmLine(),
-    element('p', 'fw-semibold', count === 1 ? '1 selected seat' : count + ' selected seats'),
-    scheduleOrder.buyerDetails, button('Add or change seats', () => seats(), true));
-  if (firstVisit) scheduleOrder.buyerDetails.querySelector('form').reset();
 }
 
 function chooseType(seat) {
@@ -238,7 +220,7 @@ function payment() {
       account.append(element('p', 'mb-0', `Local profile: ${profile.name}.`));
     } else {
       account.append(element('p', 'mb-2', 'Sign in before buying your ticket.'),
-        button('Sign in to continue', () => CinemaProfile.open(scheduleOrder?.name), true));
+        button('Sign in to continue', () => CinemaProfile.open(), true));
     }
   }
   renderAccount();
@@ -266,10 +248,7 @@ function payment() {
       return;
     }
     if (!sessionsFor(film, date).some(item => item.key === screening.key)) {
-      if (scheduleOrder) {
-        scheduleOrder.onExpired();
-        window.close();
-      } else details('This screening has already started. Choose another time.');
+      details('This screening has already started. Choose another time.');
       return;
     }
     const reference = `DC-${Date.now().toString(36).toUpperCase()}`;
@@ -325,18 +304,12 @@ function clearAccountListener() {
 }
 window.addEventListener('close', clearAccountListener);
 
-function showInitial(initialFilm, initialDate, order = null) {
+function showInitial(initialFilm, initialDate) {
   film = initialFilm;
   date = initialDate;
   selectedSeats = [];
   promoCode = '';
-  scheduleOrder = order;
-  if (order) {
-    screening = order.screening;
-    seats();
-  } else {
-    details();
-  }
+  details();
   window.showModal();
   heading.focus();
 }
@@ -345,9 +318,4 @@ export function openFilm(selectedFilm) {
   if (window.open) return;
   const dates = bookingDates();
   showInitial(selectedFilm, dates.find(day => sessionsFor(selectedFilm, day).length) || dates[0]);
-}
-
-export function openScreening(order) {
-  if (window.open) return;
-  showInitial(order.film, order.date, order);
 }
