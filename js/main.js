@@ -298,6 +298,30 @@ const CinemaTickets = (() => {
       const layout = element('div', 'row g-3 align-items-start');
       const details = element('div', film ? 'col-8' : 'col-12');
       details.append(element('h3', 'h5', ticket.title), element('p', 'text-body-secondary text-break', `Ticket ${ticket.reference}`), badge, summary(ticket));
+      if (!paid) {
+        const feedback = element('p', 'is-hidden mt-2 mb-0');
+        feedback.setAttribute('role', 'status');
+        const remove = button('Remove', () => {
+          const current = read();
+          const saved = current.find(item => item.reference === ticket.reference);
+          // Re-check the stored status in case this ticket was paid for in another tab.
+          if (!saved || saved.paymentStatus === 'paid') {
+            render();
+            heading.focus();
+            return;
+          }
+          if (!writeStorage(storageKey, current.filter(item => item.reference !== ticket.reference))) {
+            status(feedback, 'The ticket could not be removed. Check browser storage settings and try again.', true);
+            return;
+          }
+          render('Unpaid ticket removed.');
+          heading.focus();
+        }, true);
+        remove.classList.replace('btn-outline-secondary', 'btn-outline-danger');
+        remove.classList.add('mt-3');
+        remove.setAttribute('aria-label', `Remove ticket for ${ticket.title}, row ${ticket.row}, seat ${ticket.number}`);
+        details.append(remove, feedback);
+      }
       layout.append(details);
       if (film) {
         const picture = element('div', 'col-4 d-flex justify-content-end');
