@@ -160,12 +160,14 @@ const CinemaProfile = (() => {
   card.input.maxLength = 23;
   const form = element('form');
   form.noValidate = true;
-  const testNumber = '4242 4242 4242 4242';
-  card.input.placeholder = testNumber;
+  card.input.placeholder = '0000 0000 0000 0000';
+  card.input.addEventListener('input', () => {
+    const digits = card.input.value.replace(/ /g, '');
+    if (/^\d{16}$/.test(digits)) card.input.value = digits.match(/\d{4}/g).join(' ');
+  });
   const signIn = element('button', 'btn btn-success', 'Sign in');
   signIn.type = 'submit';
   form.append(name.wrapper, phone.wrapper, card.wrapper, signIn);
-  form.prepend(element('p', 'small text-body-secondary', 'Use sample details to continue. This profile works only in this tab.'));
   const account = element('section');
   const accountStatus = element('p');
   const signOut = button('Sign out', () => {
@@ -198,11 +200,11 @@ const CinemaProfile = (() => {
     const enteredName = name.input.value.trim();
     const enteredPhone = phone.input.value.trim();
     const digits = enteredPhone.replace(/\D/g, '');
-    const enteredCard = card.input.value.trim().replace(/[ -]/g, '');
+    const enteredCard = card.input.value;
     return [
       [name.input, enteredName.length < 2 || enteredName.length > 80 ? 'Enter a name with 2 to 80 characters.' : ''],
       [phone.input, !/^\+?[\d\s()-]+$/.test(enteredPhone) || digits.length < 10 || digits.length > 15 ? 'Enter a phone number with 10 to 15 digits.' : ''],
-      [card.input, enteredCard === testNumber.replace(/ /g, '') ? '' : 'Use the test card number 4242 4242 4242 4242.']
+      [card.input, /^\d{4}( \d{4}){3}$/.test(enteredCard) ? '' : 'Enter 16 digits in the format 0000 0000 0000 0000.']
     ];
   }
 
@@ -261,7 +263,7 @@ const CinemaTickets = (() => {
 
   function open() {
     const tickets = read();
-    body.replaceChildren(element('p', 'text-body-secondary', 'Tickets saved in this browser.'));
+    body.replaceChildren();
     if (!tickets.length) {
       body.append(element('p', '', 'You don’t have any tickets yet.'));
       if (location.pathname.endsWith('/movies.html')) {
@@ -290,20 +292,26 @@ const CinemaTickets = (() => {
   const isHome = page === 'index.html';
   const descriptions = {
     'index.html': ['Cinema in Astana', '', 'Your cinema at Koktal Shopping Centre, Astana.'],
-    'movies.html': ['THE FILM COLLECTION', 'Find your next film.', 'Compare age ratings, save your favourites and choose a session that suits your visit.'],
+    'movies.html': ['THE FILM COLLECTION', 'Find your next film.'],
     'schedule.html': ['PLAN YOUR SCREENING', '', 'Choose a date, then select a showtime to pick your seats.'],
-    'cinema.html': ['BEHIND THE SCREEN', 'A closer look at Dostar.', 'Explore the venue and see photographs of the cinema.'],
-    'visit.html': ['FIND YOUR WAY', 'Your visit starts here.', 'Find the cinema address, phone number and entrance photos.'],
-    'services.html': ['MAKE THE MOST OF YOUR VISIT', 'The details that make a difference.', 'Understand the ticket journey, prepare your route and leave your feedback.']
+    'cinema.html': ['BEHIND THE SCREEN', 'A closer look at Dostar.'],
+    'visit.html': ['FIND YOUR WAY', 'Your visit starts here.'],
+    'services.html': ['VISITOR FEEDBACK', 'Share your cinema experience.']
   };
 
   // Remove only redundant navigation actions identified in the user's screenshots.
-  document.querySelectorAll('#about .btn, #about-cinema .btn, #services .card .btn, #location a[href="cinema.html"], #now-showing > a.btn, main > a[href="schedule.html#live-schedule"]').forEach(node => node.remove());
+  document.querySelectorAll('#about .btn, #now-showing > a.btn, main > a[href="schedule.html#live-schedule"]').forEach(node => node.remove());
 
-  document.querySelector('#about-cinema > .lead + p')?.remove();
   document.getElementById('movie-photos')?.remove();
 
   const heading = main.querySelector('h1');
+  const isReviews = page === 'services.html';
+  if (isReviews) {
+    document.title = 'Dostar Cinema - Reviews';
+    heading.textContent = 'Reviews at Dostar Cinema';
+    document.getElementById('services').remove();
+    document.getElementById('service-feedback-form').classList.add('is-hidden');
+  }
   const [eyebrow, tagline, description] = descriptions[page] || descriptions['index.html'];
   const heroPadding = page === 'schedule.html' ? 'p-3 p-lg-4' : 'p-4 p-lg-5';
   const hero = element('section', 'bg-success text-black rounded-4 mb-4 shadow-sm ' + heroPadding);
@@ -315,9 +323,10 @@ const CinemaTickets = (() => {
   heading.before(hero);
   const heroRow = element('div', 'row g-4 align-items-center');
   const heroText = element('div', isHome ? 'col-12 col-lg-7' : 'col-12');
-  heroText.append(element('p', 'badge bg-warning text-black rounded-pill px-3 py-2 text-wrap text-start mb-3', eyebrow), heading);
-  if (tagline) heroText.append(element('p', 'h4 mb-3', tagline));
-  heroText.append(element('p', 'mb-0 text-black', description));
+  if (eyebrow) heroText.append(element('p', 'badge bg-warning text-black rounded-pill px-3 py-2 text-wrap text-start mb-3', eyebrow));
+  heroText.append(heading);
+  if (tagline) heroText.append(element('p', description ? 'h4 mb-3' : 'h4 mb-0', tagline));
+  if (description) heroText.append(element('p', 'mb-0 text-black', description));
   heroRow.append(heroText);
   if (isHome) {
     const photo = document.querySelector('#about img');
@@ -343,14 +352,6 @@ const CinemaTickets = (() => {
     card.classList.add('bg-white', 'border-0', 'shadow-sm', 'rounded-4', 'overflow-hidden');
     card.querySelector('.card-body')?.classList.add('p-4');
   });
-  document.querySelectorAll('#services .card-body').forEach((body, index) => {
-    body.prepend(element('span', 'badge rounded-pill bg-success-subtle text-success-emphasis align-self-start px-3 py-2 mb-3', `0${index % 3 + 1}`));
-    body.classList.add('d-flex', 'flex-column');
-    body.querySelector('a')?.classList.add('mt-auto', 'align-self-start');
-  });
-  document.querySelectorAll('#services .col-md-4').forEach(column => {
-    column.classList.replace('col-md-4', 'col-lg-4');
-  });
 
   const addFacts = (target, items) => {
     const row = element('dl', 'row g-3 mt-2 mb-0');
@@ -363,25 +364,20 @@ const CinemaTickets = (() => {
     });
     target.append(row);
   };
-  if (page === 'cinema.html') addFacts(document.getElementById('about-cinema'), [
-    ['Published hall count', '4 cinema halls'], ['Published seat count', '326 seats in total'], ['Location', 'Köktal shopping centre']
-  ]);
-  if (page === 'visit.html') addFacts(document.getElementById('location'), [
-    ['Inside the centre', 'Third floor'], ['Before travelling', 'Confirm the address and hours by phone'], ['Arrival planning', 'Allow time for your route and entry']
-  ]);
-  if (page === 'services.html') {
-    const questions = element('section', 'mt-4');
-    questions.append(element('h3', 'h4 mb-3', 'A few useful details'));
-    [
-      ['How does the ticket order work?', 'Open a film in Movies or choose a session in Schedule, then select seats. The result is saved locally without payment or reservation.'],
-      ['What should I check before visiting?', 'Check the film’s age rating and language. Confirm the current session, price, address and any assistance you need directly with the cinema.'],
-      ['Where does my feedback go?', 'Your feedback appears in this tab only. You can edit or delete it; it is not sent to the cinema and disappears when you reload.']
-    ].forEach(([question, answer]) => {
-      const detail = element('details', 'bg-light rounded-3 p-3 mb-2');
-      detail.append(element('summary', 'fw-semibold', question), element('p', 'mt-3 mb-0', answer));
-      questions.append(detail);
-    });
-    document.getElementById('services').append(questions);
+  if (page === 'cinema.html') {
+    hero.classList.replace('mb-4', 'mb-3');
+    const facts = document.getElementById('about-cinema');
+    facts.replaceChildren();
+    facts.classList.replace('border', 'border-top');
+    facts.classList.add('border-4', 'border-success');
+    facts.setAttribute('aria-label', 'Cinema information');
+    addFacts(facts, [
+      ['Published hall count', '4 cinema halls'], ['Published seat count', '326 seats in total'], ['Location', 'Köktal shopping centre']
+    ]);
+    facts.firstElementChild.classList.remove('mt-2');
+    document.getElementById('cinema-gallery').classList.add(
+      'bg-white', 'border-top', 'border-4', 'border-success', 'rounded-4', 'shadow-sm', 'p-3', 'p-md-4', 'mb-4'
+    );
   }
   const footer = document.querySelector('footer');
   footer.classList.remove('bg-dark', 'text-white');
@@ -400,6 +396,109 @@ const CinemaTickets = (() => {
   main.querySelectorAll('a:not(.btn)').forEach(node => node.classList.add('text-success-emphasis'));
   main.querySelectorAll('.form-label').forEach(node => node.classList.add('fw-semibold'));
   main.querySelectorAll('summary').forEach(node => node.classList.add('text-success-emphasis'));
+})();
+
+// Cinema photos share one dialog, with the current photo tracked by its index.
+(() => {
+  const gallery = document.querySelector('#cinema-gallery .row');
+  if (!gallery) return;
+
+  const { element, button, dialog } = CinemaUI;
+  const photos = [...gallery.querySelectorAll('img')].map(image => image.getAttribute('src'));
+  photos.push(
+    'images/Снимок экрана 2026-11-12 145658.png',
+    'images/Снимок экрана 2026-11-12 145723.png',
+    'images/Снимок экрана 2026-11-12 145751.png',
+    'images/Снимок экрана 2026-11-12 145758.png',
+    'images/Снимок экрана 2026-11-12 145809.png'
+  );
+
+  const { window: viewer, heading, body } = dialog('cinema-photo-viewer', 'Cinema photographs', true);
+  const image = element('img', 'd-block w-100 object-fit-contain');
+  image.height = 440;
+  image.alt = 'Cinema gallery photo';
+  const counter = element('p', 'mb-0 text-body-secondary');
+  counter.setAttribute('role', 'status');
+
+  const preview = element('img', 'd-block object-fit-cover');
+  preview.alt = '';
+  const open = element('button', 'btn d-block ratio ratio-4x3 p-0 border-0 rounded-4 overflow-hidden focus-ring');
+  open.type = 'button';
+  open.setAttribute('aria-haspopup', 'dialog');
+  open.append(preview);
+
+  const announcement = element('p', 'visually-hidden');
+  announcement.setAttribute('role', 'status');
+  const indicators = element('div', 'd-flex justify-content-center gap-1 py-2');
+  indicators.setAttribute('role', 'group');
+  indicators.setAttribute('aria-label', 'Choose a photo');
+
+  let currentPhoto = 0;
+  const dots = photos.map((_, index) => {
+    const dot = element('button', 'btn btn-sm border-0 px-1 py-0 focus-ring', '●');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', 'Go to photo ' + (index + 1));
+    dot.addEventListener('click', () => showPhoto(index));
+    indicators.append(dot);
+    return dot;
+  });
+
+  function showPhoto(index) {
+    currentPhoto = (index + photos.length) % photos.length;
+    const src = photos[currentPhoto];
+    const label = 'Photo ' + (currentPhoto + 1) + ' of ' + photos.length;
+    preview.src = src;
+    if (viewer.open) image.src = src;
+    open.setAttribute('aria-label', 'Enlarge photo ' + (currentPhoto + 1));
+    announcement.textContent = label;
+    counter.textContent = label;
+    dots.forEach((dot, dotIndex) => {
+      const active = dotIndex === currentPhoto;
+      dot.classList.toggle('text-success', active);
+      dot.classList.toggle('text-secondary', !active);
+      if (active) dot.setAttribute('aria-current', 'true');
+      else dot.removeAttribute('aria-current');
+    });
+  }
+
+  function arrow(symbol, label, position, direction) {
+    const control = element('button',
+      'btn btn-light position-absolute top-50 translate-middle-y rounded-circle shadow-sm py-2 px-3 fs-5 lh-1 ' + position,
+      symbol);
+    control.type = 'button';
+    control.setAttribute('aria-label', label);
+    control.addEventListener('click', () => showPhoto(currentPhoto + direction));
+    return control;
+  }
+
+  open.addEventListener('click', () => {
+    image.src = photos[currentPhoto];
+    viewer.showModal();
+    heading.focus();
+  });
+
+  const stage = element('div', 'position-relative');
+  stage.append(open, arrow('‹', 'Previous photo', 'start-0 ms-2', -1), arrow('›', 'Next photo', 'end-0 me-2', 1));
+  const frame = element('div', 'text-center');
+  frame.append(stage, indicators, announcement);
+  const column = element('div', 'col-12 col-lg-10 col-xl-9 mx-auto');
+  column.append(frame);
+  gallery.replaceChildren(column);
+
+  const controls = element('div', 'd-flex flex-wrap align-items-center justify-content-between gap-2 mb-3');
+  controls.append(button('Previous', () => showPhoto(currentPhoto - 1), true), counter,
+    button('Next', () => showPhoto(currentPhoto + 1), true));
+  body.append(controls, image);
+
+  [gallery, viewer].forEach(container => {
+    container.addEventListener('keydown', event => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      showPhoto(currentPhoto + (event.key === 'ArrowLeft' ? -1 : 1));
+    });
+  });
+
+  showPhoto(0);
 })();
 
 // Group the original pages without changing their addresses.
@@ -424,7 +523,7 @@ const CinemaTickets = (() => {
     item.classList.remove('nav-item');
     link.classList.remove('nav-link', 'bg-success', 'text-black', 'rounded-pill');
     link.classList.add('dropdown-item');
-    if (href === 'services.html') link.textContent = 'Services & Reviews';
+    if (href === 'services.html') link.textContent = 'Reviews';
     if (link.hasAttribute('aria-current')) toggle.classList.add('active');
     menu.append(item);
   }

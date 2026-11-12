@@ -1,177 +1,225 @@
 'use strict';
 
-// jQuery 3.7.1 full build is loaded first; its effects module animates feedback below.
 $(function () {
-  // .val(), .siblings(), .text(), .append() and .on() replace value, sibling lookup, textContent, append() and addEventListener().
-  // Traversal and card actions are shorter; validation rules remain explicit.
-  const $form = $('#service-feedback-form');
-  // Keep required/type attributes for native browser validation too.
-  // Client-side checks never replace server-side validation in a real submission.
-  const $name = $('#service-name');
-  const $email = $('#service-email');
-  const $topic = $('#service-topic');
-  const $message = $('#service-message');
+  const $feedback = $('#feedback');
+  const $form = $('#service-feedback-form').prop('noValidate', true);
+  const $name = $('#service-name').prop('readOnly', true);
+  const $message = $('#service-message').attr({ rows: 3, maxlength: 500 });
   const $submit = $('#service-feedback-submit');
-  const $error = $('#service-feedback-error');
-  const $result = $('#service-feedback-result');
+  const $cancel = $('#service-feedback-reset').attr('type', 'button').text('Cancel');
+  const $ratingError = $('<p>', { id: 'review-rating-error' }).addClass('small has-error mt-1 mb-0 is-hidden');
+  const $rating = $('<fieldset>').addClass('col-12').append(
+    $('<legend>', { text: 'Your rating' }).addClass('form-label fs-6 fw-semibold float-none w-auto')
+  );
+  const $stars = $('<div>').addClass('d-flex flex-wrap gap-1');
+  const dateFormat = new Intl.DateTimeFormat('en', { dateStyle: 'medium' });
   let reviews = [];
-  let nextId = 1;
   let editing = null;
+  let nextId = 1;
 
-  const $phoneCell = $('<div>').addClass('col-12 col-md-6').append(
-    $('<label>', { for: 'service-phone', text: 'Phone' }).addClass('form-label fw-semibold'),
-    $('<input>', { id: 'service-phone', name: 'phone', type: 'tel', required: true, autocomplete: 'tel', placeholder: '+7 777 123 45 67' }).addClass('form-control'));
-  $email.parent().after($phoneCell);
-  const $phone = $('#service-phone');
-  $topic.parent().addClass('col-md-6');
-  $name.attr('maxlength', '80');
-  $message.attr('maxlength', '500');
-  const $consent = $('<input>', { id: 'service-consent', type: 'checkbox', required: true }).addClass('form-check-input me-2');
-  const $consentLabel = $('<label>', { for: 'service-consent', text: 'Show my name and review below in this tab' }).addClass('form-check-label');
-  const $consentCell = $('<div>').addClass('col-12 form-check').append($consent, $consentLabel);
-  $submit.parent().before($consentCell);
-  const $counter = $('<p>', { role: 'status' }).addClass('form-text fs-6');
-  $message.after($counter);
-  const $sort = $('<select>', { id: 'review-order' }).addClass('form-select').append(
-    $('<option>', { value: 'new', text: 'Newest first' }), $('<option>', { value: 'old', text: 'Oldest first' }));
-  const $sortCell = $('<div>').addClass('mt-3 mb-3').append(
-    $('<label>', { for: 'review-order', text: 'Review order' }).addClass('form-label fw-semibold'), $sort);
-  const $count = $('<p>', { role: 'status' });
+  for (let value = 1; value <= 5; value++) {
+    const id = `service-rating-${value}`;
+    $stars.append(
+      $('<input>', {
+        id, type: 'radio', name: 'service-rating', value, required: true,
+        'aria-label': `${value} out of 5 stars`,
+        'aria-describedby': 'review-rating-error'
+      }).addClass('btn-check'),
+      $('<label>', { for: id, 'aria-hidden': 'true' }).addClass('btn p-2 fs-2 lh-1 text-nowrap')
+    );
+  }
+  const $ratingInputs = $stars.find('input');
+  $rating.append($stars, $ratingError);
+
+  const $heading = $feedback.children('h2').attr('id', 'write-review');
+  const $signIn = $('<button>', { type: 'button', text: 'Sign in to write a review' }).addClass('btn btn-success');
+  const $composer = $('<section>', { 'aria-labelledby': 'write-review' }).addClass('pe-lg-3')
+    .append($heading, $signIn, $form);
+
+  $form.find('#service-email, #service-topic').parent().remove();
+  $feedback.children('#service-feedback-error, #service-feedback-result').remove();
+  $name.parent().removeClass('col-md-6').after($rating);
+  $message.prev('label').text('Your review');
+
+  const $average = $('<div>').addClass('d-flex align-items-center flex-wrap gap-3');
+  const $count = $('<p>').addClass('small text-body-secondary mb-0');
+  const $summary = $('<div>', { role: 'status' }).addClass('bg-success-subtle rounded-3 px-3 py-2')
+    .append($average, $count);
+  const $sort = $('<select>', { id: 'review-order' }).addClass('form-select form-select-sm').append(
+    $('<option>', { value: 'new', text: 'Newest first' }),
+    $('<option>', { value: 'old', text: 'Oldest first' })
+  );
+  const $sortGroup = $('<div>').addClass('align-self-start').append(
+    $('<label>', { for: 'review-order', text: 'Sort reviews' }).addClass('visually-hidden'),
+    $sort
+  );
+  const $listHeading = $('<h2>', { id: 'visitor-reviews', text: 'Visitor reviews', tabindex: -1 }).addClass('h3 mb-0');
   const $cards = $('<div>', { id: 'service-review-cards' }).addClass('d-grid gap-3');
-  $result.after($('<h3>', { text: 'Reviews in this tab' }).addClass('h4 mt-4'), $sortCell, $count, $cards);
-  $result.text('Reviews stay in this tab only. Contact details are not displayed or sent.').removeClass('is-hidden');
-  $submit.text('Add local review');
+  const $list = $('<section>', { 'aria-labelledby': 'visitor-reviews' }).addClass('d-grid gap-3').append(
+    $('<div>').addClass('d-flex flex-wrap align-items-center justify-content-between gap-2').append($listHeading, $sortGroup),
+    $summary,
+    $cards
+  );
+  $feedback.append(
+    $('<div>').addClass('row g-4 align-items-start').append(
+      $('<div>').addClass('col-12 col-lg-5').append($composer),
+      $('<div>').addClass('col-12 col-lg-7').append($list)
+    )
+  );
 
-  function fieldError($field, message) {
-    // siblings() finds the message in the field's own wrapper; each input gets its own error.
-    let $hint = $field.siblings('.field-error');
-    if (!$hint.length) {
-      $hint = $('<p>').addClass('field-error has-error mt-1 mb-0');
-      $field.after($hint);
+  function selectedRating() {
+    return Number($ratingInputs.filter(':checked').val() || 0);
+  }
+
+  function updateRating() {
+    const rating = selectedRating();
+    $ratingInputs.each(function () {
+      const filled = Number(this.value) <= rating;
+      $(this).next('label').text(filled ? '★' : '☆')
+        .toggleClass('text-warning', filled)
+        .toggleClass('text-body-secondary', !filled);
+    });
+  }
+
+  function setRatingError(message) {
+    $ratingError.text(message).toggleClass('is-hidden', !message);
+    $ratingInputs.attr('aria-invalid', String(Boolean(message)));
+  }
+
+  function setFormReview(review = null) {
+    editing = review;
+    $form[0].reset();
+    $name.val(CinemaProfile.get()?.name || '');
+    $heading.text(review ? 'Edit your review' : 'Write a review');
+    $submit.text(review ? 'Save changes' : 'Post review');
+    $cancel.toggleClass('is-hidden', !review);
+    if (review) {
+      $message.val(review.message);
+      $ratingInputs.filter(`[value="${review.rating}"]`).prop('checked', true);
     }
-    $hint.text(message).toggleClass('is-hidden', !message);
-    $field.toggleClass('is-invalid', Boolean(message)).attr('aria-invalid', String(Boolean(message)));
-    if ($field.hasClass('is-invalid')) $field.attr('aria-errormessage', `${$field.attr('id')}-error`);
-    else $field.removeAttr('aria-errormessage');
-    if ($field.attr('id')) {
-      $hint.attr('id', `${$field.attr('id')}-error`);
-      $field.attr('aria-describedby', $hint.attr('id'));
+    CinemaUI.errorFor($message[0], '');
+    setRatingError('');
+    updateRating();
+  }
+
+  function starDisplay(rating) {
+    const filled = Math.round(rating);
+    return $('<span>', { 'aria-hidden': 'true', text: '★'.repeat(filled) + '☆'.repeat(5 - filled) })
+      .addClass('text-warning fs-5 text-nowrap');
+  }
+
+  function renderReviews() {
+    const profile = CinemaProfile.get();
+    $average.empty();
+    $count.text(`${reviews.length} ${reviews.length === 1 ? 'review' : 'reviews'}`);
+    if (reviews.length) {
+      const average = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+      $average.append($('<span>', { text: `${average.toFixed(1)} / 5` }).addClass('fs-4 fw-semibold'), starDisplay(average));
     }
-  }
-
-  function validationChecks() {
-    const name = $name.val().trim();
-    const email = $email.val().trim();
-    const phone = $phone.val().trim();
-    const message = $message.val().trim();
-    const phoneDigits = phone.replace(/\D/g, '');
-    return [
-      [$name, name.length < 2 || name.length > 80 ? 'Enter 2–80 characters for your name.' : ''],
-      [$email, !CinemaData.emailValid(email) || email.length > 120 ? 'Enter a valid email address.' : ''],
-      [$phone, !/^\+?[\d\s()\-]+$/.test(phone) || phoneDigits.length < 10 || phoneDigits.length > 15 ? 'Enter a phone number with 10–15 digits.' : ''],
-      [$topic, !$topic.val() ? 'Choose a topic.' : ''],
-      [$message, message.length < 10 || message.length > 500 ? 'Write 10–500 characters.' : ''],
-      [$consent, !$consent.prop('checked') ? 'Confirm that your review can appear in this tab.' : '']
-    ];
-  }
-
-  function validate() {
-    const checks = validationChecks();
-    checks.forEach(([$field, message]) => fieldError($field, message));
-    const first = checks.find(([, message]) => message);
-    if (first) first[0].trigger('focus');
-    return !first;
-  }
-
-  function render() {
+    $sortGroup.toggleClass('is-hidden', reviews.length < 2);
     $cards.empty();
+    if (!reviews.length) {
+      $cards.append($('<p>', { text: 'No reviews yet.' }).addClass('border rounded-3 p-3 mb-0 text-body-secondary'));
+      return;
+    }
+
     const sorted = [...reviews].sort((a, b) => $sort.val() === 'old' ? a.id - b.id : b.id - a.id);
-    $count.text(`${reviews.length} local reviews.`);
-    if (!sorted.length) $cards.append($('<p>', { text: 'No reviews yet. Add the first one above.' }).addClass('p-3 border rounded'));
     sorted.forEach(review => {
-      const $card = $('<article>').addClass('border rounded-4 p-3 bg-white text-break')
-        .attr({ 'data-review-id': review.id, tabindex: '-1' });
-      const $time = $('<time>', { text: new Date(review.created).toLocaleString() }).addClass('d-block mb-2')
-        .attr('datetime', new Date(review.created).toISOString());
-      const $actions = $('<div>').addClass('d-flex flex-wrap gap-2').append(
-        $('<button>', { type: 'button', text: 'Edit review' }).addClass('btn btn-success review-edit'),
-        $('<button>', { type: 'button', text: 'Delete review' }).addClass('btn btn-outline-secondary review-delete'));
-      $card.append($('<h4>', { text: review.name }).addClass('h5'),
-        $('<p>', { text: review.category }).addClass('fw-semibold'), $time,
-        $('<p>', { text: review.message }), $actions);
+      const $card = $('<article>', { tabindex: -1, 'data-review-id': review.id })
+        .addClass('border rounded-4 p-3 p-md-4 text-break');
+      const $time = $('<time>', { datetime: review.created.toISOString(), text: dateFormat.format(review.created) })
+        .addClass('small text-body-secondary');
+      const $cardHeading = $('<div>').addClass('d-flex flex-wrap justify-content-between align-items-baseline gap-1').append(
+        $('<h3>', { text: review.name }).addClass('h5 mb-0'),
+        $time
+      );
+      const $score = $('<p>').addClass('mb-2 d-flex align-items-center gap-2').append(
+        starDisplay(review.rating),
+        $('<span>', { text: `${review.rating} / 5` }).addClass('small text-body-secondary')
+      );
+      $card.append($cardHeading, $score, $('<p>', { text: review.message }).addClass('mb-0'));
+      if (review.owner === profile) {
+        $card.append($('<div>').addClass('d-flex flex-wrap gap-2 mt-3').append(
+          $('<button>', { type: 'button', text: 'Edit review' }).addClass('btn btn-outline-secondary btn-sm review-edit'),
+          $('<button>', { type: 'button', text: 'Delete review' }).addClass('btn btn-outline-secondary btn-sm review-delete')
+        ));
+      }
       $cards.append($card);
     });
   }
 
-  function clearFormState() {
-    editing = null;
-    $submit.text('Add local review');
-    $form.find('[required], textarea').each(function () { fieldError($(this), ''); });
-    $error.addClass('is-hidden');
-    $counter.text('0/500 characters. Minimum 10 non-space characters.');
+  function syncProfile() {
+    const profile = CinemaProfile.get();
+    const moveFocus = profile && document.activeElement === $signIn[0];
+    setFormReview();
+    $form.toggleClass('is-hidden', !profile);
+    $signIn.toggleClass('is-hidden', Boolean(profile));
+    renderReviews();
+    if (moveFocus) $ratingInputs.first().trigger('focus');
   }
 
-  $submit.on('click', function (event) {
-    if (!validate()) {
-      event.preventDefault();
-      $error.text('Review not saved. Check the highlighted fields.').removeClass('is-hidden');
+  $signIn.on('click', () => CinemaProfile.open());
+  $(document).on('cinema-profile-change', syncProfile);
+  $form.on('change', 'input[name="service-rating"]', function () {
+    updateRating();
+    setRatingError('');
+  });
+  $message.on('input', function () {
+    const length = $message.val().trim().length;
+    if ($message.attr('aria-invalid') === 'true' && length >= 10 && length <= 500) {
+      CinemaUI.errorFor(this, '');
     }
+  });
+  $cancel.on('click', function () {
+    setFormReview();
+    $ratingInputs.first().trigger('focus');
   });
   $form.on('submit', function (event) {
-    // Without preventDefault the browser would navigate/reload and erase local reviews.
     event.preventDefault();
-    if (!validate()) {
-      $error.text('Review not saved. Check the highlighted fields.').removeClass('is-hidden');
-      return;
-    }
-    const name = $name.val().trim();
+    const profile = CinemaProfile.get();
+    if (!profile) return;
+
+    const rating = selectedRating();
     const message = $message.val().trim();
-    const duplicate = reviews.some(item => item.id !== editing && item.name === name && item.message === message && item.topic === $topic.val());
-    if (duplicate) {
-      $error.text('This review is already listed. Edit the existing review instead.').removeClass('is-hidden');
+    const duplicate = reviews.some(review => review !== editing && review.owner === profile &&
+      review.rating === rating && review.message === message);
+    const messageError = message.length < 10 || message.length > 500 ? 'Write between 10 and 500 characters.'
+      : duplicate ? 'You have already posted this review.' : '';
+    setRatingError(rating ? '' : 'Choose a rating from 1 to 5 stars.');
+    CinemaUI.errorFor($message[0], messageError);
+    if (!rating || messageError) {
+      (rating ? $message : $ratingInputs.first()).trigger('focus');
       return;
     }
-    const previous = reviews.find(item => item.id === editing);
-    const review = { id: editing || nextId++, name, message, topic: $topic.val(), category: $topic.find('option:selected').text(), created: previous ? previous.created : Date.now() };
-    if (editing) reviews = reviews.map(item => item.id === editing ? review : item);
-    else reviews.push(review);
-    $form.trigger('reset');
-    clearFormState();
-    render();
-    // html() is used only for fixed trusted markup; visitor text is always inserted with text().
-    $result.hide().html('<strong>Saved locally.</strong> Your review appears below; no message was sent to the cinema.')
-      .slideDown(220, () => $cards.find('article:first').trigger('focus'));
+
+    const review = editing || { id: nextId++, name: profile.name, owner: profile, created: new Date() };
+    Object.assign(review, { rating, message });
+    if (!editing) reviews.push(review);
+    setFormReview();
+    renderReviews();
+    $cards.find(`[data-review-id="${review.id}"]`).trigger('focus');
   });
-  $form.on('input change', 'input, select, textarea', function () {
-    const current = validationChecks().find(([$field]) => $field[0] === this);
-    if (current) fieldError(current[0], current[1]);
-    $error.addClass('is-hidden');
-    $counter.text(`${$message.val().length}/500 characters. Minimum 10 non-space characters.`);
-  });
-  $form.on('reset', function () { setTimeout(clearFormState, 0); });
-  $sort.on('change', render);
-  // These cards are created after the handler is bound, so direct binding to .review-edit would miss them.
-  $cards.on('click', '.review-edit', function () {
-    const id = Number($(this).closest('article').attr('data-review-id'));
-    const review = reviews.find(item => item.id === id);
-    editing = id;
-    $name.val(review.name); $topic.val(review.topic); $message.val(review.message);
-    // prop() reads or changes the live checkbox state; attr() represents its initial markup.
-    $email.val(''); $phone.val(''); $consent.prop('checked', true);
-    $submit.text('Save changes');
-    $counter.text(`${review.message.length}/500 characters. Re-enter email and phone; they are not stored.`);
-    $name.trigger('focus');
-  });
-  $cards.on('click', '.review-delete', function () {
+  $sort.on('change', renderReviews);
+  $cards.on('click', '.review-edit, .review-delete', function () {
     const $card = $(this).closest('article');
     const id = Number($card.attr('data-review-id'));
-    $card.fadeOut(180, () => {
-      reviews = reviews.filter(item => item.id !== id);
-      if (editing === id) { $form[0].reset(); clearFormState(); }
-      render();
-      $result.text('Local review deleted.').removeClass('is-hidden');
-    });
+    const review = reviews.find(item => item.id === id && item.owner === CinemaProfile.get());
+    if (!review) return;
+
+    if ($(this).hasClass('review-delete')) {
+      reviews = reviews.filter(item => item !== review);
+      if (editing === review) setFormReview();
+      $card.find('button').prop('disabled', true);
+      $card.fadeOut(180, () => {
+        renderReviews();
+        $listHeading.trigger('focus');
+      });
+      return;
+    }
+
+    setFormReview(review);
+    $ratingInputs.filter(':checked').trigger('focus');
   });
-  render();
-  $counter.text('0/500 characters. Minimum 10 non-space characters.');
+
+  syncProfile();
 });
