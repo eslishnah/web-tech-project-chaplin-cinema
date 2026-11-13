@@ -236,6 +236,12 @@ const CinemaTickets = (() => {
     return Array.isArray(tickets) ? tickets : [];
   }
 
+  function persist(tickets) {
+    if (!writeStorage(storageKey, tickets)) return false;
+    document.dispatchEvent(new Event('cinema-tickets-change'));
+    return true;
+  }
+
   function isTaken(ticket, sessionKey, seat) {
     return ticket.sessionKey === sessionKey && ticket.seat === seat;
   }
@@ -244,7 +250,7 @@ const CinemaTickets = (() => {
     const tickets = read();
     const taken = newTickets.some(ticket => tickets.some(item => isTaken(item, ticket.sessionKey, ticket.seat)));
     if (taken) return 'taken';
-    return writeStorage(storageKey, [...newTickets.map(ticket => ({ ...ticket, paymentStatus: 'unpaid' })), ...tickets]) ? 'saved' : 'unavailable';
+    return persist([...newTickets.map(ticket => ({ ...ticket, paymentStatus: 'unpaid' })), ...tickets]) ? 'saved' : 'unavailable';
   }
 
   function summary(ticket) {
@@ -310,7 +316,7 @@ const CinemaTickets = (() => {
             heading.focus();
             return;
           }
-          if (!writeStorage(storageKey, current.filter(item => item.reference !== ticket.reference))) {
+          if (!persist(current.filter(item => item.reference !== ticket.reference))) {
             status(feedback, 'The ticket could not be removed. Check browser storage settings and try again.', true);
             return;
           }
@@ -441,7 +447,7 @@ const CinemaTickets = (() => {
       const updated = tickets.map(ticket => references.has(ticket.reference)
         ? { ...ticket, paymentStatus: 'paid', paidAt }
         : ticket);
-      if (!writeStorage(storageKey, updated)) {
+      if (!persist(updated)) {
         status(notice, 'Payment could not be saved. Check browser storage settings and try again.', true);
         return;
       }
@@ -464,7 +470,7 @@ const CinemaTickets = (() => {
     body.replaceChildren();
   });
 
-  return { read, isTaken, save, summary, open };
+  return { read, isTaken, save, summary, open, unpaidCount: () => unpaid(read()).length };
 })();
 
 // Presentation changes stay in JavaScript; all visual rules come from existing Bootstrap classes.
@@ -723,7 +729,18 @@ const CinemaTickets = (() => {
   group.append(toggle, menu);
 
   const ticketItem = element('li', 'nav-item');
-  ticketItem.append(button('My tickets', CinemaTickets.open));
+  const ticketButton = button('My tickets', CinemaTickets.open);
+  function updateTicketCount() {
+    const count = CinemaTickets.unpaidCount();
+    ticketButton.textContent = count ? `My tickets \u00b7 ${count}` : 'My tickets';
+    ticketButton.setAttribute('aria-label', `My tickets, ${count} unpaid ticket${count === 1 ? '' : 's'}`);
+  }
+  document.addEventListener('cinema-tickets-change', updateTicketCount);
+  window.addEventListener('storage', event => {
+    if (event.key === 'dostar-tickets-v1' || event.key === null) updateTicketCount();
+  });
+  updateTicketCount();
+  ticketItem.append(ticketButton);
   const profileItem = element('li', 'nav-item');
   const profileButton = button('Sign in', () => CinemaProfile.open(), true);
   profileButton.classList.replace('btn-outline-secondary', 'btn-outline-success');
