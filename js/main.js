@@ -723,9 +723,10 @@ const CinemaTickets = (() => {
   group.append(toggle, menu);
 
   const ticketItem = element('li', 'nav-item');
-  ticketItem.append(button('My tickets', CinemaTickets.open, true));
+  ticketItem.append(button('My tickets', CinemaTickets.open));
   const profileItem = element('li', 'nav-item');
   const profileButton = button('Sign in', () => CinemaProfile.open(), true);
+  profileButton.classList.replace('btn-outline-secondary', 'btn-outline-success');
   function updateProfileLink() {
     profileButton.textContent = CinemaProfile.get() ? 'My profile' : 'Sign in';
   }
