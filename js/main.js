@@ -275,6 +275,68 @@ const CinemaTickets = (() => {
     return tickets.reduce((sum, ticket) => sum + ticket.total, 0);
   }
 
+  function ticketCard(ticket) {
+    const card = element('article', 'border rounded-4 p-3 mb-3');
+    const paid = ticket.paymentStatus === 'paid';
+    const badge = element('p', paid ? 'badge bg-success-subtle text-success-emphasis' : 'badge bg-warning-subtle text-warning-emphasis',
+      paid ? 'Paid (demo)' : 'Unpaid');
+    const filmId = ticket.filmId || ticket.sessionKey?.split('/')[0];
+    const film = CinemaData.films.find(item => item.id === filmId)
+      || CinemaData.films.find(item => item.title === ticket.title);
+    const layout = element('div', 'row g-3 align-items-start');
+    const details = element('div', film ? 'col-8' : 'col-12');
+    details.append(element('h4', 'h5', ticket.title), element('p', 'text-body-secondary text-break', `Ticket ${ticket.reference}`), badge, summary(ticket));
+    if (!paid) {
+      const feedback = element('p', 'is-hidden mt-2 mb-0');
+      feedback.setAttribute('role', 'status');
+      const remove = button('Remove', () => {
+        const current = read();
+        const saved = current.find(item => item.reference === ticket.reference);
+        // Re-check the stored status in case this ticket was paid for in another tab.
+        if (!saved || saved.paymentStatus === 'paid') {
+          render();
+          heading.focus();
+          return;
+        }
+        if (!persist(current.filter(item => item.reference !== ticket.reference))) {
+          status(feedback, 'The ticket could not be removed. Check browser storage settings and try again.', true);
+          return;
+        }
+        render('Unpaid ticket removed.');
+        heading.focus();
+      }, true);
+      remove.classList.replace('btn-outline-secondary', 'btn-outline-danger');
+      remove.classList.add('mt-3');
+      remove.setAttribute('aria-label', `Remove ticket for ${ticket.title}, row ${ticket.row}, seat ${ticket.number}`);
+      details.append(remove, feedback);
+    }
+    layout.append(details);
+    if (film) {
+      const picture = element('div', 'col-4 d-flex justify-content-end');
+      const poster = element('img', 'movie-poster img-fluid rounded-3');
+      poster.src = film.poster;
+      poster.alt = `${film.title} poster`;
+      poster.loading = 'lazy';
+      poster.width = 200;
+      poster.height = 280;
+      picture.append(poster);
+      layout.append(picture);
+    }
+    card.append(layout);
+    return card;
+  }
+
+  function ticketGroup(title, id, tickets, emptyMessage) {
+    const section = element('section');
+    section.setAttribute('aria-labelledby', `${id}-title`);
+    const titleNode = element('h3', 'h5 mb-3', `${title} (${tickets.length})`);
+    titleNode.id = `${id}-title`;
+    section.append(titleNode);
+    tickets.forEach(ticket => section.append(ticketCard(ticket)));
+    if (!tickets.length) section.append(element('p', 'text-body-secondary mb-0', emptyMessage));
+    return section;
+  }
+
   function render(message = '') {
     const tickets = read();
     heading.textContent = 'My tickets';
@@ -292,58 +354,13 @@ const CinemaTickets = (() => {
           document.getElementById('movie-search')?.focus();
         }));
       } else body.append(link('Browse movies', 'movies.html'));
+      return;
     }
-    tickets.forEach(ticket => {
-      const card = element('article', 'border rounded-4 p-3 mb-3');
-      const paid = ticket.paymentStatus === 'paid';
-      const badge = element('p', paid ? 'badge bg-success-subtle text-success-emphasis' : 'badge bg-warning-subtle text-warning-emphasis',
-        paid ? 'Paid (demo)' : 'Unpaid');
-      const filmId = ticket.filmId || ticket.sessionKey?.split('/')[0];
-      const film = CinemaData.films.find(item => item.id === filmId)
-        || CinemaData.films.find(item => item.title === ticket.title);
-      const layout = element('div', 'row g-3 align-items-start');
-      const details = element('div', film ? 'col-8' : 'col-12');
-      details.append(element('h3', 'h5', ticket.title), element('p', 'text-body-secondary text-break', `Ticket ${ticket.reference}`), badge, summary(ticket));
-      if (!paid) {
-        const feedback = element('p', 'is-hidden mt-2 mb-0');
-        feedback.setAttribute('role', 'status');
-        const remove = button('Remove', () => {
-          const current = read();
-          const saved = current.find(item => item.reference === ticket.reference);
-          // Re-check the stored status in case this ticket was paid for in another tab.
-          if (!saved || saved.paymentStatus === 'paid') {
-            render();
-            heading.focus();
-            return;
-          }
-          if (!persist(current.filter(item => item.reference !== ticket.reference))) {
-            status(feedback, 'The ticket could not be removed. Check browser storage settings and try again.', true);
-            return;
-          }
-          render('Unpaid ticket removed.');
-          heading.focus();
-        }, true);
-        remove.classList.replace('btn-outline-secondary', 'btn-outline-danger');
-        remove.classList.add('mt-3');
-        remove.setAttribute('aria-label', `Remove ticket for ${ticket.title}, row ${ticket.row}, seat ${ticket.number}`);
-        details.append(remove, feedback);
-      }
-      layout.append(details);
-      if (film) {
-        const picture = element('div', 'col-4 d-flex justify-content-end');
-        const poster = element('img', 'movie-poster img-fluid rounded-3');
-        poster.src = film.poster;
-        poster.alt = `${film.title} poster`;
-        poster.loading = 'lazy';
-        poster.width = 200;
-        poster.height = 280;
-        picture.append(poster);
-        layout.append(picture);
-      }
-      card.append(layout);
-      body.append(card);
-    });
     const pending = unpaid(tickets);
+    const paid = tickets.filter(ticket => ticket.paymentStatus === 'paid');
+    const pendingSection = ticketGroup('Unpaid', 'unpaid-tickets', pending, 'No unpaid tickets.');
+    const paidSection = ticketGroup('Paid', 'paid-tickets', paid, 'No paid tickets yet.');
+    paidSection.classList.add('mt-4', 'pt-4', 'border-top');
     if (pending.length) {
       const checkout = element('section', 'border-top pt-3');
       checkout.setAttribute('aria-label', 'Payment total');
@@ -353,8 +370,9 @@ const CinemaTickets = (() => {
         button('Pay', () => payment()),
         element('p', 'small text-body-secondary mt-2 mb-0', 'Pay for all unpaid tickets together. Demo checkout; no real charge.')
       );
-      body.append(checkout);
+      pendingSection.append(checkout);
     }
+    body.append(pendingSection, paidSection);
   }
 
   function payment() {
