@@ -30,7 +30,11 @@ const CinemaUI = (() => {
     const heading = element('h2', 'h4 mb-0', title);
     heading.id = `${id}-title`;
     heading.tabIndex = -1;
-    const close = button('Close', () => window.close(), true);
+    const close = element('button', 'btn-close p-3');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close dialog');
+    close.title = 'Close';
+    close.addEventListener('click', () => window.close());
     header.append(heading, close);
     const body = element('div', 'p-3 p-md-4');
     window.setAttribute('aria-labelledby', heading.id);
@@ -152,9 +156,16 @@ const CinemaProfile = (() => {
   name.input.maxLength = 80;
   const phone = field('Phone number', 'profile-phone', 'tel');
   phone.input.required = true;
-  phone.input.placeholder = '+7 700 123 45 67';
-  const card = field('Card number', 'profile-card');
-  card.input.required = true;
+  phone.input.inputMode = 'numeric';
+  phone.input.placeholder = '77001234567';
+  phone.input.addEventListener('input', () => {
+    phone.input.value = phone.input.value.replace(/\D/g, '').slice(0, 11);
+  });
+  const phoneHint = element('div', 'form-text', '11 digits, starting with 7 or 8.');
+  phoneHint.id = 'profile-phone-hint';
+  phone.input.setAttribute('aria-describedby', phoneHint.id);
+  phone.wrapper.append(phoneHint);
+  const card = field('Card number (optional)', 'profile-card');
   card.input.inputMode = 'numeric';
   card.input.autocomplete = 'off';
   card.input.maxLength = 23;
@@ -199,12 +210,11 @@ const CinemaProfile = (() => {
   function checks() {
     const enteredName = name.input.value.trim();
     const enteredPhone = phone.input.value.trim();
-    const digits = enteredPhone.replace(/\D/g, '');
-    const enteredCard = card.input.value;
+    const enteredCard = card.input.value.trim();
     return [
       [name.input, enteredName.length < 2 || enteredName.length > 80 ? 'Enter a name with 2 to 80 characters.' : ''],
-      [phone.input, !/^\+?[\d\s()-]+$/.test(enteredPhone) || digits.length < 10 || digits.length > 15 ? 'Enter a phone number with 10 to 15 digits.' : ''],
-      [card.input, /^\d{4}( \d{4}){3}$/.test(enteredCard) ? '' : 'Enter 16 digits in the format 0000 0000 0000 0000.']
+      [phone.input, /^[78]\d{10}$/.test(enteredPhone) ? '' : 'Enter 11 digits starting with 7 or 8.'],
+      [card.input, !enteredCard || /^\d{4}( \d{4}){3}$/.test(enteredCard) ? '' : 'Enter 16 digits in the format 0000 0000 0000 0000.']
     ];
   }
 
@@ -255,6 +265,7 @@ const CinemaTickets = (() => {
       ['Hall and seat', `Hall ${ticket.hall} · Row ${ticket.row}, seat ${ticket.number}`],
       ['Ticket type', ticket.type], ['Ticket price', CinemaData.money(ticket.subtotal)]
     ];
+    if (ticket.buyerName) details.splice(1, 0, ['Buyer', ticket.buyerName]);
     if (ticket.discount) details.push(['Discount', `WEB1 · −${CinemaData.money(ticket.discount)}`]);
     details.push(['Total', CinemaData.money(ticket.total)]);
     details.forEach(([label, value]) => list.append(element('dt', 'col-sm-5', label), element('dd', 'col-sm-7', value)));

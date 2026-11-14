@@ -1,4 +1,4 @@
-const { element, button, field, dialog, status, errorFor } = CinemaUI;
+const { element, button, field, dialog, status, errorFor, validateFields } = CinemaUI;
 const { money, ticketTypes, fromPrice, sessionsFor, bookingDates, dateLabel } = CinemaData;
 const { window, heading, body } = dialog('booking-flow', 'Film details', true);
 
@@ -61,7 +61,7 @@ function details(message = '') {
       selectedSeats = [];
       promoCode = '';
       seats();
-    }, true)));
+    })));
   }
   day.input.addEventListener('change', () => {
     date = day.input.value;
@@ -162,10 +162,10 @@ function chooseType(seat) {
   });
 
   const actions = element('div', 'd-flex flex-wrap gap-2');
-  actions.append(button('Add another seat', () => seats(), true), button('Remove this seat', () => {
+  actions.append(button('Add another seat', () => seats()), button('Remove this seat', () => {
     selectedSeats = selectedSeats.filter(item => item !== seat);
     seats();
-  }, true));
+  }));
   show('Choose a ticket type', filmLine(), element('p', 'fw-semibold', `Row ${seat.row} · Seat ${seat.number}`),
     options, actions);
 }
@@ -208,6 +208,38 @@ function payment() {
   const feedback = element('p', 'is-hidden mb-0');
   feedback.setAttribute('role', 'status');
   const account = element('div', 'mb-3');
+  const guest = element('section', 'border rounded-3 p-3 mb-3');
+  const guestName = field('Name', 'ticket-buyer-name');
+  guestName.input.autocomplete = 'name';
+  guestName.input.maxLength = 80;
+  const guestPhone = field('Phone number', 'ticket-buyer-phone', 'tel');
+  guestPhone.input.inputMode = 'numeric';
+  guestPhone.input.autocomplete = 'tel';
+  guestPhone.input.placeholder = '77001234567';
+  guestPhone.input.addEventListener('input', () => {
+    guestPhone.input.value = guestPhone.input.value.replace(/\D/g, '').slice(0, 11);
+  });
+  const phoneHint = element('div', 'form-text', '11 digits, starting with 7 or 8.');
+  phoneHint.id = 'ticket-buyer-phone-hint';
+  guestPhone.input.setAttribute('aria-describedby', phoneHint.id);
+  guestPhone.wrapper.append(phoneHint);
+  const guestCard = field('Card number (optional)', 'ticket-buyer-card');
+  guestCard.input.inputMode = 'numeric';
+  guestCard.input.autocomplete = 'off';
+  guestCard.input.placeholder = '0000 0000 0000 0000';
+  guestCard.input.addEventListener('input', () => {
+    const digits = guestCard.input.value.replace(/\D/g, '').slice(0, 16);
+    guestCard.input.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+  });
+  guest.append(
+    element('h3', 'h5', 'Continue without signing in'),
+    guestName.wrapper,
+    guestPhone.wrapper,
+    guestCard.wrapper,
+    element('p', 'small text-body-secondary mb-0',
+      'No payment is taken here. Card details are not saved.')
+  );
+  let useGuest = false;
   const form = element('form');
   form.noValidate = true;
   const buy = element('button', 'btn btn-success', selectedSeats.length === 1 ? 'Save ticket' : 'Save tickets');
@@ -216,11 +248,36 @@ function payment() {
   function renderAccount() {
     const profile = CinemaProfile.get();
     account.replaceChildren();
-    if (profile) {
-      account.append(element('p', 'mb-0', `Local profile: ${profile.name}.`));
+    guest.hidden = !useGuest;
+    buy.hidden = !profile && !useGuest;
+    guest.classList.toggle('d-none', !useGuest);
+    buy.classList.toggle('d-none', !profile && !useGuest);
+    if (profile && !useGuest) {
+      account.append(element('p', 'mb-2', `Signed in as ${profile.name}.`),
+        button('Continue without signing in', () => {
+          useGuest = true;
+          renderAccount();
+          guestName.input.focus();
+        }, true));
+    } else if (profile) {
+      account.append(button('Use signed-in profile', () => {
+        useGuest = false;
+        renderAccount();
+      }, true));
+    } else if (useGuest) {
+      account.append(element('p', 'mb-2', 'Continuing without signing in.'),
+        button('Sign in instead', () => CinemaProfile.open(), true));
     } else {
-      account.append(element('p', 'mb-2', 'Sign in before buying your ticket.'),
-        button('Sign in to continue', () => CinemaProfile.open(), true));
+      const choices = element('div', 'd-flex flex-wrap gap-2');
+      choices.append(
+        button('Sign in', () => CinemaProfile.open()),
+        button('Continue without signing in', () => {
+          useGuest = true;
+          renderAccount();
+          guestName.input.focus();
+        }, true)
+      );
+      account.append(element('p', 'fw-semibold mb-2', 'Choose how to continue'), choices);
     }
   }
   renderAccount();
@@ -238,10 +295,21 @@ function payment() {
   promo.input.addEventListener('input', applyPromo);
   form.addEventListener('submit', event => {
     event.preventDefault();
-    if (!CinemaProfile.get()) {
-      status(feedback, 'Please sign in before buying a ticket.', true);
+    const profile = CinemaProfile.get();
+    if (!profile && !useGuest) {
+      status(feedback, 'Choose Sign in or Continue without signing in.', true);
       account.querySelector('button').focus();
       return;
+    }
+    if (!profile || useGuest) {
+      const name = guestName.input.value.trim();
+      const phone = guestPhone.input.value.trim();
+      const card = guestCard.input.value.trim();
+      if (!validateFields([
+        [guestName.input, name.length >= 2 && name.length <= 80 ? '' : 'Enter a name with 2 to 80 characters.'],
+        [guestPhone.input, /^[78]\d{10}$/.test(phone) ? '' : 'Enter 11 digits starting with 7 or 8.'],
+        [guestCard.input, !card || /^\d{4}( \d{4}){3}$/.test(card) ? '' : 'Enter 16 digits in the format 0000 0000 0000 0000.']
+      ])) return;
     }
     if (!applyPromo()) {
       promo.input.focus();
@@ -254,6 +322,7 @@ function payment() {
     const reference = `DC-${Date.now().toString(36).toUpperCase()}`;
     const tickets = selectedSeats.map((seat, index) => ({
       ...ticketData(seat),
+      buyerName: profile && !useGuest ? profile.name : guestName.input.value.trim(),
       reference: selectedSeats.length === 1 ? reference : `${reference}-${index + 1}`
     }));
     const outcome = CinemaTickets.save(tickets);
@@ -279,15 +348,16 @@ function payment() {
   });
 
   const actions = element('div', 'd-flex flex-wrap gap-2 mb-3');
-  actions.append(buy, button('Add another seat', () => seats(), true),
+  actions.append(buy, button('Add another seat', () => seats()),
     button('Back to ticket types', () => chooseType(selectedSeats[0]), true));
-  form.append(promo.wrapper, promoResult, account, actions, feedback);
+  form.append(promo.wrapper, promoResult, account, guest, actions, feedback);
   show('Review tickets', summary, form);
   applyPromo();
 
   // A successful local sign-in leaves the current seat, ticket type and promo in place.
   const updateAccount = () => {
     if (!account.isConnected || !window.open) return;
+    useGuest = false;
     renderAccount();
     if (CinemaProfile.get()) {
       feedback.classList.add('is-hidden');

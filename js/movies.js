@@ -26,10 +26,12 @@ $(function () {
     control('Sort by', 'movie-sort', [['catalogue', 'Catalogue order'], ['title', 'Title A–Z']])
   );
   const $shortlist = $('<button>', { type: 'button', text: 'Show saved films' }).addClass('btn btn-outline-secondary');
+  const $shortlistHint = $('<span>').addClass('d-inline-block').append($shortlist);
   const $reset = $('<button>', { type: 'button', text: 'Reset filters' }).addClass('btn btn-outline-secondary');
-  const $actions = $('<div>').addClass('d-flex flex-wrap gap-2 mb-3').append($shortlist, $reset);
+  const $actions = $('<div>').addClass('d-flex flex-wrap gap-2 mb-3').append($shortlistHint, $reset);
   const $count = $('<p>', { role: 'status' }).addClass('fw-semibold');
   const $notice = $('#movie-error');
+  const hoverOnly = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   $('#now-showing > h2').text('Now showing');
   $('#now-showing > p').first().remove();
   $list.removeClass('d-grid gap-4').addClass('row g-3').before($filters, $actions, $count);
@@ -45,24 +47,42 @@ $(function () {
     );
     const $open = $('<button>', { type: 'button', 'aria-label': `Details: ${film.title}` }).addClass('film-open btn p-0 text-start w-100')
       .append($poster, $text);
-    const $save = $('<button>', { type: 'button', text: isSaved ? 'Saved' : 'Save' })
-      .addClass('movie-save btn btn-link text-success-emphasis small px-2 px-sm-3 py-1')
-      .attr({ 'aria-pressed': String(isSaved), 'aria-label': `${isSaved ? 'Remove from saved' : 'Save film'}: ${film.title}` });
+    const $save = $('<button>', { type: 'button', text: isSaved ? '♥' : '♡' })
+      .addClass('movie-save btn position-absolute top-0 end-0 z-1 m-2 rounded-circle shadow-sm p-2 fs-4 lh-1')
+      .addClass(isSaved ? 'btn-danger' : 'btn-light text-danger')
+      .toggleClass('opacity-0', hoverOnly && !isSaved)
+      .attr({
+        'aria-pressed': String(isSaved),
+        'aria-label': `${isSaved ? 'Remove from saved' : 'Save film'}: ${film.title}`,
+        title: isSaved ? 'Remove from saved' : 'Save film'
+      });
     // The chain sets the card layout, marks saved films, then attaches the card controls.
-    const $card = $('<article>', { 'data-film-id': film.id }).addClass('border rounded-3 h-100 d-flex flex-column justify-content-between')
+    const $card = $('<article>', { 'data-film-id': film.id }).addClass('border rounded-3 h-100 d-flex flex-column justify-content-between position-relative')
       .toggleClass('is-selected', isSaved)
-      .append($open, $('<div>').addClass('border-top').append($save));
+      .append($open, $save);
     return $('<div>').addClass('col-6 col-md-4 col-lg-3 col-xl-2').append($card);
   }
 
   function render(animate = false) {
+    if (savedOnly && !saved.length) {
+      savedOnly = false;
+      $('#movie-search, #movie-category, #movie-age').val('');
+      $('#movie-sort').val('catalogue');
+    }
     const matches = CinemaData.filterFilms({
       query: $('#movie-search').val(), category: $('#movie-category').val(), age: $('#movie-age').val(),
       sort: $('#movie-sort').val(), savedOnly, saved
     });
     $count.text(`${matches.length} of ${CinemaData.films.length} films · ${saved.length} saved`);
     $shortlist.attr('aria-pressed', String(savedOnly)).toggleClass('active', savedOnly)
+      .prop('disabled', !saved.length)
+      .css('pointer-events', saved.length ? '' : 'none')
       .text(savedOnly ? 'Show all films' : 'Show saved films');
+    $shortlistHint.attr({
+      title: saved.length ? null : 'You have no saved films yet.',
+      tabindex: saved.length ? null : '0',
+      'aria-label': saved.length ? null : 'You have no saved films yet.'
+    });
     $list.stop(true, true).empty();
     if (!matches.length) $list.append($('<p>', { text: 'No matching films. Change the filters to try again.' }));
     matches.forEach(film => $list.append(cardFor(film)));
@@ -83,7 +103,11 @@ $(function () {
 
   $filters.on('input', '#movie-search', () => render(true));
   $filters.on('change', 'select', () => render(true));
-  $shortlist.on('click', () => { savedOnly = !savedOnly; render(true); });
+  $shortlist.on('click', () => {
+    if (!saved.length) return;
+    savedOnly = !savedOnly;
+    render(true);
+  });
   $reset.on('click', () => {
     $('#movie-search, #movie-category, #movie-age').val('');
     $('#movie-sort').val('catalogue');
@@ -94,14 +118,30 @@ $(function () {
   $list.on('click', '.film-open', function () {
     openFilm($(this).closest('article').attr('data-film-id'));
   });
-  $list.on('click', '.movie-save', function () {
+  $list.on('mouseenter mouseleave focusin focusout', 'article', function (event) {
+    if (!hoverOnly) return;
+    const focusedElement = event.type === 'focusout' ? event.relatedTarget : document.activeElement;
+    const keyboardFocus = focusedElement && this.contains(focusedElement)
+      && focusedElement.matches(':focus-visible');
+    const hovered = event.type === 'mouseenter'
+      || (event.type !== 'mouseleave' && this.matches(':hover'));
+    const visible = this.classList.contains('is-selected') || hovered || keyboardFocus;
+    $(this).find('.movie-save').toggleClass('opacity-0', !visible);
+  });
+  $list.on('click', '.movie-save', function (event) {
+    const keyboardActivated = event.originalEvent && event.originalEvent.detail === 0;
     const id = $(this).closest('article').attr('data-film-id');
     saved = saved.includes(id) ? saved.filter(item => item !== id) : [...saved, id];
     const stored = CinemaUI.writeStorage('dostar-shortlist', saved);
     $notice.text(stored ? '' : 'Your shortlist is available until you leave this page.').toggleClass('is-hidden', stored);
     render();
-    const $replacement = $list.find(`[data-film-id="${id}"] .movie-save`);
-    ($replacement.length ? $replacement : $shortlist).trigger('focus');
+    if (keyboardActivated) {
+      const $replacement = $list.find(`[data-film-id="${id}"] .movie-save`);
+      const $nextFocus = $replacement.length
+        ? $replacement
+        : ($shortlist.prop('disabled') ? $('#movie-search') : $shortlist);
+      $nextFocus.trigger('focus');
+    }
   });
 
   render();
