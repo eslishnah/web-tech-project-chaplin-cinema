@@ -8,6 +8,7 @@ let screening;
 let selectedSeats = [];
 let promoCode;
 let currentAccountListener = null;
+let editingTicket = null;
 
 function show(title, ...content) {
   clearAccountListener();
@@ -74,7 +75,7 @@ function details(message = '') {
 }
 
 function seats(message = '') {
-  const saved = CinemaTickets.read();
+  const saved = CinemaTickets.read().filter(ticket => ticket.reference !== editingTicket?.reference);
   const screen = element('p', 'border-top border-4 border-secondary rounded-top text-center fw-semibold pt-2 mx-auto w-75', 'SCREEN');
   const legend = element('p', 'small text-center text-body-secondary', 'Green · Available    Grey · Taken    Yellow · Selected');
   const scroll = element('div', 'overflow-auto mb-3');
@@ -119,7 +120,8 @@ function seats(message = '') {
     if (!seat) {
       const [row, number] = id.split('-').map(Number);
       seat = { id, row, number, type: null };
-      selectedSeats.push(seat);
+      if (editingTicket) selectedSeats = [seat];
+      else selectedSeats.push(seat);
     }
     chooseType(seat);
   });
@@ -128,13 +130,18 @@ function seats(message = '') {
   const notice = element('p', message ? 'has-error' : 'is-hidden', message);
   notice.setAttribute('role', 'status');
   const actions = element('div', 'd-flex flex-wrap gap-2');
-  if (selectedSeats.length) {
-    actions.append(button('Continue with selected seats', continueBooking), button('Clear selected seats', () => {
-      selectedSeats = [];
-      seats();
-    }, true));
+  if (editingTicket) {
+    if (selectedSeats.length) actions.append(button('Continue', continueBooking));
+    actions.append(button('Cancel editing', () => window.close(), true));
+  } else {
+    if (selectedSeats.length) {
+      actions.append(button('Continue with selected seats', continueBooking), button('Clear selected seats', () => {
+        selectedSeats = [];
+        seats();
+      }, true));
+    }
+    actions.append(button('Back to showtimes', () => details(), true));
   }
-  actions.append(button('Back to showtimes', () => details(), true));
   const selection = element('p', 'mb-2', selectedSeats.length
     ? `Selected: ${selectedSeats.map(seat => `row ${seat.row}, seat ${seat.number}`).join('; ')}.`
     : 'Select an available seat to begin.');
@@ -143,6 +150,7 @@ function seats(message = '') {
 function continueBooking() {
   const unpriced = selectedSeats.find(seat => !seat.type);
   if (unpriced) chooseType(unpriced);
+  else if (editingTicket) reviewEdit();
   else reviewTickets();
 }
 
@@ -162,10 +170,14 @@ function chooseType(seat) {
   });
 
   const actions = element('div', 'd-flex flex-wrap gap-2');
-  actions.append(button('Add another seat', () => seats()), button('Remove this seat', () => {
-    selectedSeats = selectedSeats.filter(item => item !== seat);
-    seats();
-  }));
+  if (editingTicket) {
+    actions.append(button('Change seat', () => seats()), button('Cancel editing', () => window.close(), true));
+  } else {
+    actions.append(button('Add another seat', () => seats()), button('Remove this seat', () => {
+      selectedSeats = selectedSeats.filter(item => item !== seat);
+      seats();
+    }));
+  }
   show('Choose a ticket type', filmLine(), element('p', 'fw-semibold', `Row ${seat.row} · Seat ${seat.number}`),
     options, actions);
 }
@@ -195,6 +207,33 @@ function orderSummary(tickets) {
   if (discount) summary.append(element('p', 'mb-1', `WEB1 discount: −${money(discount)}`));
   summary.append(element('p', 'fw-semibold mb-0', `Total for ${tickets.length} tickets: ${money(total)}`));
   return summary;
+}
+
+function reviewEdit() {
+  const updated = { ...ticketData(selectedSeats[0]), buyerName: editingTicket.buyerName };
+  const feedback = element('p', 'is-hidden');
+  feedback.setAttribute('role', 'status');
+  const actions = element('div', 'd-flex flex-wrap gap-2 mt-3');
+  actions.append(button('Save changes', () => {
+    const outcome = CinemaTickets.update(editingTicket.reference, updated);
+    if (outcome === 'taken') {
+      selectedSeats = [];
+      seats('That seat is no longer available. Choose another seat.');
+      return;
+    }
+    if (outcome === 'paid' || outcome === 'missing') {
+      status(feedback, 'This ticket was paid for or removed. Return to My tickets to see the current details.', true);
+      return;
+    }
+    if (outcome !== 'saved') {
+      status(feedback, 'Your changes could not be saved. Check browser storage settings and try again.', true);
+      return;
+    }
+    window.close();
+  }), button('Change seat', () => seats(), true),
+  button('Change ticket type', () => chooseType(selectedSeats[0]), true),
+  button('Cancel editing', () => window.close(), true));
+  show('Review changes', CinemaTickets.summary(updated), feedback, actions);
 }
 
 function reviewTickets() {
@@ -359,9 +398,16 @@ function clearAccountListener() {
   document.removeEventListener('cinema-profile-change', currentAccountListener);
   currentAccountListener = null;
 }
-window.addEventListener('close', clearAccountListener);
+window.addEventListener('close', () => {
+  clearAccountListener();
+  if (editingTicket) {
+    editingTicket = null;
+    CinemaTickets.open();
+  }
+});
 
 function showInitial(initialFilm, initialDate) {
+  editingTicket = null;
   film = initialFilm;
   date = initialDate;
   selectedSeats = [];
@@ -375,4 +421,27 @@ export function openFilm(selectedFilm) {
   if (window.open) return;
   const dates = bookingDates();
   showInitial(selectedFilm, dates.find(day => sessionsFor(selectedFilm, day).length) || dates[0]);
+}
+
+export function editTicket(reference) {
+  if (window.open) return false;
+  const ticket = CinemaTickets.read().find(item => item.reference === reference);
+  if (!ticket || ticket.paymentStatus === 'paid') return false;
+  const filmId = ticket.filmId || ticket.sessionKey?.split('/')[0];
+  const selectedFilm = CinemaData.films.find(item => item.id === filmId)
+    || CinemaData.films.find(item => item.title === ticket.title);
+  if (!selectedFilm) return false;
+  film = selectedFilm;
+  date = ticket.date;
+  screening = { time: ticket.time, key: ticket.sessionKey };
+  editingTicket = ticket;
+  promoCode = ticket.discount ? 'WEB1' : '';
+  selectedSeats = [{
+    id: ticket.seat, row: ticket.row, number: ticket.number,
+    type: ticketTypes(film).find(item => item.label === ticket.type) || null
+  }];
+  seats();
+  window.showModal();
+  heading.focus();
+  return true;
 }

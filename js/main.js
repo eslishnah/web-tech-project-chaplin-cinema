@@ -253,6 +253,18 @@ const CinemaTickets = (() => {
     return persist([...newTickets.map(ticket => ({ ...ticket, paymentStatus: 'unpaid' })), ...tickets]) ? 'saved' : 'unavailable';
   }
 
+  function update(reference, changes) {
+    const tickets = read();
+    const index = tickets.findIndex(ticket => ticket.reference === reference);
+    if (index === -1) return 'missing';
+    const ticket = tickets[index];
+    if (ticket.paymentStatus === 'paid') return 'paid';
+    if (tickets.some(item => item.reference !== reference && isTaken(item, ticket.sessionKey, changes.seat))) return 'taken';
+    const { seat, row, number, type, subtotal, discount, total } = changes;
+    tickets[index] = { ...ticket, seat, row, number, type, subtotal, discount, total };
+    return persist(tickets) ? 'saved' : 'unavailable';
+  }
+
   function summary(ticket) {
     const list = element('dl', 'row mb-0');
     const details = [
@@ -308,7 +320,26 @@ const CinemaTickets = (() => {
       remove.classList.replace('btn-outline-secondary', 'btn-outline-danger');
       remove.classList.add('mt-3');
       remove.setAttribute('aria-label', `Remove ticket for ${ticket.title}, row ${ticket.row}, seat ${ticket.number}`);
-      details.append(remove, feedback);
+      const actions = element('div', 'd-flex flex-wrap gap-2');
+      if (film) {
+        const edit = button('Edit', async () => {
+          edit.disabled = true;
+          try {
+            const booking = await import('./booking.js');
+            window.close();
+            if (!booking.editTicket(ticket.reference)) open();
+          } catch {
+            edit.disabled = false;
+            status(feedback, 'The ticket editor could not load. Open the site through Live Server and try again.', true);
+          }
+        }, true);
+        edit.classList.replace('btn-outline-secondary', 'btn-outline-success');
+        edit.classList.add('mt-3');
+        edit.setAttribute('aria-label', `Edit ticket for ${ticket.title}, row ${ticket.row}, seat ${ticket.number}`);
+        actions.append(edit);
+      }
+      actions.append(remove);
+      details.append(actions, feedback);
     }
     layout.append(details);
     if (film) {
@@ -381,7 +412,7 @@ const CinemaTickets = (() => {
       render();
       return;
     }
-    const references = new Set(pending.map(ticket => ticket.reference));
+    const references = new Map(pending.map(ticket => [ticket.reference, JSON.stringify(ticket)]));
     heading.textContent = 'Pay for tickets';
     const form = element('form');
     form.noValidate = true;
@@ -452,7 +483,7 @@ const CinemaTickets = (() => {
       // Re-read before saving so paid tickets cannot be charged twice and new tickets are not silently included.
       const tickets = read();
       const current = unpaid(tickets);
-      if (current.length !== pending.length || current.some(ticket => !references.has(ticket.reference)) || total(current) !== total(pending)) {
+      if (current.length !== pending.length || current.some(ticket => references.get(ticket.reference) !== JSON.stringify(ticket)) || total(current) !== total(pending)) {
         form.reset();
         render();
         const changed = element('p', 'has-error', 'Your tickets changed. Review the total and select Pay again.');
@@ -488,7 +519,7 @@ const CinemaTickets = (() => {
     body.replaceChildren();
   });
 
-  return { read, isTaken, save, summary, open, unpaidCount: () => unpaid(read()).length };
+  return { read, isTaken, save, update, summary, open, unpaidCount: () => unpaid(read()).length };
 })();
 
 // Presentation changes stay in JavaScript; all visual rules come from existing Bootstrap classes.
