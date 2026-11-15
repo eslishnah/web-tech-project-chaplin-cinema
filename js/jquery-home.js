@@ -2,13 +2,13 @@
 
 $(function () {
   const trailers = [
-    { title: 'Скрудж', poster: 'skrudzh.webp', videoId: 'aWJiuFSLCv4' },
-    { title: 'Дюна: Часть третья', poster: 'dune_tri.jpg', videoId: 'iKSqhwnNvNY' },
-    { title: 'Рамаяна: Восхождение легенды', poster: 'ramayana.webp', videoId: 'T0uGAwb5MUM' },
-    { title: 'Психопатка', poster: 'psihopakta.webp', videoId: 'rOfWY4mc-Rw' },
-    { title: 'Проклятье Сальмокджи', poster: 'proklatye_lsalmodji.webp', videoId: 'cUPwK_xbVxs' },
-    { title: 'Махаббат жасқа қарамайды', poster: 'mahabbat_zhaska_karamaidy.webp', videoId: 'xD74CQF8RGA' },
-    { title: 'Навар', poster: 'navar.webp', videoId: 'zZ3WNLIMm5w' }
+    { title: 'Скрудж', poster: 'skrudzh.webp', videoId: 'aWJiuFSLCv4', videoSrc: 'video/scrooge (1).mp4' },
+    { title: 'Дюна: Часть третья', poster: 'dune_tri.jpg', videoId: 'iKSqhwnNvNY', videoSrc: 'video/dune3.mp4' },
+    { title: 'Рамаяна: Восхождение легенды', poster: 'ramayana.webp', videoId: 'T0uGAwb5MUM', videoSrc: 'video/ramayana.mp4' },
+    { title: 'Психопатка', poster: 'psihopakta.webp', videoId: 'rOfWY4mc-Rw', videoSrc: 'video/psihopatka.mp4' },
+    { title: 'Проклятье Сальмокджи', poster: 'proklatye_lsalmodji.webp', videoId: 'cUPwK_xbVxs', videoSrc: 'video/proklatie_salnokdzhi.mp4' },
+    { title: 'Махаббат жасқа қарамайды', poster: 'mahabbat_zhaska_karamaidy.webp', videoId: 'xD74CQF8RGA', videoSrc: 'video/mahabbat_zhaska_karamaidy.mp4' },
+    { title: 'Навар', poster: 'navar.webp', videoId: 'zZ3WNLIMm5w', videoSrc: 'video/navar.mp4' }
   ];
   const today = new Date(CinemaData.bookingDates()[0] + 'T12:00:00Z');
   const daysUntilMonday = (8 - today.getUTCDay()) % 7 || 7;
@@ -27,17 +27,12 @@ $(function () {
   isolation: isolate;
 }
 .trailer-screen { height: clamp(17.5rem, 30vw, 25rem); }
-.trailer-preview {
-  position: absolute;
-  inset: .5rem calc(var(--carousel-arrow-size) + var(--trailer-arrow-offset) + .375rem) 2.75rem;
-}
 .trailer-screen::after, .featured-film::after {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(0deg, #111c22 0%, rgba(17, 28, 34, .72) 22%, transparent 68%);
 }
-.trailer-preview-open .trailer-screen::after { background: #000; }
 .featured-film:focus-visible::after { box-shadow: inset 0 0 0 3px #fff; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .featured-film img { transition: transform .25s ease; }
@@ -105,11 +100,13 @@ $(function () {
 `).appendTo(document.head);
 
   const $hero = $('#page-introduction');
-  const $section = $('<section>', { id: 'trailer-carousel', 'aria-label': 'Трейлеры фильмов' })
+  const $section = $('<section>', { id: 'upcoming-trailers', 'aria-labelledby': 'upcoming-trailers-title' });
+  const $heading = $('<h2>', { id: 'upcoming-trailers-title', text: 'Coming Soon' }).addClass('h3 mb-3');
+  const $carousel = $('<div>', { id: 'trailer-carousel' })
     .addClass('position-relative text-white rounded-4 overflow-hidden shadow-sm');
   const $poster = $('<img>', { alt: '' }).addClass('d-block w-100 h-100 object-fit-cover');
   const $screen = $('<div>').addClass('trailer-screen position-relative bg-dark').append($poster);
-  const $title = $('<h2>').addClass('trailer-title mb-1 text-break');
+  const $title = $('<h3>').addClass('trailer-title mb-1 text-break');
   const $date = $('<p>').addClass('trailer-date mb-0');
   const $info = $('<div>', { 'aria-live': 'polite', 'aria-atomic': 'true' })
     .addClass('trailer-info').append($title, $date);
@@ -130,16 +127,24 @@ $(function () {
 
   const $navigation = $('<div>').addClass('trailer-navigation d-flex align-items-center gap-1')
     .append($previous, $dots, $next);
-  const $controls = $('<div>').addClass('trailer-controls').append($info, $play, $navigation);
+  const $pause = $('<button>', { type: 'button', 'aria-label': 'Pause trailer', 'aria-controls': 'trailer-preview' })
+    .addClass('btn d-none position-absolute top-0 start-0 w-100 h-100 rounded-0 border-0 bg-transparent');
+  const $controls = $('<div>').addClass('trailer-controls').append($info, $play, $pause, $navigation);
   const $preview = $('<div>', { id: 'trailer-preview' })
-    .addClass('trailer-preview d-none bg-black rounded-3 overflow-hidden');
-  $hero.after($section.append($screen, $preview, $controls));
+    .addClass('position-absolute top-0 start-0 w-100 h-100 d-none bg-black');
+  $hero.after($section.append($heading, $carousel.append($screen, $preview, $controls)));
 
   let activeIndex = 0;
 
   function closePreview() {
+    const video = $preview.children('video')[0];
     $preview.empty().addClass('d-none');
-    $section.removeClass('trailer-preview-open');
+    if (video) {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    }
+    $pause.addClass('d-none');
     $info.add($play).removeClass('d-none');
   }
 
@@ -158,23 +163,38 @@ $(function () {
     });
   }
 
+  function playLocalTrailer(src) {
+    let video = $preview.children('video')[0];
+    if (!video) {
+      const $video = $('<video>', { src, playsinline: true })
+        .addClass('d-block w-100 h-100 object-fit-cover')
+        .on('play', () => {
+          $play.addClass('d-none');
+          $pause.removeClass('d-none');
+          $pause[0].focus({ preventScroll: true });
+        })
+        .on('pause ended', () => {
+          const restoreFocus = document.activeElement === $pause[0];
+          $pause.addClass('d-none');
+          $play.removeClass('d-none');
+          if (restoreFocus) $play[0].focus({ preventScroll: true });
+        });
+      video = $video[0];
+      $info.addClass('d-none');
+      $preview.removeClass('d-none').append($video);
+    }
+
+    video.play().catch(error => {
+      if (error.name === 'AbortError' || !video.isConnected) return;
+      closePreview();
+      $play[0].focus({ preventScroll: true });
+    });
+  }
+
+  $pause.on('click', () => $preview.children('video')[0]?.pause());
   $previous.on('click', () => showTrailer(activeIndex - 1));
   $next.on('click', () => showTrailer(activeIndex + 1));
-  $play.on('click', () => {
-    const { title, videoId } = trailers[activeIndex];
-    const params = new URLSearchParams({ autoplay: '1', playsinline: '1', rel: '0' });
-    const $iframe = $('<iframe>', {
-      src: `https://www.youtube.com/embed/${videoId}?${params}`,
-      title: `Трейлер фильма «${title}»`,
-      allow: 'autoplay; encrypted-media; picture-in-picture; fullscreen',
-      referrerpolicy: 'strict-origin-when-cross-origin',
-      allowfullscreen: true
-    }).addClass('d-block w-100 h-100 border-0');
-    $info.add($play).addClass('d-none');
-    $section.addClass('trailer-preview-open');
-    $preview.removeClass('d-none').append($iframe);
-    $iframe[0].focus({ preventScroll: true });
-  });
+  $play.on('click', () => playLocalTrailer(trailers[activeIndex].videoSrc));
   $controls.on('keydown', event => {
     if (event.key === 'Escape' && !$preview.hasClass('d-none')) {
       closePreview();
@@ -247,7 +267,7 @@ $(function () {
   $next.on('click', () => scrollFilms(1));
   $track.on('scroll', updateArrows);
   $(window).on('resize', updateArrows);
-  $('#trailer-carousel').after($section.append($header, $track));
+  $('#upcoming-trailers').after($section.append($header, $track));
   if (location.hash === '#about-cinema') document.getElementById('about-cinema')?.scrollIntoView();
   updateArrows();
 });
