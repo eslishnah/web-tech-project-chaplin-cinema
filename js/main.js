@@ -230,6 +230,8 @@ const CinemaTickets = (() => {
   const { element, button, field, link, dialog, readStorage, writeStorage, validateFields, status } = CinemaUI;
   const storageKey = 'dostar-tickets-v1';
   const { window, heading, body } = dialog('my-tickets', 'My tickets', true);
+  let expirationTimer;
+  let activeCheckout = [];
 
   function read() {
     const tickets = readStorage(storageKey, []);
@@ -242,12 +244,22 @@ const CinemaTickets = (() => {
     return true;
   }
 
+  function screeningStartsAt(ticket) {
+    // Screening dates and times use Astana's UTC+05:00 offset, regardless of the visitor's timezone.
+    return Date.parse(`${ticket.date}T${ticket.time}:00+05:00`);
+  }
+
+  function isExpired(ticket, now = Date.now()) {
+    return ticket.paymentStatus !== 'paid' && !(screeningStartsAt(ticket) > now);
+  }
+
   function isTaken(ticket, sessionKey, seat) {
     return ticket.sessionKey === sessionKey && ticket.seat === seat;
   }
 
   function save(newTickets) {
     const tickets = read();
+    if (newTickets.some(ticket => isExpired(ticket))) return 'expired';
     const taken = newTickets.some(ticket => tickets.some(item => isTaken(item, ticket.sessionKey, ticket.seat)));
     if (taken) return 'taken';
     return persist([...newTickets.map(ticket => ({ ...ticket, paymentStatus: 'unpaid' })), ...tickets]) ? 'saved' : 'unavailable';
@@ -259,6 +271,7 @@ const CinemaTickets = (() => {
     if (index === -1) return 'missing';
     const ticket = tickets[index];
     if (ticket.paymentStatus === 'paid') return 'paid';
+    if (isExpired(ticket)) return 'expired';
     if (tickets.some(item => item.reference !== reference && isTaken(item, ticket.sessionKey, changes.seat))) return 'taken';
     const { seat, row, number, type, subtotal, discount, total } = changes;
     tickets[index] = { ...ticket, seat, row, number, type, subtotal, discount, total };
@@ -279,8 +292,8 @@ const CinemaTickets = (() => {
     return list;
   }
 
-  function unpaid(tickets) {
-    return tickets.filter(ticket => ticket.paymentStatus !== 'paid');
+  function unpaid(tickets, now = Date.now()) {
+    return tickets.filter(ticket => ticket.paymentStatus !== 'paid' && !isExpired(ticket, now));
   }
 
   function total(tickets) {
@@ -290,8 +303,9 @@ const CinemaTickets = (() => {
   function ticketCard(ticket) {
     const card = element('article', 'border rounded-4 p-3 mb-3');
     const paid = ticket.paymentStatus === 'paid';
-    const badge = element('p', paid ? 'badge bg-success-subtle text-success-emphasis' : 'badge bg-warning-subtle text-warning-emphasis',
-      paid ? 'Paid (demo)' : 'Unpaid');
+    const expired = isExpired(ticket);
+    const badge = element('p', paid ? 'badge bg-success-subtle text-success-emphasis' : expired ? 'badge bg-secondary-subtle text-secondary-emphasis' : 'badge bg-warning-subtle text-warning-emphasis',
+      paid ? 'Paid (demo)' : expired ? 'Expired' : 'Unpaid');
     const filmId = ticket.filmId || ticket.sessionKey?.split('/')[0];
     const film = CinemaData.films.find(item => item.id === filmId)
       || CinemaData.films.find(item => item.title === ticket.title);
@@ -314,14 +328,14 @@ const CinemaTickets = (() => {
           status(feedback, 'The ticket could not be removed. Check browser storage settings and try again.', true);
           return;
         }
-        render('Unpaid ticket removed.');
+        render(expired ? 'Expired ticket removed.' : 'Unpaid ticket removed.');
         heading.focus();
       }, true);
       remove.classList.replace('btn-outline-secondary', 'btn-outline-danger');
       remove.classList.add('mt-3');
       remove.setAttribute('aria-label', `Remove ticket for ${ticket.title}, row ${ticket.row}, seat ${ticket.number}`);
       const actions = element('div', 'd-flex flex-wrap gap-2');
-      if (film) {
+      if (film && !expired) {
         const edit = button('Edit', async () => {
           edit.disabled = true;
           try {
@@ -341,6 +355,7 @@ const CinemaTickets = (() => {
       actions.append(remove);
       details.append(actions, feedback);
     }
+    if (expired) details.append(element('p', 'small text-body-secondary mt-3 mb-0', 'This screening has already started. You can remove this ticket and choose another showtime.'));
     layout.append(details);
     if (film) {
       const picture = element('div', 'col-4 d-flex justify-content-end');
@@ -368,12 +383,13 @@ const CinemaTickets = (() => {
     return section;
   }
 
-  function render(message = '') {
+  function render(message = '', error = false) {
+    activeCheckout = [];
     const tickets = read();
     heading.textContent = 'My tickets';
     body.replaceChildren();
     if (message) {
-      const confirmation = element('p', 'is-success fw-semibold', message);
+      const confirmation = element('p', error ? 'has-error fw-semibold' : 'is-success fw-semibold', message);
       confirmation.setAttribute('role', 'status');
       body.append(confirmation);
     }
@@ -404,6 +420,12 @@ const CinemaTickets = (() => {
       pendingSection.append(checkout);
     }
     body.append(pendingSection, paidSection);
+    const expired = tickets.filter(ticket => isExpired(ticket));
+    if (expired.length) {
+      const expiredSection = ticketGroup('Expired', 'expired-tickets', expired, '');
+      expiredSection.classList.add('mt-4', 'pt-4', 'border-top');
+      body.append(expiredSection);
+    }
   }
 
   function payment() {
@@ -412,6 +434,7 @@ const CinemaTickets = (() => {
       render();
       return;
     }
+    activeCheckout = pending;
     const references = new Map(pending.map(ticket => [ticket.reference, JSON.stringify(ticket)]));
     heading.textContent = 'Pay for tickets';
     const form = element('form');
@@ -469,6 +492,10 @@ const CinemaTickets = (() => {
 
     form.addEventListener('submit', event => {
       event.preventDefault();
+      if (pending.some(ticket => isExpired(ticket))) {
+        refreshExpiration();
+        return;
+      }
       const digits = card.input.value.replace(/ /g, '');
       const match = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(expiry.input.value);
       const today = new Date();
@@ -507,6 +534,36 @@ const CinemaTickets = (() => {
     });
   }
 
+  function scheduleExpiration() {
+    globalThis.clearTimeout(expirationTimer);
+    const nextStart = Math.min(...unpaid(read()).map(screeningStartsAt));
+    if (Number.isFinite(nextStart)) {
+      expirationTimer = globalThis.setTimeout(refreshExpiration,
+        Math.min(Math.max(1, nextStart - Date.now()), 2147483647));
+    }
+  }
+
+  function refreshExpiration() {
+    if (window.open) {
+      if (activeCheckout.some(ticket => isExpired(ticket))) {
+        body.querySelector('form')?.reset();
+        render('A screening has started. Expired tickets cannot be paid for. Review your remaining tickets.', true);
+        heading.focus();
+      } else if (!activeCheckout.length) render();
+    }
+    document.dispatchEvent(new Event('cinema-tickets-change'));
+  }
+
+  document.addEventListener('cinema-tickets-change', scheduleExpiration);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshExpiration();
+  });
+  globalThis.addEventListener('focus', refreshExpiration);
+  globalThis.addEventListener('storage', event => {
+    if (event.key === storageKey || event.key === null) refreshExpiration();
+  });
+  scheduleExpiration();
+
   function open() {
     render();
     if (!window.open) window.showModal();
@@ -515,11 +572,12 @@ const CinemaTickets = (() => {
 
   // Remove the payment form and its values when the dialog is dismissed, including with Escape.
   window.addEventListener('close', () => {
+    activeCheckout = [];
     body.querySelector('form')?.reset();
     body.replaceChildren();
   });
 
-  return { read, isTaken, save, update, summary, open, unpaidCount: () => unpaid(read()).length };
+  return { read, isTaken, isExpired, save, update, summary, open, unpaidCount: () => unpaid(read()).length };
 })();
 
 // Presentation changes stay in JavaScript; all visual rules come from existing Bootstrap classes.

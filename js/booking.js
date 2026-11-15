@@ -221,6 +221,10 @@ function reviewEdit() {
       seats('That seat is no longer available. Choose another seat.');
       return;
     }
+    if (outcome === 'expired') {
+      status(feedback, 'This screening has already started. The ticket can no longer be edited. Return to My tickets to remove it.', true);
+      return;
+    }
     if (outcome === 'paid' || outcome === 'missing') {
       status(feedback, 'This ticket was paid for or removed. Return to My tickets to see the current details.', true);
       return;
@@ -352,6 +356,10 @@ function reviewTickets() {
       reference: selectedSeats.length === 1 ? reference : `${reference}-${index + 1}`
     }));
     const outcome = CinemaTickets.save(tickets);
+    if (outcome === 'expired') {
+      details('This screening has already started. Choose another time.');
+      return;
+    }
     if (outcome === 'taken') {
       const saved = CinemaTickets.read();
       selectedSeats = selectedSeats.filter(seat => !saved.some(ticket => CinemaTickets.isTaken(ticket, screening.key, seat.id)));
@@ -435,7 +443,7 @@ export function openScreening(selectedFilm, selectedDate, time) {
 export function editTicket(reference) {
   if (window.open) return false;
   const ticket = CinemaTickets.read().find(item => item.reference === reference);
-  if (!ticket || ticket.paymentStatus === 'paid') return false;
+  if (!ticket || ticket.paymentStatus === 'paid' || CinemaTickets.isExpired(ticket)) return false;
   const filmId = ticket.filmId || ticket.sessionKey?.split('/')[0];
   const selectedFilm = CinemaData.films.find(item => item.id === filmId)
     || CinemaData.films.find(item => item.title === ticket.title);
