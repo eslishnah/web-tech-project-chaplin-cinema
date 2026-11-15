@@ -9,14 +9,14 @@ const CinemaUI = (() => {
   }
 
   function button(text, action, secondary = false) {
-    const node = element('button', `btn ${secondary ? 'btn-outline-secondary' : 'btn-success'} py-2 px-3`, text);
+    const node = element('button', `btn ${secondary ? 'btn-outline-secondary' : 'btn-success'} py-2 px-3 rounded-3 fw-semibold`, text);
     node.type = 'button';
     node.addEventListener('click', action);
     return node;
   }
 
   function link(text, href) {
-    const node = element('a', 'btn btn-success py-2 px-3', text);
+    const node = element('a', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', text);
     node.href = href;
     return node;
   }
@@ -128,7 +128,8 @@ const CinemaUI = (() => {
   document.querySelectorAll('.text-success').forEach(node => {
     node.classList.replace('text-success', 'text-dark');
   });
-  document.querySelectorAll('.btn, .nav-link').forEach(node => node.classList.add('py-2', 'px-3'));
+  document.querySelectorAll('.btn').forEach(node => node.classList.add('py-2', 'px-3', 'rounded-3', 'fw-semibold'));
+  document.querySelectorAll('.nav-link').forEach(node => node.classList.add('py-2', 'px-3'));
   document.querySelectorAll('main .p-4').forEach(node => {
     node.classList.replace('p-4', 'p-3');
     node.classList.add('p-md-4');
@@ -176,7 +177,7 @@ const CinemaProfile = (() => {
     const digits = card.input.value.replace(/ /g, '');
     if (/^\d{16}$/.test(digits)) card.input.value = digits.match(/\d{4}/g).join(' ');
   });
-  const signIn = element('button', 'btn btn-success', 'Sign in');
+  const signIn = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', 'Sign in');
   signIn.type = 'submit';
   form.append(name.wrapper, phone.wrapper, card.wrapper, signIn);
   const account = element('section');
@@ -285,7 +286,7 @@ const CinemaTickets = (() => {
       } else body.append(link('Browse movies', 'movies.html'));
     }
     tickets.forEach(ticket => {
-      const card = element('article', 'border rounded-3 p-3 mb-3');
+      const card = element('article', 'border rounded-4 p-3 mb-3');
       card.append(element('h3', 'h5', ticket.title), element('p', 'text-body-secondary', `Ticket ${ticket.reference}`), summary(ticket));
       body.append(card);
     });
@@ -329,7 +330,7 @@ const CinemaTickets = (() => {
     document.getElementById('service-feedback-form').classList.add('is-hidden');
   }
   const [eyebrow, tagline, description] = descriptions[page] || descriptions['index.html'];
-  const heroPadding = page === 'schedule.html' ? 'p-3 p-lg-4' : 'p-4 p-lg-5';
+  const heroPadding = 'p-4 p-lg-5';
   const hero = element('section', 'bg-success text-black rounded-4 mb-4 shadow-sm ' + heroPadding);
   hero.id = 'page-introduction';
   hero.setAttribute('aria-labelledby', 'page-title');
@@ -358,6 +359,7 @@ const CinemaTickets = (() => {
     node.classList.add('rounded-4', 'shadow-sm');
   });
   document.querySelectorAll('main .card').forEach(card => {
+    card.classList.remove('rounded-3');
     card.classList.add('bg-white', 'border-0', 'shadow-sm', 'rounded-4', 'overflow-hidden');
     card.querySelector('.card-body')?.classList.add('p-4');
   });

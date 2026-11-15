@@ -63,15 +63,15 @@ $(function () {
   transform: translate(-50%, -50%);
   width: clamp(2.9rem, 4.5vw, 3.7rem);
   aspect-ratio: 1;
-  background-color: #ef4548;
-  border-color: #ef4548;
-  color: #fff;
+  background-color: var(--bs-warning);
+  border-color: var(--bs-warning);
+  color: #111;
   font-size: 1.2rem;
 }
 .trailer-play:hover, .trailer-play:focus-visible {
-  color: #fff;
-  background-color: #d83640;
-  border-color: #d83640;
+  color: #111;
+  background-color: #ad692e;
+  border-color: #ad692e;
 }
 .trailer-arrow-prev { left: var(--trailer-arrow-offset); }
 .trailer-arrow-next { right: var(--trailer-arrow-offset); }
@@ -206,12 +206,13 @@ $(function () {
 
   function arrow(label, symbol) {
     return $('<button>', { type: 'button', text: symbol, 'aria-label': label, 'aria-controls': 'featured-films-track' })
-      .addClass('btn btn-outline-secondary px-3');
+      .addClass('btn btn-outline-secondary py-2 px-3 rounded-3 fw-semibold');
   }
 
   const $previous = arrow('Previous trending film', '‹');
   const $next = arrow('Next trending film', '›');
-  const $all = $('<a>', { href: 'movies.html', text: 'View all movies' }).addClass('btn btn-outline-success');
+  const $all = $('<a>', { href: 'movies.html', text: 'View all movies' })
+    .addClass('btn btn-success py-2 px-3 rounded-3 fw-semibold');
   const $actions = $('<div>').addClass('d-flex flex-wrap gap-2').append($all, $previous, $next);
   const $header = $('<div>').addClass('d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3')
     .append($heading, $actions);

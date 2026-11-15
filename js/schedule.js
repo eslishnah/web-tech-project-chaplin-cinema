@@ -55,7 +55,7 @@
   }
 
   function filmCard(film, screenings) {
-    const card = element('article', 'border rounded-3 p-2 p-sm-3 d-flex gap-2 gap-sm-3 align-items-start');
+    const card = element('article', 'border rounded-4 p-2 p-sm-3 d-flex gap-2 gap-sm-3 align-items-start');
     const poster = element('img', 'rounded-2 flex-shrink-0');
     poster.src = film.poster;
     poster.alt = '';
@@ -65,7 +65,7 @@
     const info = element('div');
     const times = element('div', 'd-flex flex-wrap gap-2');
     screenings.forEach(screening => {
-      times.append(element('span', 'btn btn-outline-success py-2 px-3 pe-none', screening.time));
+      times.append(element('span', 'badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2 fs-6', screening.time));
     });
     info.append(element('h3', 'h5 mb-1', film.title),
       element('p', 'small text-body-secondary mb-2', film.age + '+ · ' + film.language + ' · From ' + money(fromPrice(film))),

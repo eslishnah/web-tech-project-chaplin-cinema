@@ -25,9 +25,11 @@ $(function () {
     control('Age rating', 'movie-age', ages),
     control('Sort by', 'movie-sort', [['catalogue', 'Catalogue order'], ['title', 'Title A–Z']])
   );
-  const $shortlist = $('<button>', { type: 'button', text: 'Show saved films' }).addClass('btn btn-outline-secondary');
+  const $shortlist = $('<button>', { type: 'button', text: 'Show saved films' })
+    .addClass('btn btn-outline-secondary py-2 px-3 rounded-3 fw-semibold');
   const $shortlistHint = $('<span>').addClass('d-inline-block').append($shortlist);
-  const $reset = $('<button>', { type: 'button', text: 'Reset filters' }).addClass('btn btn-outline-secondary');
+  const $reset = $('<button>', { type: 'button', text: 'Reset filters' })
+    .addClass('btn btn-outline-secondary py-2 px-3 rounded-3 fw-semibold');
   const $actions = $('<div>').addClass('d-flex flex-wrap gap-2 mb-3').append($shortlistHint, $reset);
   const $count = $('<p>', { role: 'status' }).addClass('fw-semibold');
   const $notice = $('#movie-error');
@@ -36,10 +38,28 @@ $(function () {
   $('#now-showing > p').first().remove();
   $list.removeClass('d-grid gap-4').addClass('row g-3').before($filters, $actions, $count);
 
+  function heartIcon(filled) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', '24');
+    svg.setAttribute('height', '24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z');
+    path.setAttribute('fill', filled ? 'currentColor' : 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.append(path);
+    return svg;
+  }
+
   function cardFor(film) {
     const isSaved = saved.includes(film.id);
     const $poster = $('<img>', { src: film.poster, alt: '', loading: 'lazy', width: 240, height: 336 })
-      .addClass('img-fluid w-100 rounded-top-3');
+      .addClass('img-fluid w-100 rounded-top-4');
     const $text = $('<div>').addClass('p-2 p-sm-3').append(
       $('<span>', { text: film.title }).addClass('fw-semibold d-block'),
       $('<span>', { text: `${film.category} · ${film.age}+` }).addClass('small text-body-secondary d-block'),
@@ -47,17 +67,18 @@ $(function () {
     );
     const $open = $('<button>', { type: 'button', 'aria-label': `Details: ${film.title}` }).addClass('film-open btn p-0 text-start w-100')
       .append($poster, $text);
-    const $save = $('<button>', { type: 'button', text: isSaved ? '♥' : '♡' })
-      .addClass('movie-save btn position-absolute top-0 end-0 z-1 m-2 rounded-circle shadow-sm p-2 fs-4 lh-1')
+    const $save = $('<button>', { type: 'button' })
+      .addClass('movie-save btn position-absolute top-0 end-0 z-1 m-2 rounded-circle shadow-sm p-2 d-inline-flex align-items-center justify-content-center')
       .addClass(isSaved ? 'btn-danger' : 'btn-light text-danger')
       .toggleClass('opacity-0', hoverOnly && !isSaved)
       .attr({
         'aria-pressed': String(isSaved),
         'aria-label': `${isSaved ? 'Remove from saved' : 'Save film'}: ${film.title}`,
         title: isSaved ? 'Remove from saved' : 'Save film'
-      });
+      })
+      .append(heartIcon(isSaved));
     // The chain sets the card layout, marks saved films, then attaches the card controls.
-    const $card = $('<article>', { 'data-film-id': film.id }).addClass('border rounded-3 h-100 d-flex flex-column justify-content-between position-relative')
+    const $card = $('<article>', { 'data-film-id': film.id }).addClass('border rounded-4 h-100 d-flex flex-column justify-content-between position-relative')
       .toggleClass('is-selected', isSaved)
       .append($open, $save);
     return $('<div>').addClass('col-6 col-md-4 col-lg-3 col-xl-2').append($card);

@@ -46,7 +46,7 @@
   const whatsapp = externalLink('WhatsApp', 'https://api.whatsapp.com/message/5ACZ7HYLVPCNL1?autoload=1&app_absent=0&utm_source=ig');
   const instagram = externalLink('Instagram', 'https://www.instagram.com/dostar.cinema');
   whatsapp.classList.replace('btn-success', 'btn-outline-success');
-  instagram.classList.replace('btn-success', 'btn-outline-secondary');
+  instagram.classList.replace('btn-success', 'btn-outline-success');
   phone.classList.add('mb-3');
   social.append(whatsapp, instagram);
   contacts.append(element('h3', 'h3 mb-3', 'Contacts'), phone, social);

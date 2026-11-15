@@ -242,7 +242,7 @@ function payment() {
   let useGuest = false;
   const form = element('form');
   form.noValidate = true;
-  const buy = element('button', 'btn btn-success', selectedSeats.length === 1 ? 'Save ticket' : 'Save tickets');
+  const buy = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', selectedSeats.length === 1 ? 'Save ticket' : 'Save tickets');
   buy.type = 'submit';
 
   function renderAccount() {

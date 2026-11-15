@@ -32,7 +32,8 @@ $(function () {
   $rating.append($stars, $ratingError);
 
   const $heading = $feedback.children('h2').attr('id', 'write-review');
-  const $signIn = $('<button>', { type: 'button', text: 'Sign in to write a review' }).addClass('btn btn-success');
+  const $signIn = $('<button>', { type: 'button', text: 'Sign in to write a review' })
+    .addClass('btn btn-success py-2 px-3 rounded-3 fw-semibold');
   const $composer = $('<section>', { 'aria-labelledby': 'write-review' }).addClass('pe-lg-3')
     .append($heading, $signIn, $form);
 
@@ -119,7 +120,7 @@ $(function () {
     $sortGroup.toggleClass('is-hidden', reviews.length < 2);
     $cards.empty();
     if (!reviews.length) {
-      $cards.append($('<p>', { text: 'No reviews yet.' }).addClass('border rounded-3 p-3 mb-0 text-body-secondary'));
+      $cards.append($('<p>', { text: 'No reviews yet.' }).addClass('border rounded-4 p-3 mb-0 text-body-secondary'));
       return;
     }
 
@@ -140,8 +141,8 @@ $(function () {
       $card.append($cardHeading, $score, $('<p>', { text: review.message }).addClass('mb-0'));
       if (review.owner === profile) {
         $card.append($('<div>').addClass('d-flex flex-wrap gap-2 mt-3').append(
-          $('<button>', { type: 'button', text: 'Edit review' }).addClass('btn btn-outline-secondary btn-sm review-edit'),
-          $('<button>', { type: 'button', text: 'Delete review' }).addClass('btn btn-outline-secondary btn-sm review-delete')
+          $('<button>', { type: 'button', text: 'Edit review' }).addClass('btn btn-outline-secondary btn-sm rounded-3 fw-semibold review-edit'),
+          $('<button>', { type: 'button', text: 'Delete review' }).addClass('btn btn-outline-secondary btn-sm rounded-3 fw-semibold review-delete')
         ));
       }
       $cards.append($card);
