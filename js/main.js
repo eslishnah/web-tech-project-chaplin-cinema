@@ -301,8 +301,13 @@ const CinemaTickets = (() => {
   const main = document.querySelector('main');
   const page = location.pathname.split('/').pop() || 'index.html';
   const isHome = page === 'index.html';
+  const isCinema = page === 'cinema.html';
+  if (isCinema && !CinemaData.cinemaPageEnabled) {
+    location.replace('index.html#about-cinema');
+    return;
+  }
   const descriptions = {
-    'index.html': ['Cinema in Astana', '', 'Your cinema at Koktal Shopping Centre, Astana.'],
+    'index.html': ['CINEMA IN ASTANA', '', 'Your cinema at Koktal Shopping Centre, Astana.'],
     'movies.html': ['THE FILM COLLECTION', 'Find your next film.'],
     'schedule.html': ['PLAN YOUR SCREENING', '', 'Check which films and showtimes are listed for each day. To choose seats, open a film on Movies.'],
     'cinema.html': ['BEHIND THE SCREEN', 'A closer look at Dostar.'],
@@ -333,20 +338,13 @@ const CinemaTickets = (() => {
   heading.classList.add('mb-3');
   heading.before(hero);
   const heroRow = element('div', 'row g-4 align-items-center');
-  const heroText = element('div', isHome ? 'col-12 col-lg-7' : 'col-12');
+  const heroText = element('div', 'col-12');
   if (eyebrow) heroText.append(element('p', 'badge bg-warning text-black rounded-pill px-3 py-2 text-wrap text-start mb-3', eyebrow));
   heroText.append(heading);
   if (tagline) heroText.append(element('p', description ? 'h4 mb-3' : 'h4 mb-0', tagline));
   if (description) heroText.append(element('p', 'mb-0 text-black', description));
   heroRow.append(heroText);
   if (isHome) {
-    const photo = document.querySelector('#about img');
-    photo.loading = 'eager';
-    photo.alt = 'Entrance to Dostar Cinema';
-    photo.classList.add('w-100', 'rounded-4');
-    const media = element('div', 'col-12 col-lg-5');
-    media.append(photo);
-    heroRow.append(media);
     main.querySelectorAll('#about, #visitor-paths, #team').forEach(section => section.remove());
   }
   hero.append(heroRow);
@@ -364,8 +362,30 @@ const CinemaTickets = (() => {
     card.querySelector('.card-body')?.classList.add('p-4');
   });
 
+  if (isHome || isCinema) {
+    document.head.append(element('style', '', `
+:is(#trailer-carousel, #cinema-gallery) {
+  --carousel-arrow-size: clamp(2.25rem, 3.5vw, 2.75rem);
+}
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  width: var(--carousel-arrow-size);
+  aspect-ratio: 1;
+  font-size: 1.5rem;
+  line-height: 1;
+  background-color: rgba(16, 24, 29, .5);
+  border-color: rgba(255, 255, 255, .65);
+}
+`));
+  }
+
   const addFacts = (target, items) => {
-    const row = element('dl', 'row g-3 mt-2 mb-0');
+    const row = element('dl', 'row g-3 mb-0');
     items.forEach(([label, value]) => {
       const cell = element('div', 'col-12 col-md-4');
       const box = element('div', 'bg-success-subtle rounded-3 p-3 h-100');
@@ -375,20 +395,29 @@ const CinemaTickets = (() => {
     });
     target.append(row);
   };
-  if (page === 'cinema.html') {
-    hero.classList.replace('mb-4', 'mb-3');
-    const facts = document.getElementById('about-cinema');
-    facts.replaceChildren();
-    facts.classList.replace('border', 'border-top');
-    facts.classList.add('border-4', 'border-success');
+  if (isCinema || (isHome && !CinemaData.cinemaPageEnabled)) {
+    const panelClasses = ['bg-white', 'border-top', 'border-4', 'border-success', 'rounded-4', 'shadow-sm', 'p-3', 'p-md-4', 'mb-4'];
+    let facts = document.getElementById('about-cinema');
+    let gallery = document.getElementById('cinema-gallery');
+
+    if (isHome) {
+      facts = element('section', 'mt-4');
+      facts.id = 'about-cinema';
+      gallery = element('section');
+      gallery.id = 'cinema-gallery';
+      gallery.append(element('h2', 'h3 text-dark', 'Cinema photographs'), element('div', 'row g-4'));
+      main.append(facts, gallery);
+    } else {
+      hero.classList.replace('mb-4', 'mb-3');
+      facts.replaceChildren();
+      facts.classList.remove('border');
+    }
+    facts.classList.add(...panelClasses);
     facts.setAttribute('aria-label', 'Cinema information');
     addFacts(facts, [
       ['Published hall count', '4 cinema halls'], ['Published seat count', '326 seats in total'], ['Location', 'Köktal shopping centre']
     ]);
-    facts.firstElementChild.classList.remove('mt-2');
-    document.getElementById('cinema-gallery').classList.add(
-      'bg-white', 'border-top', 'border-4', 'border-success', 'rounded-4', 'shadow-sm', 'p-3', 'p-md-4', 'mb-4'
-    );
+    gallery.classList.add(...panelClasses);
   }
   const footer = document.querySelector('footer');
   footer.classList.remove('bg-dark', 'text-white');
@@ -409,34 +438,27 @@ const CinemaTickets = (() => {
   main.querySelectorAll('summary').forEach(node => node.classList.add('text-success-emphasis'));
 })();
 
-// Cinema photos share one dialog, with the current photo tracked by its index.
+// Track the current cinema photo by its index.
 (() => {
   const gallery = document.querySelector('#cinema-gallery .row');
   if (!gallery) return;
 
-  const { element, button, dialog } = CinemaUI;
-  const photos = [...gallery.querySelectorAll('img')].map(image => image.getAttribute('src'));
-  photos.push(
+  const { element } = CinemaUI;
+  const photos = [
+    'images/dostar-bar.jpg',
+    'images/dostar-front.jpg',
+    'images/dostar-lobby.jpg',
     'images/Снимок экрана 2026-11-12 145658.png',
     'images/Снимок экрана 2026-11-12 145723.png',
     'images/Снимок экрана 2026-11-12 145751.png',
     'images/Снимок экрана 2026-11-12 145758.png',
     'images/Снимок экрана 2026-11-12 145809.png'
-  );
-
-  const { window: viewer, heading, body } = dialog('cinema-photo-viewer', 'Cinema photographs', true);
-  const image = element('img', 'd-block w-100 object-fit-contain');
-  image.height = 440;
-  image.alt = 'Cinema gallery photo';
-  const counter = element('p', 'mb-0 text-body-secondary');
-  counter.setAttribute('role', 'status');
+  ];
 
   const preview = element('img', 'd-block object-fit-cover');
-  preview.alt = '';
-  const open = element('button', 'btn d-block ratio ratio-4x3 p-0 border-0 rounded-4 overflow-hidden focus-ring');
-  open.type = 'button';
-  open.setAttribute('aria-haspopup', 'dialog');
-  open.append(preview);
+  preview.alt = 'Dostar Cinema interior';
+  const photoFrame = element('div', 'd-block ratio ratio-4x3 rounded-4 overflow-hidden');
+  photoFrame.append(preview);
 
   const announcement = element('p', 'visually-hidden');
   announcement.setAttribute('role', 'status');
@@ -459,10 +481,7 @@ const CinemaTickets = (() => {
     const src = photos[currentPhoto];
     const label = 'Photo ' + (currentPhoto + 1) + ' of ' + photos.length;
     preview.src = src;
-    if (viewer.open) image.src = src;
-    open.setAttribute('aria-label', 'Enlarge photo ' + (currentPhoto + 1));
     announcement.textContent = label;
-    counter.textContent = label;
     dots.forEach((dot, dotIndex) => {
       const active = dotIndex === currentPhoto;
       dot.classList.toggle('text-success', active);
@@ -474,7 +493,7 @@ const CinemaTickets = (() => {
 
   function arrow(symbol, label, position, direction) {
     const control = element('button',
-      'btn btn-light position-absolute top-50 translate-middle-y rounded-circle shadow-sm py-2 px-3 fs-5 lh-1 ' + position,
+      'carousel-arrow btn btn-outline-light ' + position,
       symbol);
     control.type = 'button';
     control.setAttribute('aria-label', label);
@@ -482,43 +501,29 @@ const CinemaTickets = (() => {
     return control;
   }
 
-  open.addEventListener('click', () => {
-    image.src = photos[currentPhoto];
-    viewer.showModal();
-    heading.focus();
-  });
-
   const stage = element('div', 'position-relative');
-  stage.append(open, arrow('‹', 'Previous photo', 'start-0 ms-2', -1), arrow('›', 'Next photo', 'end-0 me-2', 1));
+  stage.append(photoFrame, arrow('‹', 'Previous photo', 'start-0 ms-2', -1), arrow('›', 'Next photo', 'end-0 me-2', 1));
   const frame = element('div', 'text-center');
   frame.append(stage, indicators, announcement);
   const column = element('div', 'col-12 col-lg-10 col-xl-9 mx-auto');
   column.append(frame);
   gallery.replaceChildren(column);
 
-  const controls = element('div', 'd-flex flex-wrap align-items-center justify-content-between gap-2 mb-3');
-  controls.append(button('Previous', () => showPhoto(currentPhoto - 1), true), counter,
-    button('Next', () => showPhoto(currentPhoto + 1), true));
-  body.append(controls, image);
-
-  [gallery, viewer].forEach(container => {
-    container.addEventListener('keydown', event => {
-      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-      event.preventDefault();
-      showPhoto(currentPhoto + (event.key === 'ArrowLeft' ? -1 : 1));
-    });
+  gallery.addEventListener('keydown', event => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    showPhoto(currentPhoto + (event.key === 'ArrowLeft' ? -1 : 1));
   });
 
   showPhoto(0);
 })();
 
-// Group the original pages without changing their addresses.
+// Group the active information pages in the Details menu.
 (() => {
   const { element, button } = CinemaUI;
   const nav = document.querySelector('.navbar-nav');
-  const home = nav.querySelector('a[href="index.html"]');
-  if (home.hasAttribute('aria-current')) document.querySelector('.navbar-brand a').setAttribute('aria-current', 'page');
-  home.closest('li').remove();
+  const brandLink = document.querySelector('header .navbar-brand a');
+  brandLink.replaceWith(element('span', brandLink.className, brandLink.textContent));
 
   const group = element('li', 'nav-item dropdown');
   const toggle = element('button', 'nav-link dropdown-toggle py-2 px-3', 'Details');
@@ -531,6 +536,10 @@ const CinemaTickets = (() => {
   for (const href of ['cinema.html', 'visit.html', 'services.html']) {
     const link = nav.querySelector(`a[href="${href}"]`);
     const item = link.closest('li');
+    if (href === 'cinema.html' && !CinemaData.cinemaPageEnabled) {
+      item.remove();
+      continue;
+    }
     item.classList.remove('nav-item');
     link.classList.remove('nav-link', 'bg-success', 'text-black', 'rounded-pill');
     link.classList.add('dropdown-item');
