@@ -227,7 +227,7 @@ const CinemaProfile = (() => {
 })();
 
 const CinemaTickets = (() => {
-  const { element, button, field, link, dialog, readStorage, writeStorage, validateFields, status } = CinemaUI;
+  const { element, button, field, link, dialog, readStorage, writeStorage, validateFields, errorFor, status } = CinemaUI;
   const storageKey = 'dostar-tickets-v1';
   const { window, heading, body } = dialog('my-tickets', 'My tickets', true);
   let expirationTimer;
@@ -453,15 +453,23 @@ const CinemaTickets = (() => {
     expiry.input.inputMode = 'numeric';
     expiry.input.maxLength = 5;
     expiry.input.placeholder = 'MM/YY';
+    let lastExpiry = '';
     expiry.input.addEventListener('input', () => {
       const digits = expiry.input.value.replace(/\D/g, '').slice(0, 4);
+      if (digits.length >= 2 && !/^(0[1-9]|1[0-2])/.test(digits)) {
+        expiry.input.value = lastExpiry;
+        errorFor(expiry.input, 'The month must be between 01 and 12.');
+        return;
+      }
       expiry.input.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+      lastExpiry = expiry.input.value;
+      if (expiry.input.getAttribute('aria-invalid') === 'true') errorFor(expiry.input, '');
     });
     const cvc = field('CVC', 'payment-cvc', 'password');
     cvc.input.inputMode = 'numeric';
-    cvc.input.maxLength = 4;
+    cvc.input.maxLength = 3;
     cvc.input.addEventListener('input', () => {
-      cvc.input.value = cvc.input.value.replace(/\D/g, '').slice(0, 4);
+      cvc.input.value = cvc.input.value.replace(/\D/g, '').slice(0, 3);
     });
     [holder, card, expiry, cvc].forEach(item => {
       item.input.required = true;
@@ -504,7 +512,7 @@ const CinemaTickets = (() => {
         [holder.input, holder.input.value.trim().length >= 2 ? '' : 'Enter the cardholder name.'],
         [card.input, /^\d{16}$/.test(digits) ? '' : 'Enter 16 digits for the card number.'],
         [expiry.input, validExpiry ? '' : 'Enter a valid expiry date that has not passed (MM/YY).'],
-        [cvc.input, /^\d{3,4}$/.test(cvc.input.value) ? '' : 'Enter a 3 or 4-digit CVC.']
+        [cvc.input, /^\d{3}$/.test(cvc.input.value) ? '' : 'Enter exactly 3 digits for the CVC.']
       ])) return;
 
       // Re-read before saving so paid tickets cannot be charged twice and new tickets are not silently included.
