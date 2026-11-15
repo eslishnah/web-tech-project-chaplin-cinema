@@ -406,13 +406,15 @@ window.addEventListener('close', () => {
   }
 });
 
-function showInitial(initialFilm, initialDate) {
+function showInitial(initialFilm, initialDate, initialScreening = null, message = '') {
   editingTicket = null;
   film = initialFilm;
   date = initialDate;
   selectedSeats = [];
   promoCode = '';
-  details();
+  screening = initialScreening;
+  if (screening) seats();
+  else details(message);
   window.showModal();
   heading.focus();
 }
@@ -421,6 +423,13 @@ export function openFilm(selectedFilm) {
   if (window.open) return;
   const dates = bookingDates();
   showInitial(selectedFilm, dates.find(day => sessionsFor(selectedFilm, day).length) || dates[0]);
+}
+
+export function openScreening(selectedFilm, selectedDate, time) {
+  if (window.open) return;
+  const selectedScreening = sessionsFor(selectedFilm, selectedDate).find(item => item.time === time);
+  showInitial(selectedFilm, selectedDate, selectedScreening,
+    selectedScreening ? '' : 'This screening is no longer available. Choose another time.');
 }
 
 export function editTicket(reference) {
