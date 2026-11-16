@@ -163,7 +163,7 @@ function chooseType(seat) {
     const choice = button(`${item.label} · ${money(item.price)}`, () => {
       seat.type = item;
       continueBooking();
-    }, true);
+    });
     choice.classList.add('w-100', 'text-start');
     if (seat.type?.id === item.id) choice.classList.add('active');
     const option = element('div');
