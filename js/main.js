@@ -60,6 +60,42 @@ const CinemaUI = (() => {
     return { wrapper, input };
   }
 
+  function phoneField(id) {
+    const phone = field('Phone number', id, 'tel');
+    const { input } = phone;
+    const prefix = '+7 ';
+    input.inputMode = 'numeric';
+    input.autocomplete = 'tel';
+    input.placeholder = `${prefix}000 000 00 00`;
+
+    input.addEventListener('focus', () => {
+      if (!input.value) input.value = prefix;
+    });
+    input.addEventListener('input', () => {
+      const value = input.value;
+      const withoutPrefix = value.replace(/^(?:\+7|7\s)/, '');
+      let digits = withoutPrefix.replace(/\D/g, '');
+      if (withoutPrefix === value && /^[78]\d{10}$/.test(digits)) digits = digits.slice(1);
+      const formatted = prefix + digits.slice(0, 10);
+      if (value !== formatted) input.value = formatted;
+    });
+    input.addEventListener('paste', event => {
+      const pasted = event.clipboardData?.getData('text') || '';
+      if (!/^[78]\d{10}$/.test(pasted.replace(/\D/g, ''))) return;
+      event.preventDefault();
+      input.value = pasted;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    input.addEventListener('blur', () => {
+      if (input.value === prefix) input.value = '';
+    });
+    return phone;
+  }
+
+  function phoneError(value) {
+    return /^[78]\d{10}$/.test(value.replace(/\D/g, '')) ? '' : 'Enter 10 digits after +7.';
+  }
+
   function renderList(container, items, render, emptyText) {
     container.replaceChildren();
     if (items.length === 0) {
@@ -142,11 +178,11 @@ const CinemaUI = (() => {
   document.head.append(icon);
 
 
-  return { element, button, link, dialog, field, renderList, status, errorFor, clearErrors, validateFields, readStorage, writeStorage };
+  return { element, button, link, dialog, field, phoneField, phoneError, renderList, status, errorFor, clearErrors, validateFields, readStorage, writeStorage };
 })();
 
 const CinemaProfile = (() => {
-  const { element, button, field, dialog, validateFields, errorFor, clearErrors } = CinemaUI;
+  const { element, button, field, phoneField, phoneError, dialog, validateFields, errorFor, clearErrors } = CinemaUI;
   const storageKey = 'dostar-sign-in';
   let profile = null;
   try { profile = JSON.parse(sessionStorage.getItem(storageKey)); } catch { /* Use memory. */ }
@@ -155,17 +191,8 @@ const CinemaProfile = (() => {
   const name = field('Name', 'profile-name');
   name.input.required = true;
   name.input.maxLength = 80;
-  const phone = field('Phone number', 'profile-phone', 'tel');
+  const phone = phoneField('profile-phone');
   phone.input.required = true;
-  phone.input.inputMode = 'numeric';
-  phone.input.placeholder = '77001234567';
-  phone.input.addEventListener('input', () => {
-    phone.input.value = phone.input.value.replace(/\D/g, '').slice(0, 11);
-  });
-  const phoneHint = element('div', 'form-text', '11 digits, starting with 7 or 8.');
-  phoneHint.id = 'profile-phone-hint';
-  phone.input.setAttribute('aria-describedby', phoneHint.id);
-  phone.wrapper.append(phoneHint);
   const form = element('form');
   form.noValidate = true;
   const signIn = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', 'Sign in');
@@ -201,10 +228,9 @@ const CinemaProfile = (() => {
 
   function checks() {
     const enteredName = name.input.value.trim();
-    const enteredPhone = phone.input.value.trim();
     return [
       [name.input, enteredName.length < 2 || enteredName.length > 80 ? 'Enter a name with 2 to 80 characters.' : ''],
-      [phone.input, /^[78]\d{10}$/.test(enteredPhone) ? '' : 'Enter 11 digits starting with 7 or 8.']
+      [phone.input, phoneError(phone.input.value)]
     ];
   }
 
@@ -305,7 +331,7 @@ const CinemaTickets = (() => {
     const paid = ticket.paymentStatus === 'paid';
     const expired = isExpired(ticket);
     const badge = element('p', paid ? 'badge bg-success-subtle text-success-emphasis' : expired ? 'badge bg-secondary-subtle text-secondary-emphasis' : 'badge bg-warning-subtle text-warning-emphasis',
-      paid ? 'Paid (demo)' : expired ? 'Expired' : 'Unpaid');
+      paid ? 'Paid' : expired ? 'Expired' : 'Unpaid');
     const filmId = ticket.filmId || ticket.sessionKey?.split('/')[0];
     const film = CinemaData.films.find(item => item.id === filmId)
       || CinemaData.films.find(item => item.title === ticket.title);
@@ -376,6 +402,7 @@ const CinemaTickets = (() => {
     const section = element('section');
     section.setAttribute('aria-labelledby', `${id}-title`);
     const titleNode = element('h3', 'h5 mb-3', `${title} (${tickets.length})`);
+    titleNode.style.fontFamily = 'inherit';
     titleNode.id = `${id}-title`;
     section.append(titleNode);
     tickets.forEach(ticket => section.append(ticketCard(ticket)));
@@ -415,7 +442,7 @@ const CinemaTickets = (() => {
         element('p', 'mb-1', `${pending.length} unpaid ticket${pending.length === 1 ? '' : 's'}`),
         element('p', 'h5 mb-3', `Total to pay: ${CinemaData.money(total(pending))}`),
         button('Pay', () => payment()),
-        element('p', 'small text-body-secondary mt-2 mb-0', 'Pay for all unpaid tickets together. Demo checkout; no real charge.')
+        element('p', 'small text-body-secondary mt-2 mb-0', 'Pay for all unpaid tickets together.')
       );
       pendingSection.append(checkout);
     }
@@ -444,7 +471,7 @@ const CinemaTickets = (() => {
     const card = field('Card number', 'payment-card-number');
     card.input.inputMode = 'numeric';
     card.input.maxLength = 19;
-    card.input.placeholder = '4242 4242 4242 4242';
+    card.input.placeholder = '0000 0000 0000 0000';
     card.input.addEventListener('input', () => {
       const digits = card.input.value.replace(/\D/g, '').slice(0, 16);
       card.input.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -492,7 +519,6 @@ const CinemaTickets = (() => {
     form.append(holder.wrapper, card.wrapper, dates, notice, actions);
     body.replaceChildren(
       element('p', 'fw-semibold', `${pending.length} ticket${pending.length === 1 ? '' : 's'} - Total: ${CinemaData.money(total(pending))}`),
-      element('p', 'small text-body-secondary', 'Demo payment only. Use test card 4242 4242 4242 4242, a future expiry date and any 3-digit CVC. No money is charged and card details are not saved.'),
       form
     );
     window.scrollTop = 0;

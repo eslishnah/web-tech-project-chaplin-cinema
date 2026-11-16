@@ -34,7 +34,7 @@
 
   const panelClasses = 'bg-body rounded-4 shadow-sm p-3';
   const hours = element('section', panelClasses);
-  const schedule = element('dl', 'd-flex align-items-center justify-content-between flex-wrap gap-2 mb-0');
+  const schedule = element('dl', 'd-flex align-items-center flex-wrap gap-2 mb-0');
   schedule.append(
     element('dt', 'fw-normal text-success-emphasis', 'Daily'),
     element('dd', 'mb-0 px-2 py-1 rounded-2 bg-success-subtle text-success-emphasis text-nowrap fw-semibold', '10:00–00:00')
@@ -55,7 +55,57 @@
   details.append(hours, contacts);
   const layout = element('div', 'row g-4 g-xl-5');
   layout.append(venue, details);
+
+  const faqItems = [
+    ['Where is Dostar Cinema located?', 'Dostar Cinema is located on the 3rd floor of Koktal Shopping Centre, 12A Nurgisa Tlendiyev Avenue, Astana.'],
+    ['Can I buy tickets online?', 'Yes, you can browse movies, choose a showtime, select your seats, and book tickets directly on our website.'],
+    ['Can I buy tickets at the cinema?', 'Yes, tickets can be purchased at the cinema’s ticket counter.'],
+    ['Is the cinema accessible to people with reduced mobility?', 'Yes, the cinema welcomes guests with reduced mobility. Please contact us in advance to arrange any assistance you may need.'],
+    ['Is parking available?', 'Parking is available at Koktal Shopping Centre. Please check with the shopping centre for details.'],
+    ['Can I bring my own food and drinks?', 'No, outside food and drinks are not permitted.']
+  ];
+  const faq = element('section', location.className);
+  const locationStyle = getComputedStyle(location);
+  faq.style.borderTop = locationStyle.borderTop;
+  faq.style.borderRadius = locationStyle.borderRadius;
+  faq.append(element('h2', 'h3 text-dark mb-3', 'Frequently Asked Questions'));
+  const accordion = element('div', 'accordion');
+  accordion.id = 'visit-faq';
+  faqItems.forEach(([question, answer], index) => {
+    const answerId = `visit-faq-answer-${index + 1}`;
+    const item = element('div', 'accordion-item');
+    const itemHeading = element('h3', 'accordion-header');
+    const toggle = element('button', 'accordion-button collapsed fw-bold', question);
+    toggle.style.fontFamily = 'var(--bs-font-sans-serif)';
+    toggle.type = 'button';
+    toggle.dataset.bsToggle = 'collapse';
+    toggle.dataset.bsTarget = `#${answerId}`;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', answerId);
+    itemHeading.append(toggle);
+    const panel = element('div', 'accordion-collapse collapse');
+    panel.id = answerId;
+    panel.dataset.bsParent = '#visit-faq';
+    panel.addEventListener('show.bs.collapse', () => {
+      toggle.style.backgroundColor = 'var(--bs-body-bg)';
+      toggle.style.color = 'var(--bs-body-color)';
+      toggle.style.boxShadow = 'none';
+    });
+    panel.addEventListener('hide.bs.collapse', () => {
+      toggle.style.removeProperty('background-color');
+      toggle.style.removeProperty('color');
+      toggle.style.removeProperty('box-shadow');
+    });
+    panel.setAttribute('aria-labelledby', `${answerId}-heading`);
+    itemHeading.id = `${answerId}-heading`;
+    const content = element('div', 'accordion-body', answer);
+    panel.append(content);
+    item.append(itemHeading, panel);
+    accordion.append(item);
+  });
+  faq.append(accordion);
   location.replaceChildren(layout);
+  location.after(faq);
 
   document.getElementById('route')?.remove();
 })();

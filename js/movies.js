@@ -18,7 +18,7 @@ $(function () {
 
   const categories = [...new Set(CinemaData.films.map(film => film.category))].sort();
   const categoryOptions = [['', 'All categories'], ...categories.map(category => [category, category])];
-  const ages = [['', 'All ages'], ...[6, 14, 16, 18, 21].map(age => [String(age), `Up to ${age}+`])];
+  const ages = [['', 'All ages'], ...[6, 14, 16, 18, 21].map(age => [String(age), `${age}+`])];
   const $filters = $('<div>').addClass('row g-2 mb-3').append(
     control('Search films', 'movie-search'),
     control('Category', 'movie-category', categoryOptions),
@@ -85,7 +85,8 @@ $(function () {
   }
 
   function render(animate = false) {
-    if (savedOnly && !saved.length) {
+    const hasSavedFilms = saved.length > 0;
+    if (savedOnly && !hasSavedFilms) {
       savedOnly = false;
       $('#movie-search, #movie-category, #movie-age').val('');
       $('#movie-sort').val('catalogue');
@@ -96,13 +97,15 @@ $(function () {
     });
     $count.text(`${matches.length} of ${CinemaData.films.length} films · ${saved.length} saved`);
     $shortlist.attr('aria-pressed', String(savedOnly)).toggleClass('active', savedOnly)
-      .prop('disabled', !saved.length)
-      .css('pointer-events', saved.length ? '' : 'none')
-      .text(savedOnly ? 'Show all films' : 'Show saved films');
+      .toggleClass('btn-outline-secondary', !hasSavedFilms)
+      .toggleClass('btn-outline-success', hasSavedFilms)
+      .prop('disabled', !hasSavedFilms)
+      .css('pointer-events', hasSavedFilms ? '' : 'none')
+      .text(savedOnly ? 'Show all movies' : 'Show saved films');
     $shortlistHint.attr({
-      title: saved.length ? null : 'You have no saved films yet.',
-      tabindex: saved.length ? null : '0',
-      'aria-label': saved.length ? null : 'You have no saved films yet.'
+      title: hasSavedFilms ? null : 'You have no saved films yet.',
+      tabindex: hasSavedFilms ? null : '0',
+      'aria-label': hasSavedFilms ? null : 'You have no saved films yet.'
     });
     $list.stop(true, true).empty();
     if (!matches.length) $list.append($('<p>', { text: 'No matching films. Change the filters to try again.' }));
@@ -122,6 +125,12 @@ $(function () {
     }
   }
 
+  $reset.on('mouseenter mouseleave', function (event) {
+    if (!hoverOnly) return;
+    const hovered = event.type === 'mouseenter' && !this.disabled;
+    $(this).toggleClass('btn-outline-secondary', !hovered)
+      .toggleClass('btn-outline-success', hovered);
+  });
   $filters.on('input', '#movie-search', () => render(true));
   $filters.on('change', 'select', () => render(true));
   $shortlist.on('click', () => {

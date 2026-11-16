@@ -1,4 +1,4 @@
-const { element, button, field, dialog, status, errorFor, validateFields } = CinemaUI;
+const { element, button, field, dialog, status, errorFor } = CinemaUI;
 const { money, ticketTypes, fromPrice, sessionsFor, bookingDates, dateLabel } = CinemaData;
 const { window, heading, body } = dialog('booking-flow', 'Film details', true);
 
@@ -78,16 +78,14 @@ function seats(message = '') {
   const saved = CinemaTickets.read().filter(ticket => ticket.reference !== editingTicket?.reference);
   const screen = element('p', 'border-top border-4 border-secondary rounded-top text-center fw-semibold pt-2 mx-auto w-75', 'SCREEN');
   const legend = element('p', 'small text-center text-body-secondary', 'Green · Available    Grey · Taken    Yellow · Selected');
-  const scroll = element('div', 'overflow-auto mb-3');
-  scroll.tabIndex = 0;
-  scroll.setAttribute('aria-label', 'Scrollable seat map');
-  const map = element('table', 'table table-borderless table-sm w-100 mb-0 text-nowrap align-middle');
+  const seatMapContainer = element('div', 'mb-3 seat-map-container');
+  const map = element('table', 'table table-borderless table-sm w-100 mb-0 text-nowrap align-middle seat-map-table');
   map.setAttribute('aria-label', 'Hall seat map');
   const rows = element('tbody');
 
   for (let row = 1; row <= 8; row++) {
     const line = element('tr');
-    const label = element('th', 'small px-1', `Row ${row}`);
+    const label = element('th', 'small ps-0 pe-1 seat-row-label', `Row ${row}`);
     label.scope = 'row';
     line.append(label);
     for (let number = 1; number <= 10; number++) {
@@ -99,7 +97,12 @@ function seats(message = '') {
       control.type = 'button';
       control.disabled = taken;
       control.dataset.seat = id;
-      control.setAttribute('aria-label', `Row ${row}, seat ${number}${taken ? ', taken' : ''}`);
+      const prices = ticketTypes(film).map(type => `${type.label}: ${money(type.price)}`);
+      const priceText = taken ? 'Taken' : prices.join(' · ');
+      const seatDescription = `Row ${row} · Seat ${number}\n${priceText}`;
+      control.dataset.seatTooltip = seatDescription;
+      control.title = seatDescription.replace('\n', '. ');
+      control.setAttribute('aria-label', `Row ${row}, seat ${number}${taken ? ', taken' : `, ticket prices: ${priceText}`}`);
       control.setAttribute('aria-pressed', String(!taken && selected));
       const cell = element('td');
       cell.append(control);
@@ -126,7 +129,7 @@ function seats(message = '') {
     chooseType(seat);
   });
   map.append(rows);
-  scroll.append(map);
+  seatMapContainer.append(map);
   const notice = element('p', message ? 'has-error' : 'is-hidden', message);
   notice.setAttribute('role', 'status');
   const actions = element('div', 'd-flex flex-wrap gap-2');
@@ -145,7 +148,7 @@ function seats(message = '') {
   const selection = element('p', 'mb-2', selectedSeats.length
     ? `Selected: ${selectedSeats.map(seat => `row ${seat.row}, seat ${seat.number}`).join('; ')}.`
     : 'Select an available seat to begin.');
-  show('Choose a seat', filmLine(), notice, screen, legend, scroll, selection, actions);
+  show('Choose a seat', filmLine(), notice, screen, legend, seatMapContainer, selection, actions);
 }
 function continueBooking() {
   const unpriced = selectedSeats.find(seat => !seat.type);
@@ -173,10 +176,10 @@ function chooseType(seat) {
   if (editingTicket) {
     actions.append(button('Change seat', () => seats()), button('Cancel editing', () => window.close(), true));
   } else {
-    actions.append(button('Add another seat', () => seats()), button('Remove this seat', () => {
+    actions.append(button('Remove this seat', () => {
       selectedSeats = selectedSeats.filter(item => item !== seat);
       seats();
-    }));
+    }, true));
   }
   show('Choose a ticket type', filmLine(), element('p', 'fw-semibold', `Row ${seat.row} · Seat ${seat.number}`),
     options, actions);
@@ -251,27 +254,7 @@ function reviewTickets() {
   const feedback = element('p', 'is-hidden mb-0');
   feedback.setAttribute('role', 'status');
   const account = element('div', 'mb-3');
-  const guest = element('section', 'border rounded-3 p-3 mb-3');
-  const guestName = field('Name', 'ticket-buyer-name');
-  guestName.input.autocomplete = 'name';
-  guestName.input.maxLength = 80;
-  const guestPhone = field('Phone number', 'ticket-buyer-phone', 'tel');
-  guestPhone.input.inputMode = 'numeric';
-  guestPhone.input.autocomplete = 'tel';
-  guestPhone.input.placeholder = '77001234567';
-  guestPhone.input.addEventListener('input', () => {
-    guestPhone.input.value = guestPhone.input.value.replace(/\D/g, '').slice(0, 11);
-  });
-  const phoneHint = element('div', 'form-text', '11 digits, starting with 7 or 8.');
-  phoneHint.id = 'ticket-buyer-phone-hint';
-  guestPhone.input.setAttribute('aria-describedby', phoneHint.id);
-  guestPhone.wrapper.append(phoneHint);
-  guest.append(
-    element('h3', 'h5', 'Continue without signing in'),
-    guestName.wrapper,
-    guestPhone.wrapper
-  );
-  let useGuest = false;
+  const signIn = button('Sign in', () => CinemaProfile.open());
   const form = element('form');
   form.noValidate = true;
   const buy = element('button', 'btn btn-success py-2 px-3 rounded-3 fw-semibold', 'Add to My tickets');
@@ -279,38 +262,9 @@ function reviewTickets() {
 
   function renderAccount() {
     const profile = CinemaProfile.get();
-    account.replaceChildren();
-    guest.hidden = !useGuest;
-    buy.hidden = !profile && !useGuest;
-    guest.classList.toggle('d-none', !useGuest);
-    buy.classList.toggle('d-none', !profile && !useGuest);
-    if (profile && !useGuest) {
-      account.append(element('p', 'mb-2', `Signed in as ${profile.name}.`),
-        button('Continue without signing in', () => {
-          useGuest = true;
-          renderAccount();
-          guestName.input.focus();
-        }, true));
-    } else if (profile) {
-      account.append(button('Use signed-in profile', () => {
-        useGuest = false;
-        renderAccount();
-      }, true));
-    } else if (useGuest) {
-      account.append(element('p', 'mb-2', 'Continuing without signing in.'),
-        button('Sign in instead', () => CinemaProfile.open(), true));
-    } else {
-      const choices = element('div', 'd-flex flex-wrap gap-2');
-      choices.append(
-        button('Sign in', () => CinemaProfile.open()),
-        button('Continue without signing in', () => {
-          useGuest = true;
-          renderAccount();
-          guestName.input.focus();
-        }, true)
-      );
-      account.append(element('p', 'fw-semibold mb-2', 'Choose how to continue'), choices);
-    }
+    buy.hidden = !profile;
+    buy.classList.toggle('d-none', !profile);
+    account.replaceChildren(profile ? element('p', 'mb-2', `Signed in as ${profile.name}.`) : signIn);
   }
   renderAccount();
 
@@ -328,18 +282,10 @@ function reviewTickets() {
   form.addEventListener('submit', event => {
     event.preventDefault();
     const profile = CinemaProfile.get();
-    if (!profile && !useGuest) {
-      status(feedback, 'Choose Sign in or Continue without signing in.', true);
-      account.querySelector('button').focus();
+    if (!profile) {
+      status(feedback, 'Sign in to add tickets.', true);
+      signIn.focus();
       return;
-    }
-    if (!profile || useGuest) {
-      const name = guestName.input.value.trim();
-      const phone = guestPhone.input.value.trim();
-      if (!validateFields([
-        [guestName.input, name.length >= 2 && name.length <= 80 ? '' : 'Enter a name with 2 to 80 characters.'],
-        [guestPhone.input, /^[78]\d{10}$/.test(phone) ? '' : 'Enter 11 digits starting with 7 or 8.']
-      ])) return;
     }
     if (!applyPromo()) {
       promo.input.focus();
@@ -352,7 +298,7 @@ function reviewTickets() {
     const reference = `DC-${Date.now().toString(36).toUpperCase()}`;
     const tickets = selectedSeats.map((seat, index) => ({
       ...ticketData(seat),
-      buyerName: profile && !useGuest ? profile.name : guestName.input.value.trim(),
+      buyerName: profile.name,
       reference: selectedSeats.length === 1 ? reference : `${reference}-${index + 1}`
     }));
     const outcome = CinemaTickets.save(tickets);
@@ -384,14 +330,13 @@ function reviewTickets() {
   const actions = element('div', 'd-flex flex-wrap gap-2 mb-3');
   actions.append(buy, button('Add another seat', () => seats()),
     button('Back to ticket types', () => chooseType(selectedSeats[0]), true));
-  form.append(promo.wrapper, promoResult, account, guest, actions, feedback);
+  form.append(promo.wrapper, promoResult, account, actions, feedback);
   show('Review tickets', summary, form);
   applyPromo();
 
   // A successful local sign-in leaves the current seat, ticket type and promo in place.
   const updateAccount = () => {
     if (!account.isConnected || !window.open) return;
-    useGuest = false;
     renderAccount();
     if (CinemaProfile.get()) {
       feedback.classList.add('is-hidden');
@@ -414,30 +359,18 @@ window.addEventListener('close', () => {
   }
 });
 
-function showInitial(initialFilm, initialDate, initialScreening = null, message = '') {
-  editingTicket = null;
-  film = initialFilm;
-  date = initialDate;
-  selectedSeats = [];
-  promoCode = '';
-  screening = initialScreening;
-  if (screening) seats();
-  else details(message);
-  window.showModal();
-  heading.focus();
-}
-
 export function openFilm(selectedFilm) {
   if (window.open) return;
   const dates = bookingDates();
-  showInitial(selectedFilm, dates.find(day => sessionsFor(selectedFilm, day).length) || dates[0]);
-}
-
-export function openScreening(selectedFilm, selectedDate, time) {
-  if (window.open) return;
-  const selectedScreening = sessionsFor(selectedFilm, selectedDate).find(item => item.time === time);
-  showInitial(selectedFilm, selectedDate, selectedScreening,
-    selectedScreening ? '' : 'This screening is no longer available. Choose another time.');
+  editingTicket = null;
+  film = selectedFilm;
+  date = dates.find(day => sessionsFor(film, day).length) || dates[0];
+  selectedSeats = [];
+  promoCode = '';
+  screening = null;
+  details();
+  window.showModal();
+  heading.focus();
 }
 
 export function editTicket(reference) {
